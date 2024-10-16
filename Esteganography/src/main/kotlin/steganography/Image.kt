@@ -1,4 +1,6 @@
 import java.awt.image.BufferedImage
+import java.io.File
+import javax.imageio.ImageIO
 /**
  * Image
  *
@@ -6,5 +8,6 @@ import java.awt.image.BufferedImage
  *
  * @property image The image to be processed.
  */
-class ImageHandler(private val image : BufferedImage) {
+class ImageHandler(private val imagePath : String) {
+    private val image : BufferedImage = ImageIO.read(File(imagePath))
 }
