@@ -1,6 +1,6 @@
 package steganography
 
-import steganography.Setegenography   
+import steganography.Steganography   
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
