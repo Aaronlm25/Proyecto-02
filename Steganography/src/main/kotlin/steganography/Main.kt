@@ -1,5 +1,5 @@
 package steganography
 
-fun main(args: Array<String>) {
+fun main() {
     println("Soy provisional jsjs")
 }
