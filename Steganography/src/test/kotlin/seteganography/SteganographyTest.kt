@@ -6,7 +6,7 @@ import io.kotest.matchers.shouldBe
 // (Borren este comentario) usen kotest
 // estilo StringSpec
 
-class SetegenographyTest : StringSpec ({
+class SteganographyTest : StringSpec ({
     "should encode text be clean" {
         0 shouldBe 0
     }

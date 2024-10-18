@@ -1,10 +1,10 @@
 package steganography
 
-import steganography.TextHandler   
+import steganography.*
 import io.kotest.core.spec.style.StringSpec
 // (Borren este comentario) usen kotest
 // estilo StringSpec
 
-class TextTest : StringSpec ({
+class ImageTest : StringSpec ({
 
 })

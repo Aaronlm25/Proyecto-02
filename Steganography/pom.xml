@@ -23,6 +23,7 @@
 
   <build>
     <sourceDirectory>src/main/kotlin</sourceDirectory>
+    <testSourceDirectory>src/test/kotlin</testSourceDirectory>
     <plugins>
 
       <plugin>
@@ -93,7 +94,7 @@
       <artifactId>kotlin-stdlib</artifactId>
       <version>${kotlin.version}</version>
     </dependency>
-    
+
   </dependencies>
 
 </project>
