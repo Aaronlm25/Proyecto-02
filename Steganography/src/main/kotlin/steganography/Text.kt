@@ -14,4 +14,16 @@ class TextHandler {
         val characters = mutableListOf(' ')
         return characters
     }
+
+    /**
+     * Writes the encoded message to a file at the specified path.
+     * 
+     * @param characters Characters that make up the encoded message.
+     * @param textPath Path to which the encoded message will be written.
+     * @return A file with the encoded message.
+    */
+    fun toFile(characters : List<Char>, textPath: String): File{
+        val message = File(textPath)
+        return message
+    }
 }

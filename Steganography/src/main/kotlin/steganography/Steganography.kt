@@ -36,16 +36,4 @@ class Steganography {
     fun decodeText(data: ByteArray, path : String): String {
         // Implementation
     }
-
-    /**
-     * Validates if the length of the text is suitable for hiding in the given image.
-     *
-     * @param text The text to be validated.
-     * @param image The image in which the text is to be hidden.
-     * @return True if the length is suitable, otherwise false.
-     */
-    fun validateTextLength(text: String, image: Image): Boolean {
-        // Implementation
-    }
-
 }
