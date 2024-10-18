@@ -7,11 +7,8 @@ import javax.imageio.ImageIO
  * Image
  *
  * This class process an image in format png and ___.
- *
- * @property image The image to be processed.
  */
-class ImageHandler(private val imagePath : String) {
-    private val image : BufferedImage = ImageIO.read(File(imagePath))
+class ImageHandler {
 
     /**
      * Loads an image from the specified file path.
@@ -32,6 +29,7 @@ class ImageHandler(private val imagePath : String) {
      */
     fun saveImage(image: Image, filePath: String): Boolean {
         // Implementation
+        return false
     }
     
 }

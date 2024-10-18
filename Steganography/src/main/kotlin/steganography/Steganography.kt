@@ -6,17 +6,6 @@ package steganography
 class Steganography {
 
     /**
-     * Hides the provided text within the specified image.
-     *
-     * @param image The image in which the text should be hidden.
-     * @param text The text to be hidden.
-     * @return The modified image with the hidden text.
-     */
-    fun hideText(image: Image, text: String): Image {
-        // Implementation
-    }
-
-    /**
      * Retrieves the hidden text from the specified image.
      *
      * @param image The image from which to retrieve the text.
