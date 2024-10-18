@@ -1,9 +1,10 @@
 package steganography
 
 import steganography.TextHandler   
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Test
+import io.kotest.core.spec.style.StringSpec
+// (Borren este comentario) usen kotest
+// estilo StringSpec
 
-class TextTest {
+class TextTest : StringSpec ({
 
-}
+})
