@@ -45,4 +45,14 @@ class ImageTest : StringSpec({
         val result = saveImage(image, invalidFilePath)
         result shouldBe false
     }
+
+    "should maintain the resolution of the loaded image" {
+        val filePath = "src/test/resources/test_image.png"
+        val expectedWidth = 360
+        val expectedHeight = 360
+
+        val image = loadImage(filePath) as BufferedImage
+        image.width shouldBe expectedWidth
+        image.height shouldBe expectedHeight
+    }
 })
