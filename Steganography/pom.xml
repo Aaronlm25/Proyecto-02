@@ -22,7 +22,7 @@
   </properties>
 
   <build>
-    <sourceDirectory>src/main/kotlin</sourceDirectory>
+    <sourceDirectory>src/main/kotlin/steganography</sourceDirectory>
     <testSourceDirectory>src/test/kotlin</testSourceDirectory>
     <plugins>
       <plugin>

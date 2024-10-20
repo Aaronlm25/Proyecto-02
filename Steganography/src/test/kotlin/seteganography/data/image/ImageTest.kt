@@ -1,5 +1,7 @@
 package steganography
 
+import steganography.data.image.loadImage
+import steganography.data.image.saveImage
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -26,7 +28,7 @@ class ImageTest : StringSpec({
         val saveFilePath = "src/test/resources/saved_image.png"
         val pixels = loadImage(originalFilePath)
 
-        val result = saveImage(pixels   , saveFilePath)
+        val result = saveImage(pixels, saveFilePath)
         result shouldBe true
 
         val savedImageFile = File(saveFilePath)
