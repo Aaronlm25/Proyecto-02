@@ -1,25 +1,22 @@
 package steganography
 
 /**
- * Encodes the text into a byte array suitable for hiding in an image.
+ * Encodes the text into an image represented by an integer array of the pixels.
  *
  * @param text The text to be encoded.
- * @param path The path of the text file.
- * @return A byte array representing the encoded text.
+ * @param path The 2D pixel array of the image.
  */
-fun encodeText(text: String, path : String): ByteArray ? {
+fun encodeText(text: List<Char>, pixels : Array<IntArray>): {
     // Implementation
-    return null
 }
 
 /**
- * Decodes a byte array back into the original text.
+ * Decodes an image represented by an integer array of the pixels into the 
+ * original text.
  *
- * @param data The byte array to be decoded.
- * @param path The path of the Image file.
+ * @param pixels The 2D pixel array of the image.
  * @return The decoded text.
  */
-fun decodeText(data: ByteArray, path : String): String {
+fun decodeText(pixels : Array<IntArray>): List<Char> {
     // Implementation
-    return " "
 }
