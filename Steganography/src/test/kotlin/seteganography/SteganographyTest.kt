@@ -13,4 +13,34 @@ class SteganographyTest : StringSpec ({
     "should decode text correctly" {
         0 shouldBe 0
     }
+
+    "should encode text correctly into the pixel array" {
+        val text = "Hello"
+        val pixels = Array(1) { IntArray(5) { 0 } } 
+        val encodedPixels = encodeText(text.toList(), pixels)
+
+        encodedPixels shouldNotBe pixels 
+    }
+
+    "should decode text correctly from the pixel array" {
+        val originalText = "Hello"
+        val pixels = Array(1) { IntArray(5) { 0 } }
+        val encodedPixels = encodeText(originalText.toList(), pixels)
+        val decodedText = decodeText(encodedPixels)
+        decodedText.joinToString("") shouldBe originalText.toList() 
+    }
+
+    "should return empty list when decoding empty pixel array" {
+        val pixels = Array(1) { IntArray(5) { 0 } }
+        val decodedText = decodeText(pixels)
+        decodedText shouldBe emptyList() 
+    }
+    
+    "should handle special characters during encoding and decoding" {
+        val text = "Hello, World! 🌍"
+        val pixels = Array(1) { IntArray(5) { 0 } }
+        val encodedPixels = encodeText(text.toList(), pixels)
+        val decodedText = decodeText(encodedPixels)
+        decodedText.joinToString("") shouldBe text.toList() 
+    }
 })
