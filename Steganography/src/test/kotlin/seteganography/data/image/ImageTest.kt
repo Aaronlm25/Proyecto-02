@@ -1,4 +1,4 @@
-package steganography
+package steganography.data.image
 
 import steganography.data.image.loadImage
 import steganography.data.image.saveImage
@@ -51,7 +51,7 @@ class ImageTest : StringSpec({
         val expectedHeight = 360
 
         val image = loadImage(filePath)
-        image!!.size shouldBe expectedWidth
+        image.size shouldBe expectedWidth
         image[0].size shouldBe expectedHeight
     }
 })

@@ -7,6 +7,7 @@ import java.io.File
 */
 fun readFile(pathText : String): List<Char> {
     // Implementation
+    return emptyList()
 }
 
 /**
@@ -18,4 +19,5 @@ fun readFile(pathText : String): List<Char> {
 */
 fun toFile(characters : List<Char>, textPath: String): File {
     // Implementation
+    return File("pathname")
 }
