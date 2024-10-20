@@ -2,7 +2,7 @@ package steganography
 
 import java.io.File
 /**
- * Reads the file and converts it to a list of strings.
+ * Reads the file and converts it to a list of characters.
  * @return A list of the words in the text.
 */
 fun readFile(pathText : String):List<Char>{
