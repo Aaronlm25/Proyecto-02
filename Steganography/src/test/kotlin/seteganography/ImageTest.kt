@@ -48,8 +48,8 @@ class ImageTest : StringSpec({
         val expectedWidth = 360
         val expectedHeight = 360
 
-        val image = loadImage(filePath) as BufferedImage
-        image.width shouldBe expectedWidth
-        image.height shouldBe expectedHeight
+        val image = loadImage(filePath)
+        image!!.size shouldBe expectedWidth
+        image[0].size shouldBe expectedHeight
     }
 })
