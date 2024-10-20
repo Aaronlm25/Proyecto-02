@@ -10,6 +10,7 @@ import io.kotest.matchers.string.shouldContain
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
+import javax.imageio.IIOException
 
 class ImageTest : StringSpec({
 
@@ -19,9 +20,9 @@ class ImageTest : StringSpec({
         image shouldNotBe null
     }
 
-    "should throw an exception for an invalid file path" {
+    "should throw an IIOException for an invalid file path" {
         val filePath = "invalid/path/to/image.png"
-        val exception = shouldThrow<Exception> {
+        val exception = shouldThrow<IIOException> {
             loadImage(filePath)
         }
         exception.message shouldContain "Can't read input file!"
