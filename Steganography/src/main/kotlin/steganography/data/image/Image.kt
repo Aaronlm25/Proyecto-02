@@ -1,4 +1,4 @@
-package steganography
+package steganography.data.image
 
 import java.awt.image.BufferedImage
 import java.awt.Image

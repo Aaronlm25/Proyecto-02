@@ -1,4 +1,4 @@
-package steganography
+package steganography.data.text
 
 import java.io.File
 /**
