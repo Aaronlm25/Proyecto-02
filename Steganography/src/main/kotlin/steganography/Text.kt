@@ -1,10 +1,6 @@
 package steganography
+
 import java.io.File
-/**
- * Text
- * 
- * This class proccess a text so as to obtain a list of Strings
- */
 /**
  * Reads the file and converts it to a list of strings.
  * @return A list of the words in the text.
