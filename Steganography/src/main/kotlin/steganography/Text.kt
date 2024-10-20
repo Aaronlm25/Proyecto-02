@@ -5,9 +5,9 @@ import java.io.File
  * Reads the file and converts it to a list of characters.
  * @return A list of the words in the text.
 */
-fun readFile(pathText : String):List<Char>{
-    val characters = mutableListOf(' ')
-    return characters
+fun readFile(pathText : String): List<Char> ? {
+    // Implementation
+    return null
 }
 
 /**
@@ -17,7 +17,7 @@ fun readFile(pathText : String):List<Char>{
  * @param textPath Path to which the encoded message will be written.
  * @return A file with the encoded message.
 */
-fun toFile(characters : List<Char>, textPath: String): File{
-    val message = File(textPath)
-    return message
+fun toFile(characters : List<Char>, textPath: String): File ? {
+    // Implementation
+    return null
 }

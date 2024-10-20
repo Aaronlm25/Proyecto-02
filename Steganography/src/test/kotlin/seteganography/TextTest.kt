@@ -3,13 +3,14 @@ package steganography
 import steganography.*   
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldThrow
+import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.ints.shouldBeGreaterThan
 import java.io.File
 import java.io.IOException
 
 class TextTest : StringSpec ({
     "the list should be no empty" {
-        readFile.size shouldBe > 0
+        readFile("./resoureces")?.size ?: 0 shouldBeGreaterThan 0
     }
 
     "the text should be the same" {

@@ -8,9 +8,9 @@ import javax.imageio.ImageIO
  * Loads an image from the specified file path.
  *
  * @param filePath The path of the image file.
- * @return The loaded image object.
+ * @return 2D arrays of the image pixels.
  */
-fun loadImage(filePath: String): Image ? {
+fun loadImage(filePath: String): Array<IntArray> ? {
     // Implementation
     return null
 }
@@ -18,11 +18,11 @@ fun loadImage(filePath: String): Image ? {
 /**
  * Saves the modified image to the specified file path.
  *
- * @param image The image to be saved.
+ * @param image The 2D pixel array of the image.
  * @param filePath The path where the image should be saved.
  * @return True if the image was saved successfully, otherwise false.
  */
-fun saveImage(image: Image, filePath: String): Boolean {
+fun saveImage(pixels: Array<IntArray>, filePath: String): Boolean {
     // Implementation
     return false
 }
