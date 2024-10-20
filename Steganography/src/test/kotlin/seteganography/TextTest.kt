@@ -2,8 +2,7 @@ package steganography
 
 import steganography.*   
 import io.kotest.core.spec.style.StringSpec
-// (Borren este comentario) usen kotest
-// estilo StringSpec
+import io.kotest.matchers.shouldBe
 
 class TextTest : StringSpec ({
 

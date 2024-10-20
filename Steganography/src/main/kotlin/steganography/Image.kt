@@ -5,12 +5,6 @@ import java.awt.Image
 import java.io.File
 import javax.imageio.ImageIO
 /**
- * Image
- *
- * This class process an image in format png and ___.
- */
-
-/**
  * Loads an image from the specified file path.
  *
  * @param filePath The path of the image file.
