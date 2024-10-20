@@ -1,4 +1,4 @@
-package steganography
+package steganography.data.text
 
 import steganography.data.text.readFile
 import steganography.data.text.toFile

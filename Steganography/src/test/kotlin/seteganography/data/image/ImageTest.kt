@@ -1,4 +1,4 @@
-package steganography
+package steganography.data.image
 
 import steganography.data.image.loadImage
 import steganography.data.image.saveImage

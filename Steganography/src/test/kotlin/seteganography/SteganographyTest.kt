@@ -1,10 +1,9 @@
 package steganography
 
-import steganography.*
+import steganography.encodeText
+import steganography.decodeText
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
-// (Borren este comentario) usen kotest
-// estilo StringSpec
 
 class SteganographyTest : StringSpec ({
     "should encode text be clean" {
