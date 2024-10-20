@@ -22,7 +22,7 @@ fun loadImage(filePath: String): Array<IntArray> ? {
  * @param filePath The path where the image should be saved.
  * @return True if the image was saved successfully, otherwise false.
  */
-fun saveImage(pixels: Array<IntArray>, filePath: String): Boolean {
+fun saveImage(pixels: Array<IntArray>?, filePath: String): Boolean {
     // Implementation
     return false
 }

@@ -24,25 +24,22 @@ class ImageTest : StringSpec({
     "should save an image to the specified file path" {
         val originalFilePath = "src/test/resources/test_image.png"
         val saveFilePath = "src/test/resources/saved_image.png"
-        val image = loadImage(originalFilePath) as BufferedImage
+        val pixels = loadImage(originalFilePath)
 
-        val result = saveImage(image, saveFilePath)
+        val result = saveImage(pixels   , saveFilePath)
         result shouldBe true
 
-        // Verify the saved image exists
         val savedImageFile = File(saveFilePath)
         savedImageFile.exists() shouldBe true
 
-        // Clean up
         savedImageFile.delete()
     }
 
     "should return false when trying to save an image to an invalid path" {
         val originalFilePath = "src/test/resources/test_image.png"
         val invalidFilePath = "invalid/path/to/save_image.png"
-        val image = loadImage(originalFilePath) as BufferedImage
-
-        val result = saveImage(image, invalidFilePath)
+        val pixels = loadImage(originalFilePath)
+        val result = saveImage(pixels, invalidFilePath)
         result shouldBe false
     }
 
