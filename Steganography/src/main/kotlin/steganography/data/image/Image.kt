@@ -8,7 +8,7 @@ import javax.imageio.ImageIO
  * Loads an image from the specified file path.
  *
  * @param filePath The path of the image file.
- * @return 2D arrays of the image pixels, or null if the file path is invalid.
+ * @return 2D arrays of the image pixels
  */
 fun loadImage(filePath: String): Array<IntArray> {
     val image: BufferedImage = ImageIO.read(File(filePath))
