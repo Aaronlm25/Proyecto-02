@@ -11,7 +11,7 @@ import javax.imageio.ImageIO
  * @return The 2D pixel array of the image.
  */
 fun loadImage(filePath: String): Array<IntArray> {
-    // Implementation
+    return arrayOf()
 }
 
 /**
@@ -22,5 +22,5 @@ fun loadImage(filePath: String): Array<IntArray> {
  * @return True if the image was saved successfully, otherwise false.
  */
 fun saveImage(pixels: Array<IntArray>, filePath: String): Boolean {
-    // Implementation
+    return true
 }

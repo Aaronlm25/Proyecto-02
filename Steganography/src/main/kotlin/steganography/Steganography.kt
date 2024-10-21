@@ -6,8 +6,8 @@ package steganography
  * @param text The text to be encoded.
  * @param path The 2D pixel array of the image.
  */
-fun encodeText(text: List<Char>, pixels : Array<IntArray>): {
-    // Implementation
+fun encodeText(text: List<Char>, pixels : Array<IntArray>): Array<IntArray>{
+    return arrayOf()
 }
 
 /**
@@ -18,5 +18,5 @@ fun encodeText(text: List<Char>, pixels : Array<IntArray>): {
  * @return The decoded text.
  */
 fun decodeText(pixels : Array<IntArray>): List<Char> {
-    // Implementation
+    return listOf()
 }
