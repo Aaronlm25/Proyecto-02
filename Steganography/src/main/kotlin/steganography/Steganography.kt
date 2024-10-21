@@ -7,7 +7,7 @@ package steganography
  * @param path The 2D pixel array of the image.
  * @returns 2D pixel array with the message encoded.
  */
-fun encodeText(text: List<Char>, pixels : Array<IntArray>): Array<IntArray>     {
+fun encodeText(text: List<Char>, pixels : Array<IntArray>): Array<IntArray> {
     // Implementation
 }
 
