@@ -8,6 +8,7 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.ints.shouldBeGreaterThan
 import java.io.File
 import java.io.IOException
+import java.io.FileNotFoundException
 
 class TextTest : StringSpec ({
     "the list should be no empty" {
@@ -63,16 +64,16 @@ class TextTest : StringSpec ({
 
     "should throw an exception when the parameter isn't a list of characters" {
         val filePath = "src/test/resources/writeTest.txt"
-        val invalidList = listOf(1,2,3,4,5,6,7,8,9,0)
+        val invalidList: List<Any> = listOf(1,2,3,4,5,6,7,8,9,0)
         val exception = shouldThrow<ClassCastException> {
-            toFile(invalidList, filePath)
+            toFile(invalidList as List<Char>, filePath)
         }
         exception.message shouldBe "The parameter is not a list of characters"
     }
 
     "should throw an exception when the file doesn't exist" {
         val filePath = "src/test/resources/non-existent.txt"
-        val exception = shouldThrow<IOException> {
+        val exception = shouldThrow<FileNotFoundException> {
             readFile(filePath)
         }
         exception.message shouldBe "File not found"
