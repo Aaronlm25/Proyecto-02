@@ -1,57 +1,86 @@
 package steganography
 
 import kotlin.text.trim
+import kotlin.io.readlnOrNull
 import steganography.data.text.toFile
 import steganography.data.text.readFile
 import steganography.data.image.loadImage
 import steganography.data.image.saveImage
 
 fun main() {
-    var option: String?
     var active = true
-    do {
-        println("Esteganografia.\n" + 
-                "(h) Ocultar texto en imagen.\n" +
-                "(u) Develar texto de imagen.\n" +
-                "(x) Salir."
-        )
-        option = readLine()?.trim()
+    while (active) {
+        displayMenu()
+        val option = readNonNullInput()
         try {
             when (option) {
-                "h" -> {
-                    println("Proporcione la ruta del archivo con el texto a ocultar.")
-                    val textPath = readNonNullInput()
-                    println("Proporcione la ruta de la imagen donde se ocultarà el texto.")
-                    val imagePath = readNonNullInput()
-                    println("Proporcione la ruta de la imagen resultante.")
-                    val resultPath = readNonNullInput()
-                    val text = readFile(textPath)
-                    val pixels = loadImage(imagePath)
-                    val encoded = encodeText(text, pixels)
-                    saveImage(encoded, resultPath)
-                    println("Se ha guardado la imagen con el mensaje en : " + resultPath)
-                }
-                "u" -> {
-                    println("Propocione la ruta de la imagen que contiene los datos ocultos.")
-                    val imagePath = readNonNullInput()
-                    println("Proporcione el nombre del archivo en el que se guardarà el texto develado.")
-                    val resultPath = readNonNullInput()
-                    val pixels = loadImage(imagePath)
-                    val text = decodeText(pixels)
-                    toFile(text, resultPath)
-                    println("Se ha decodificado el mensaje en la imagen en : " + resultPath)
-                }
+                "h" -> hideTextInImage()
+                "u" -> revealTextFromImage()
                 "x" -> {
                     active = false
                     println("El programa ha terminado.")
                 }
+                else -> println("Introduzca una opción válida (u) (h) (x).")
             }
-        } catch(iae : IllegalArgumentException) {
+        } catch (iae: IllegalArgumentException) {
             println(iae.message)
         }
-    } while(active)
+    }
+}
+
+fun displayMenu() {
+    println(
+        """
+        Esteganografía.
+        (h) Ocultar texto en imagen.
+        (u) Develar texto de imagen.
+        (x) Salir.
+        """.trimIndent()
+    )
 }
 
 fun readNonNullInput(): String {
-    return readLine()?.trim() ?: throw IllegalArgumentException("Todos los parametros son necesarios")
+    return readLine()?.trim() ?: throw IllegalArgumentException("Todos los parámetros son necesarios")
+}
+
+fun hideTextInImage() {
+    val text = getTextFromFile()
+    val pixels = getPixelsFromImage("Proporcione la ruta de la imagen donde se ocultarà el texto.")
+    val encoded = encodeText(text, pixels)
+    println("Proporcione la ruta de la imagen resultante.")
+    val resultPath = readNonNullInput()
+    saveImage(encoded, resultPath)
+}
+
+fun revealTextFromImage() {
+    val pixels = getPixelsFromImage("Proporcione la ruta de la imagen que contiene los datos ocultos.")
+    println("Proporcione el nombre del archivo en el que se guardará el texto develado.")
+    val resultPath = readNonNullInput()
+    val text = decodeText(pixels)
+    toFile(text, resultPath)
+    println("Se ha decodificado el mensaje en la imagen en: $resultPath")
+}
+
+fun getTextFromFile(): List<Char> {
+    while (true) {
+        try {
+            println("Proporcione la ruta del archivo con el texto a ocultar.")
+            val textPath = readNonNullInput()
+            return readFile(textPath)
+        } catch (e: Exception) {
+            println("No se pudo abrir el archivo que proporcionó!")
+        }
+    }
+}
+
+fun getPixelsFromImage(prompt : String): Array<IntArray> {
+    while (true) {
+        try {
+            println(prompt)
+            val imagePath = readNonNullInput()
+            return loadImage(imagePath)
+        } catch (e: Exception) {
+            println("No se pudo abrir el archivo que proporcionó!")
+        }
+    }
 }

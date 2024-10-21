@@ -1,13 +1,16 @@
-package steganography
+package steganography.data.image
 
 import steganography.data.image.loadImage
 import steganography.data.image.saveImage
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.string.shouldContain
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
+import javax.imageio.IIOException
 
 class ImageTest : StringSpec({
 
@@ -17,10 +20,12 @@ class ImageTest : StringSpec({
         image shouldNotBe null
     }
 
-    "should return null for an invalid file path" {
+    "should throw an IIOException for an invalid file path" {
         val filePath = "invalid/path/to/image.png"
-        val image = loadImage(filePath)
-        image shouldBe null
+        val exception = shouldThrow<IIOException> {
+            loadImage(filePath)
+        }
+        exception.message shouldContain "Can't read input file!"
     }
 
     "should save an image to the specified file path" {
@@ -45,13 +50,33 @@ class ImageTest : StringSpec({
         result shouldBe false
     }
 
-    "should maintain the resolution of the loaded image" {
+    "should maintain the resolution of the test image" {
         val filePath = "src/test/resources/test_image.png"
         val expectedWidth = 360
         val expectedHeight = 360
 
-        val image = loadImage(filePath)
-        image!!.size shouldBe expectedWidth
-        image[0].size shouldBe expectedHeight
+        testImageResolution(filePath, expectedWidth, expectedHeight)
+    }
+
+    "should maintain the resolution of black image" {
+        val filePath = "src/test/resources/black-370118_1280.png"
+        val expectedWidth = 1280
+        val expectedHeight = 822
+
+        testImageResolution(filePath, expectedWidth, expectedHeight)
+    }
+
+    "should maintain the resolution of gradient image" {
+        val filePath = "src/test/resources/gradient_black_white_144x144.png"
+        val expectedWidth = 144
+        val expectedHeight = 144
+
+        testImageResolution(filePath, expectedWidth, expectedHeight)
     }
 })
+
+fun testImageResolution(filePath: String, expectedWidth: Int, expectedHeight: Int) {
+    val image = loadImage(filePath)
+    image!!.size shouldBe expectedWidth
+    image[0].size shouldBe expectedHeight
+}

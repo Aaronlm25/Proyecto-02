@@ -3,10 +3,10 @@ package steganography.data.text
 import java.io.File
 /**
  * Reads the file and converts it to a list of characters.
- * @return A list of the words in the text.
+ * @return A list of the characters in the text.
 */
 fun readFile(pathText : String): List<Char> {
-    // Implementation
+    return listOf()
 }
 
 /**
@@ -17,5 +17,5 @@ fun readFile(pathText : String): List<Char> {
  * @return The file with the message.
 */
 fun toFile(characters : List<Char>, textPath: String): File {
-    // Implementation
+    return File(textPath)
 }
