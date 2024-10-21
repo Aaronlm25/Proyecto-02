@@ -73,6 +73,14 @@ class ImageTest : StringSpec({
 
         testImageResolution(filePath, expectedWidth, expectedHeight)
     }
+
+    "should maintain the resolution of penguin image" {
+        val filePath = "src/test/resources/images.png"
+        val expectedWidth = 290
+        val expectedHeight = 174
+
+        testImageResolution(filePath, expectedWidth, expectedHeight)
+    }
 })
 
 fun testImageResolution(filePath: String, expectedWidth: Int, expectedHeight: Int) {
