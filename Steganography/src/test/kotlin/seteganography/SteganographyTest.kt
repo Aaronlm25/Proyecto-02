@@ -4,6 +4,7 @@ import steganography.encodeText
 import steganography.decodeText
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 
 class SteganographyTest : StringSpec ({
     "should encode text be clean" {
