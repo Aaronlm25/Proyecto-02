@@ -12,7 +12,7 @@ fun encodeText(text: List<Char>, pixels : Array<IntArray>): Array<IntArray> {
     // Implementation
 }
 
-/**
+/** 
  * Decodes an image represented by an integer array of the pixels into the 
  * original text.
  *
