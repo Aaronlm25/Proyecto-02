@@ -5,9 +5,12 @@ import steganography.data.image.saveImage
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.string.shouldContain
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
+import javax.imageio.IIOException
 
 class ImageTest : StringSpec({
 
@@ -17,10 +20,12 @@ class ImageTest : StringSpec({
         image shouldNotBe null
     }
 
-    "should return null for an invalid file path" {
+    "should throw an IIOException for an invalid file path" {
         val filePath = "invalid/path/to/image.png"
-        val image = loadImage(filePath)
-        image shouldBe null
+        val exception = shouldThrow<IIOException> {
+            loadImage(filePath)
+        }
+        exception.message shouldContain "Can't read input file!"
     }
 
     "should save an image to the specified file path" {
@@ -50,8 +55,8 @@ class ImageTest : StringSpec({
         val expectedWidth = 360
         val expectedHeight = 360
 
-        val image = loadImage(filePath) as BufferedImage
-        image.width shouldBe expectedWidth
-        image.height shouldBe expectedHeight
+        val image = loadImage(filePath)
+        image.size shouldBe expectedWidth
+        image[0].size shouldBe expectedHeight
     }
 })
