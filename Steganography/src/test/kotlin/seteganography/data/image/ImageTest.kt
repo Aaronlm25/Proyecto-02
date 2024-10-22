@@ -87,6 +87,6 @@ fun testImageResolution(filePath: String, expectedWidth: Int, expectedHeight: In
     val image = loadImage(filePath)
     print(image.size)
     print(image[0].size)
-    image!!.size shouldBe expectedHeight
+    image.size shouldBe expectedHeight
     image[0].size shouldBe expectedWidth
 }
