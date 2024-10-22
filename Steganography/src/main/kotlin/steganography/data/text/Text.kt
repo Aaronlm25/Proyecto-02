@@ -1,32 +1,20 @@
 package steganography.data.text
 
 import java.io.File
-import java.io.FileNotFoundException
 import java.io.IOException
+import java.io.FileNotFoundException
 /**
  * Reads the file and converts it to a list of characters.
  * @return A list of the characters in the text.
+ * @throws FileNotFoundException If the file doesn't exist.
 */
 fun readFile(pathText : String): List<Char> {
     val characters = mutableListOf<Char>()
-    try {
-        val text = File(pathText).readText()
-        for (char in text) {
-            val ascii = char.code
-            if ((ascii < 65 || ascii > 122) && ascii != 32) {
-                throw IllegalArgumentException("The text contains special characters")
-            }else {
-                characters.add(char) 
-            }
-        }
-        return characters
-    }catch (e: FileNotFoundException) {
-        throw FileNotFoundException("File not found")
-    }catch (e: IOException) {
-        throw IOException("File cannot be read")
-    }catch (e: Exception) {
-        throw Exception("An error occurred while reading the file")
+    val text = File(pathText).readText()
+    for (char in text) {
+        characters.add(char) 
     }
+    return characters
 }
 
 /**
@@ -35,8 +23,15 @@ fun readFile(pathText : String): List<Char> {
  * @param characters List of characters.
  * @param textPath Path to which the message will be written.
  * @return The file with the message.
+ * @throws IOException If the path is invalid.
 */
 fun toFile(characters : List<Char>, textPath: String): File {
-    // Implementation
-    return File("pathname")
+    if (!textPath.endsWith(".txt")) {
+        throw IOException("Invalid path.")
+    }
+    val file = File(textPath)
+    file.createNewFile()
+    val text = characters.joinToString("")
+    file.writeText(text)
+    return file
 }
