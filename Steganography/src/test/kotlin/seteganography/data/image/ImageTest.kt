@@ -85,6 +85,8 @@ class ImageTest : StringSpec({
 
 fun testImageResolution(filePath: String, expectedWidth: Int, expectedHeight: Int) {
     val image = loadImage(filePath)
-    image!!.size shouldBe expectedWidth
-    image[0].size shouldBe expectedHeight
+    print(image.size)
+    print(image[0].size)
+    image!!.size shouldBe expectedHeight
+    image[0].size shouldBe expectedWidth
 }
