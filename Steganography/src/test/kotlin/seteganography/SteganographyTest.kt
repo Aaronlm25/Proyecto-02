@@ -2,6 +2,7 @@ package steganography
 
 import steganography.encodeText
 import steganography.decodeText
+import steganography.data.image.loadImage
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -34,7 +35,6 @@ class SteganographyTest : StringSpec ({
         val text = "Hello"
         val pixels = Array(1) { IntArray(5) { 0 } } 
         val encodedPixels = encodeText(text.toList(), pixels)
-
         encodedPixels shouldNotBe pixels 
     }
 
@@ -60,3 +60,14 @@ class SteganographyTest : StringSpec ({
         decodedText shouldBe originalText.toList()
     }
 })
+
+fun getText(size: Int) : List<Char> {
+    val chars = ('A'..'Z') + ('a'..'z') + ' '
+    return List(size) { chars.random() }
+}
+
+fun getTextSpecialCharacters(size: Int) : List<Char> {
+    val chars = ('A'..'Z') + ('a'..'z') + ('0'..'9') + "!@#$%^&*()-_=+[]{}|;:'\",.<>?/\\`~ "
+    return List(size) { chars.random() as Char}
+}
+
