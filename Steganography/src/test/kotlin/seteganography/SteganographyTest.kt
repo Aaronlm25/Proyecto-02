@@ -10,11 +10,37 @@ import io.kotest.assertions.throwables.shouldThrow
 import java.io.File
 
 class SteganographyTest : StringSpec ({
-    "should throw exception when text contains invalid characters during encoding" {
+    "should correctly implement LSB encoding" {
+
+    }
+
+    "should correctly encrypt text using Caesar cipher" {
+
+    }
+
+    "should throw IllegalStateException if text is too large for a given pixel array" {
+        val directoryPath = "src/test/resources"
+        val pngFiles = File(directoryPath).listFiles { _, name -> name.endsWith(".png") } ?: arrayOf()
+        pngFiles.forEach { file ->
+            val pixels = loadImage(file.path)
+            val width = pixels.size
+            val height = pixels[0].size 
+            var text = getText(width * height + 10)
+            var textSpecial = getTextSpecialCharacters(width * height + 10)
+            shouldThrow<IllegalStateException> {
+                encodeText(text.toList(), pixels)
+            }
+            shouldThrow<IllegalStateException> {
+                encodeText(textSpecial.toList(), pixels)
+            }
+        }
+    }
+
+    "should throw IllegalStateException when text contains invalid characters during encoding" {
         val path = "src/test/resources/invalidText.txt"
         val file = File(path)
         val text = file.readText()
-        shouldThrow<IllegalArgumentException> {
+        shouldThrow<IllegalStateException> {
             val pixels = arrayOf(intArrayOf(0))
             encodeText(text.toList(), pixels)
         }
@@ -70,4 +96,3 @@ fun getTextSpecialCharacters(size: Int) : List<Char> {
     val chars = ('A'..'Z') + ('a'..'z') + ('0'..'9') + "!@#$%^&*()-_=+[]{}|;:'\",.<>?/\\`~ "
     return List(size) { chars.random() as Char}
 }
-
