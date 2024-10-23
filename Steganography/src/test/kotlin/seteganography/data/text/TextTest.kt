@@ -2,17 +2,19 @@ package steganography.data.text
 
 import steganography.data.text.readFile
 import steganography.data.text.toFile
+import steganography.data.text.compressText
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.ints.shouldBeGreaterThan
+import io.kotest.matchers.collections.shouldContain
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
 
 class TextTest : StringSpec ({
     "the list should be no empty" {
-        readFile("src/test/resources/example.txt").size shouldBeGreaterThan 0
+        readFile("src/test/resources/example.txt",1).size shouldBeGreaterThan 0
     }
 
     "the list should be the same" {
@@ -22,7 +24,7 @@ class TextTest : StringSpec ({
         for (char in text) {
             characters.add(char) 
         }
-        characters shouldBe readFile(filePath)
+        characters shouldBe readFile(filePath,1)
     }
 
     "should write a simple text on the file" {
@@ -172,7 +174,7 @@ class TextTest : StringSpec ({
     "should throw an exception when the file doesn't exist" {
         val filePath = "src/test/resources/non-existent.txt"
         val exception = shouldThrow<FileNotFoundException> {
-            readFile(filePath)
+            readFile(filePath,1)
         }
     }
 
@@ -192,7 +194,7 @@ class TextTest : StringSpec ({
     //     tempFile.setReadable(false, false)
 
     //     val exception = shouldThrow<SecurityException> {
-    //         readFile(tempFile.path)
+    //         readFile(tempFile.path,1)
     //     }
 
     //     tempFile.setReadable(true, true)

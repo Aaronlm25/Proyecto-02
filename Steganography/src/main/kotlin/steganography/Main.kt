@@ -61,12 +61,12 @@ fun revealTextFromImage() {
     println("Se ha decodificado el mensaje en la imagen en: $resultPath")
 }
 
-fun getTextFromFile(): List<Char> {
+fun getTextFromFile(): List<Any> {
     while (true) {
         try {
             println("Proporcione la ruta del archivo con el texto a ocultar.")
             val textPath = readNonNullInput()
-            return readFile(textPath)
+            return readFile(textPath,1)
         } catch (e: Exception) {
             println("No se pudo abrir el archivo que proporcionó!")
         }

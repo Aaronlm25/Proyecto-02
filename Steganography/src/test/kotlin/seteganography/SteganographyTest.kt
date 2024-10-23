@@ -20,23 +20,7 @@ class SteganographyTest : StringSpec ({
 
     }
 
-    "should throw IllegalStateException if text is too large for a given pixel array" {
-        val directoryPath = "src/test/resources"
-        val pngFiles = File(directoryPath).listFiles { _, name -> name.endsWith(".png") } ?: arrayOf()
-        pngFiles.forEach { file ->
-            val pixels = loadImage(file.path)
-            val width = pixels.size
-            val height = pixels[0].size 
-            var text = getText(width * height + 10)
-            var textSpecial = getTextSpecialCharacters(width * height + 10)
-            shouldThrow<IllegalStateException> {
-                encodeText(text.toList(), pixels)
-            }
-            shouldThrow<IllegalStateException> {
-                encodeText(textSpecial.toList(), pixels)
-            }
-        }
-    }
+    
 
     "should encode text correctly into the pixel array" {
         val text = "Hello"

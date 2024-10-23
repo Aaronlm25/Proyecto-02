@@ -8,7 +8,7 @@ package steganography
  * @return 2D pixel array with the message encoded.
  * @throws IllegalStateException if the text is too large for the pixels array.
  */
-fun encodeText(text: List<Char>, pixels : Array<IntArray>): Array<IntArray> {
+fun encodeText(text: List<Any>, pixels : Array<IntArray>): Array<IntArray> {
     // Implementation
     return pixels
 }
