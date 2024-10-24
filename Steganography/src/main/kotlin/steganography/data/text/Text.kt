@@ -49,17 +49,34 @@ fun toFile(characters : List<Char>, textPath: String): File {
     return file
 }
 
+fun toparagraph(rows: List<Any>):String{
+    val sb = StringBuilder()
+    for (i in rows) {
+        sb.append(i.toString().lowercase())
+    }
+    return sb.toString()
+}
+
+fun genratePatterns():List<String>{
+    val patterns = mutableListOf<String>()
+    val basePattern = "\\\\b0\\\\w+\\\\b".toCharArray()
+    for (char in 'a'..'z' ){
+        basePattern[3] = char
+        val pattern = String(basePattern)
+        patterns.add(pattern)
+    }
+    return patterns
+}
 /**
  * Compresses the text by searching for regular expressions to create a dictionary with that expression.
  * 
  */
 fun compressText(text: String): List<String>{
-    val sentence = text
+    val patterns = genratePatterns()
     val regulars = mutableListOf<String>()
-    val patterns = listOf("\\b\\w+\\s+\\w+\\b","\\b\\w+\\b","\\w+","\\w+\\s+\\w+\\s+\\w+")
     for (i in patterns) {
-        val pattern = Pattern.compile(i)
-        val match = pattern.matcher(sentence)
+        val pattern = Pattern.compile(i.toString())
+        val match = pattern.matcher(text)
         if (match.find()){
             regulars.add(match.group())
         }

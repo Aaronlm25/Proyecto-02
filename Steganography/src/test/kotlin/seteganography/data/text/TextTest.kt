@@ -3,6 +3,7 @@ package steganography.data.text
 import steganography.data.text.readFile
 import steganography.data.text.toFile
 import steganography.data.text.compressText
+import steganography.data.text.genratePatterns
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.assertions.throwables.shouldThrow
@@ -13,6 +14,7 @@ import java.io.FileNotFoundException
 import java.io.IOException
 
 class TextTest : StringSpec ({
+
     "the list should be no empty" {
         readFile("src/test/resources/example.txt",1).size shouldBeGreaterThan 0
     }
