@@ -3,7 +3,7 @@ package steganography.data.text
 import steganography.data.text.readFile
 import steganography.data.text.toFile
 import steganography.data.text.compressText
-import steganography.data.text.genratePatterns
+import steganography.data.text.readFull
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.assertions.throwables.shouldThrow
