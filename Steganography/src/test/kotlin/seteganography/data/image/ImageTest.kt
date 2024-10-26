@@ -21,7 +21,7 @@ import javax.imageio.ImageIO
 class ImageTest : StringSpec({
 
     lateinit var imagePaths: MutableList<String>
-    val directory: String = "src/test/resources/"
+    val directory: String = "src/test/resources/images"
     val directoryToTest: String = "random_noise"
 
     beforeSpec {
