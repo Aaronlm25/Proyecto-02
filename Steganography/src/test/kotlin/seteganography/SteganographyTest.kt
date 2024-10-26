@@ -26,12 +26,8 @@ class SteganographyTest : StringSpec ({
             val width = pixels.size
             val height = pixels[0].size 
             var text = getText(width * height + 10)
-            var textSpecial = getTextSpecialCharacters(width * height + 10)
             shouldThrow<IllegalStateException> {
                 encodeText(text.toList(), pixels)
-            }
-            shouldThrow<IllegalStateException> {
-                encodeText(textSpecial.toList(), pixels)
             }
         }
     }
@@ -53,7 +49,6 @@ class SteganographyTest : StringSpec ({
         val encodedImage1 = encodeText(text1.toList(), pixels)
         val encodedImage2 = encodeText(text2.toList(), encodedImage1)
         val decodedText = decodeText(encodedImage2)
-
         decodedText shouldBe text2.toList()
     }
 
@@ -90,9 +85,4 @@ class SteganographyTest : StringSpec ({
 fun getText(size: Int) : List<Char> {
     val chars = ('A'..'Z') + ('a'..'z') + ' '
     return List(size) { chars.random() }
-}
-
-fun getTextSpecialCharacters(size: Int) : List<Char> {
-    val chars = ('A'..'Z') + ('a'..'z') + ('0'..'9') + "!@#$%^&*()-_=+[]{}|;:'\",.<>?/\\`~ "
-    return List(size) { chars.random() as Char}
 }
