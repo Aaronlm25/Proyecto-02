@@ -55,11 +55,11 @@ fun readFull(pathFile: String):String{
     return lineas
 }
 /**
- * Compresses a text by searching for its regular expressions.
+ * Gets the expressions in a text that match a specific pattern.
  * @param file Text Text to compress.
  * @return A list with the regular expressions of the text.
  */ 
-fun compressText(fileText: String): List<String> {
+fun getRegulars(fileText: String): List<String> {
     var text = fileText
     val pattern = Pattern.compile("\\b\\w+\\s+\\w+\\b")
     val regulars = mutableListOf<String>()
@@ -86,18 +86,51 @@ fun compressText(fileText: String): List<String> {
  * to be encoded.
  * @return A map formed by regular expressions linked to an integer. 
  */
-fun generateMap(expressions: List<String>): Map<Int, String> {
-    val regEx = mutableMapOf<Int, String>()
-    var i = 0
+fun generateMap(expressions: List<String>): Map<String, String> {
+    val regEx = mutableMapOf<String, String>()
+    var i = 10
     for (item in expressions) {
-        regEx[i] = item
+        regEx[item] = i.toString()
         i++
     }
     return regEx
 }
 /**
- * 
+ * provisional methos, don't delet
  */
-fun replaceAlphabet(): Int{
-    return 0
+fun map(expressions: List<String>): Map<String, String> {
+    val regEx = mutableMapOf<String, String>()
+    var i = 10
+    for (item in expressions) {
+        regEx[i.toString()] = item
+        i++
+    }
+    return regEx
+}
+/**
+ * provisional methos, don't delet
+ */
+fun replaceAlphabet(alphabet: Map<String,String>, content: String): String{
+    var text = content
+    for (expression in alphabet.keys) {
+        val pattern = Pattern.compile(expression)
+        val matcher = pattern.matcher(text)
+        val a = alphabet[expression]
+        text = matcher.replaceAll(a)
+    }
+    return text
+}
+/**
+* provisional methos, don't delet
+ */
+fun reassemble(alphabet: Map<String,String>, content: String): String{
+    var text = content
+    for (key in alphabet.keys) {
+        val value = "\\b"+key+"\\b"
+        val pattern = Pattern.compile(value)
+        val matcher = pattern.matcher(text)
+        val a = alphabet[key]
+        text = matcher.replaceAll(a)
+    }
+    return text
 }
