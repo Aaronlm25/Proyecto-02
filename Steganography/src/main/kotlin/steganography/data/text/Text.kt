@@ -51,7 +51,7 @@ fun toFile(characters : List<Char>, textPath: String): File {
  * @return The full text of the file at the path
  */
 fun readFull(pathFile: String):String{
-    val lineas = File(pathFile).readText().lowercase()
+    val lineas = File(pathFile).readText()
     return lineas
 }
 /**
@@ -88,7 +88,7 @@ fun getRegulars(fileText: String): List<String> {
  */
 fun generateMap(expressions: List<String>): Map<String, String> {
     val regEx = mutableMapOf<String, String>()
-    var i = 10
+    var i = 1
     for (item in expressions) {
         regEx[item] = i.toString()
         i++
@@ -96,19 +96,11 @@ fun generateMap(expressions: List<String>): Map<String, String> {
     return regEx
 }
 /**
- * provisional methos, don't delet
- */
-fun map(expressions: List<String>): Map<String, String> {
-    val regEx = mutableMapOf<String, String>()
-    var i = 10
-    for (item in expressions) {
-        regEx[i.toString()] = item
-        i++
-    }
-    return regEx
-}
-/**
- * provisional methos, don't delet
+ * Replaces regular words with the integer value that corresponds to it
+ * according to the alphabet.
+ * @param alphabet Contains regular expressions and their corresponding value.
+ * @param content Text on which the substitution will be applied following 
+ * the alphabet.
  */
 fun replaceAlphabet(alphabet: Map<String,String>, content: String): String{
     var text = content
@@ -121,16 +113,33 @@ fun replaceAlphabet(alphabet: Map<String,String>, content: String): String{
     return text
 }
 /**
-* provisional methos, don't delet
+ * Provisional method created to test regEx.
  */
-fun reassemble(alphabet: Map<String,String>, content: String): String{
-    var text = content
-    for (key in alphabet.keys) {
-        val value = "\\b"+key+"\\b"
-        val pattern = Pattern.compile(value)
-        val matcher = pattern.matcher(text)
-        val a = alphabet[key]
-        text = matcher.replaceAll(a)
+fun map(expressions: List<String>): Map<String, String> {
+    val regEx = mutableMapOf<String, String>()
+    var i = 1
+    for (item in expressions) {
+        regEx[i.toString()] = item
+        i++
     }
-    return text
+    return regEx
+}
+/**
+ * Provisional method created to test regEx.
+ * 
+ * Recrea el texto original a partir del texto comprimido.
+ * @param alphabet Contains regular expressions and their corresponding value.
+ * @param content Text on which the substitution will be applied following 
+ * the alphabet.
+ */
+fun reassemble(alphabet: Map<String, String>, content: String): String {
+    val pattern = Pattern.compile("\\d+(?=\\D)")
+    val matcher = pattern.matcher(content)
+    val result = StringBuffer()
+    while (matcher.find()) {
+        val replacement = alphabet[matcher.group()] ?: matcher.group()
+        matcher.appendReplacement(result, replacement)
+    }
+    matcher.appendTail(result)
+    return result.toString()
 }
