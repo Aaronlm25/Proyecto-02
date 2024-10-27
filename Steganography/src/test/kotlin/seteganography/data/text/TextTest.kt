@@ -9,170 +9,119 @@ import io.kotest.matchers.ints.shouldBeGreaterThan
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
+import java.nio.file.Paths
+import java.nio.file.Files
 
 class TextTest : StringSpec ({
-    "the list should be no empty" {
-        readFile("src/test/resources/example.txt").size shouldBeGreaterThan 0
+    lateinit var textPaths: MutableList<String>
+
+    beforeSpec {
+        val dirPath = Paths.get("src/test/resources/text")
+        textPaths = mutableListOf<String>()
+        Files.newDirectoryStream(dirPath, "*.txt").use { stream ->
+            stream.forEach { path ->
+                textPaths.add(path.toString())
+            }
+        }
     }
 
-    "the list should be the same" {
-        val filePath = "src/test/resources/example.txt"
-        val text = File(filePath).readText()
-        val characters = mutableListOf<Char>()
-        for (char in text) {
-            characters.add(char) 
+    "should the list of charactres of a given text file not be empty" {
+        for(path in textPaths) {
+            readFile(path).size shouldBeGreaterThan 0
         }
-        characters shouldBe readFile(filePath)
+    }
+
+    "should be the list be same" {
+        for(path in textPaths) {
+            val text = File(path).readText()
+            val characters = text.toList()
+            characters shouldBe readFile(path)
+        }
+    }
+
+    "should not modify text" {
+        for(path in textPaths) {
+            val text = readFile(path).toList()
+            val savePath = path.substringBefore(".txt") + "_saved.txt"
+            toFile(text, savePath)
+            readFile(savePath) shouldBe text
+        }
     }
 
     "should write a simple text on the file" {
-        val filePath = "src/test/resources/writeTest.txt"
-        val file = File(filePath)
-
+        val path = "src/test/resources/text/saved.txt"
+        val file = File(path)
         file.createNewFile()
         file.setWritable(true)
-
         val text = "this is the write test"
         val chars = text.toList()
-
-        toFile(chars, filePath)
-
+        toFile(chars, path)
         val writtenText = file.readText()
         writtenText shouldBe text
-
         file.delete();
     }
 
     "should write a text with special characters on the file" {
-        val filePath = "src/test/resources/writeTest.txt"
-        val file = File(filePath)
-
+        val path = "src/test/resources/special_saved.txt"
+        val file = File(path)
         file.createNewFile()
         file.setWritable(true)
-
-        val text = "¿¡this is, - the write test with_special °! ch@r@ct3rs []]{}"
+        val text = "! # \$ % & ' ( ) * + , - . / : ; < = > ? @ [ \\ ] ^ _ { | } ~ " +
+                   "\$ € £ ¥ ₹ ₣ ₩ ₪ ₱ ฿ ₦ ₲ ₴ ₽ " +
+                   "+ - × ÷ ± ∓ ∑ ∏ √ ∞ ≠ ≈ ≡ ≤ ≥ ∫ ∴ ∵ ⊕ ⊗ ⊥ " +
+                   "¬ ∧ ∨ ∀ ∃ ∴ ⊂ ⊆ ⊄ ∩ ∪ " +
+                   "1 2 3 4 6 7 8 9 10"
         val chars = text.toList()
-
-        toFile(chars, filePath)
-
+        toFile(chars, path)
         val writtenText = file.readText()
         writtenText shouldBe text
-
         file.delete();
     }
 
     "should write a text with more spaces between words on the file" {
-        val filePath = "src/test/resources/writeTest.txt"
-        val file = File(filePath)
-
+        val path = "src/test/resources/spaces_saved.txt"
+        val file = File(path)
         file.createNewFile()
         file.setWritable(true)
-
         val text = "th     is is the    test o f the tex t  with  morespaces between     w o r d s"
         val chars = text.toList()
-
-        toFile(chars, filePath)
-
+        toFile(chars, path)
         val writtenText = file.readText()
         writtenText shouldBe text
-
         file.delete();
     }
 
     "should write a text with more than one line on the file" {
-        val filePath = "src/test/resources/writeTest.txt"
-        val file = File(filePath)
-
+        val path = "src/test/resources/line_saved.txt"
+        val file = File(path)
         file.createNewFile()
         file.setWritable(true)
-
         val text = "\n this \n\n is \n the \n text \n in \n\n\n lines"
         val chars = text.toList()
-
-        toFile(chars, filePath)
-
+        toFile(chars, path)
         val writtenText = file.readText()
         writtenText shouldBe text
-
-        file.delete()
-    }
-
-    "should write a text with more than one line on the file" {
-        val filePath = "src/test/resources/writeTest.txt"
-        val file = File(filePath)
-
-        file.createNewFile()
-        file.setWritable(true)
-
-        val text = "\n this \n\n is \n the \n text \n in \n\n\n lines"
-        val chars = text.toList()
-
-        toFile(chars, filePath)
-
-        val writtenText = file.readText()
-        writtenText shouldBe text
-
-        file.delete()
-    }
-
-    "should write a text that contains numbers" {
-        val filePath = "src/test/resources/writeTest.txt"
-        val file = File(filePath)
-
-        file.createNewFile()
-        file.setWritable(true)
-
-        val text = "The number is 123456789 10 1 1"
-        val chars = text.toList()
-
-        toFile(chars, filePath)
-
-        val writtenText = file.readText()
-        writtenText shouldBe text
-
-        file.delete()
-    }
-
-    "should write a text of numbers" {
-        val filePath = "src/test/resources/writeTest.txt"
-        val file = File(filePath)
-
-        file.createNewFile()
-        file.setWritable(true)
-
-        val text = " 3 56 123456789 10 1 1"
-        val chars = text.toList()
-
-        toFile(chars, filePath)
-
-        val writtenText = file.readText()
-        writtenText shouldBe text
-
         file.delete()
     }
 
     "should create a file" {
-        val filePath = "src/test/resources/createTest.txt"
-        val file = File(filePath)
+        val path = "src/test/resources/created_saved.txt"
+        val file = File(path)
         val text = "this is the create test"
         val characters = text.toList()
-
         if (file.exists()) {
             file.delete() 
         }
-
-        toFile(characters, filePath)
-
+        toFile(characters, path)
         file.exists() shouldBe true
         file.isFile shouldBe true
-
         file.delete()
     }
 
-    "should throw an exception when the file doesn't exist" {
-        val filePath = "src/test/resources/non-existent.txt"
+    "should throw an exception when trying to read a file that doesn't exist" {
+        val path = "src/test/resources/non-existent.txt"
         shouldThrow<FileNotFoundException> {
-            readFile(filePath)
+            readFile(path)
         }
     }
 
@@ -184,20 +133,4 @@ class TextTest : StringSpec ({
             toFile(characters, filePath)
         }
     }
-
-    // "should throw an exception when the file cannot be read" {
-    //    val tempFile = File.createTempFile("non-readable", ".txt")
-
-    //     tempFile.writeText("This text cannot be read")
-    //     tempFile.setReadable(false, false)
-
-    //     val exception = shouldThrow<SecurityException> {
-    //         readFile(tempFile.path)
-    //     }
-
-    //     tempFile.setReadable(true, true)
-
-    //     tempFile.delete()
-    // }
-
 })

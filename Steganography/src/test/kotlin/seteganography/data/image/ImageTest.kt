@@ -19,13 +19,11 @@ import kotlin.collections.emptyList
 import javax.imageio.ImageIO
 
 class ImageTest : StringSpec({
-
     lateinit var imagePaths: MutableList<String>
     val directory: String = "src/test/resources/images"
-    val directoryToTest: String = "random_noise"
 
     beforeSpec {
-        val dirPath = Paths.get(directory + directoryToTest)
+        val dirPath = Paths.get(directory)
         imagePaths = mutableListOf<String>()
         Files.newDirectoryStream(dirPath, "*.png").use { stream ->
             stream.forEach { path ->
@@ -47,8 +45,8 @@ class ImageTest : StringSpec({
         for(path in imagePaths) {
             val image = ImageIO.read(File(path))
             val imagePixels = loadImage(path)
-            val imageName = path.substringAfterLast(directoryToTest + "/")
-            val savePath = directory + imageName + ".png"
+            val imageName = path.substringAfterLast("/images")
+            val savePath = directory + imageName + "saved.png"
             saveImage(imagePixels, savePath) shouldBe true
             val savedImage = ImageIO.read(File(savePath))
             val imageSavedPixels = loadImage(savePath)
@@ -63,7 +61,7 @@ class ImageTest : StringSpec({
     }
 
     "should load an image from a valid file path" {
-        val filePath = directory + directoryToTest + "/random_noise_16x16.png"
+        val filePath = directory + "/random_noise_16x16.png"
         val image = loadImage(filePath)
         image shouldNotBe emptyArray<IntArray>()
     }
@@ -76,8 +74,8 @@ class ImageTest : StringSpec({
     }
 
     "should save an image to the specified file path" {
-        val originalFilePath = directory + directoryToTest + "/random_noise_16x16.png"
-        val saveFilePath = directory + "random_noise_saved_16x16.png"
+        val originalFilePath = directory + "/random_noise_16x16.png"
+        val saveFilePath = directory + "random_noise_16x16_saved.png"
         val pixels = loadImage(originalFilePath)
         val result = saveImage(pixels, saveFilePath)
         result shouldBe true
@@ -87,7 +85,7 @@ class ImageTest : StringSpec({
     }
 
     "should return false when trying to save an image to an invalid path" {
-        val originalFilePath = directory + directoryToTest + "/random_noise_16x16.png"
+        val originalFilePath = directory + "/random_noise_16x16.png"
         val invalidFilePath = "invalid/path/to/save_image.png"
         val pixels = loadImage(originalFilePath)
         val result = saveImage(pixels, invalidFilePath)
@@ -97,7 +95,7 @@ class ImageTest : StringSpec({
     afterSpec {
         val dir = File(directory)
         if (dir.exists() && dir.isDirectory) {
-            dir.listFiles { file -> file.extension == "png" }?.forEach { file ->
+            dir.listFiles { file -> file.extension == "saved.png" }?.forEach { file ->
                 file.delete()
             }
         }

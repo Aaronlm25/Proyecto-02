@@ -15,6 +15,8 @@ fun encodeText(text: List<Char>, pixels : Array<IntArray>): Array<IntArray> {
 /** 
  * Decodes an image represented by an integer array of the pixels into the 
  * original text.
+ * Handles letters (a-z) and (A-Z) numbers (0-9) and some special characters :
+ * (!.+-?¿àèìòù¡¿/!)
  *
  * @param pixels The 2D pixel array of the image.
  * @return The decoded text.

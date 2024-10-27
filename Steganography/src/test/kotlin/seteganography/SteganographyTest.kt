@@ -3,29 +3,31 @@ package steganography
 import steganography.encodeText
 import steganography.decodeText
 import steganography.data.image.loadImage
+import steganography.data.text.readFile
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.doubles.shouldBeGreaterThanOrEqual
 import java.io.File
+import org.apache.commons.math3.stat.inference.ChiSquareTest
 
 class SteganographyTest : StringSpec ({
-    "should correctly implement LSB encoding" {
+    lateinit var imageData: MutableList<Array<IntArray>>
 
-    }
-
-    "should correctly encrypt text using Caesar cipher" {
-
+    beforeSpec {
+        val pngFiles = File("src/test/resources/images").listFiles { _, name -> name.endsWith(".png") } ?: arrayOf()
+        pngFiles.forEach { file: File ->
+            val pixels = loadImage(file.path)
+            imageData.add(pixels)
+        }
     }
 
     "should throw IllegalStateException if text is too large for a given pixel array" {
-        val directoryPath = "src/test/resources"
-        val pngFiles = File(directoryPath).listFiles { _, name -> name.endsWith(".png") } ?: arrayOf()
-        pngFiles.forEach { file ->
-            val pixels = loadImage(file.path)
+        for(pixels in imageData) {
             val width = pixels.size
             val height = pixels[0].size 
-            var text = getText(width * height + 10)
+            var text = getText(width * height * 3)
             shouldThrow<IllegalStateException> {
                 encodeText(text.toList(), pixels)
             }
@@ -33,11 +35,11 @@ class SteganographyTest : StringSpec ({
     }
 
     "should throw IllegalStateException when text contains invalid characters during encoding" {
-        val path = "src/test/resources/invalidText.txt"
+        val path = "src/test/resources/text/special_characters.txt"
         val file = File(path)
         val text = file.readText()
         shouldThrow<IllegalStateException> {
-            val pixels = arrayOf(intArrayOf(0))
+            val pixels = loadImage("src/test/resources/images/random_noise_1440x900.png")
             encodeText(text.toList(), pixels)
         }
     }
@@ -45,7 +47,7 @@ class SteganographyTest : StringSpec ({
     "should not handle multiple encodings" {
         val text1 = "First encoding"
         val text2 = "Second encoding"
-        val pixels = Array(100) { IntArray(100) }
+        val pixels = imageData.get(0)
         val encodedImage1 = encodeText(text1.toList(), pixels)
         val encodedImage2 = encodeText(text2.toList(), encodedImage1)
         val decodedText = decodeText(encodedImage2)
@@ -53,32 +55,65 @@ class SteganographyTest : StringSpec ({
     }
 
     "should encode text correctly into the pixel array" {
-        val text = "Hello"
-        val pixels = Array(1) { IntArray(5) { 0 } } 
-        val encodedPixels = encodeText(text.toList(), pixels)
-        encodedPixels shouldNotBe pixels 
+        val text = readFile("src/test/resources/text/short.txt")
+        for(pixels in imageData) {
+            val encodedPixels = encodeText(text, pixels)
+            encodedPixels shouldNotBe pixels
+        }
     }
 
     "should decode text correctly from the pixel array" {
-        val originalText = "Hello"
-        val pixels = Array(1) { IntArray(5) { 0 } }
-        val encodedPixels = encodeText(originalText.toList(), pixels)
-        val decodedText = decodeText(encodedPixels)
-        decodedText shouldBe originalText.toList()
+        val text = readFile("src/test/resources/text/short.txt")
+        for(pixels in imageData) {
+            val encodedPixels = encodeText(text, pixels)
+            decodeText(encodedPixels) shouldBe text
+        }
     }
 
     "should return empty list when decoding empty pixel array" {
-        val pixels = Array(1) { IntArray(5) { 0 } }
+        val pixels: Array<IntArray> = arrayOf()
         val decodedText = decodeText(pixels)
         decodedText shouldBe emptyList() 
     }
     
-    "should handle special characters during encoding and decoding" {
-        val originalText = "Hello, World! 🌍"
-        val pixels = Array(1) { IntArray(5) { 0 } }
-        val encodedPixels = encodeText(originalText.toList(), pixels)
-        val decodedText = decodeText(encodedPixels)
-        decodedText shouldBe originalText.toList()
+    "should handle some common special characters during encoding and decoding" {
+        val text = ("!.+-?¿àèìòù¡¿/!").toList()
+        for(pixels in imageData) {
+            val encodedPixels = encodeText(text, pixels)
+            decodeText(encodedPixels) shouldBe text
+        }
+    }
+
+    "should changes not be apparent" {
+        for(pixels in imageData) {
+            val lsbCounts = IntArray(2)
+            for (y in 0 until pixels.size) {
+                for (x in 0 until pixels[0].size) {
+                    val lsb = pixels[y][x] and 1
+                    lsbCounts[lsb]++
+                }
+            }
+            val expected = DoubleArray(2) { lsbCounts.sum() / 2.0 }
+            val chiSquareTest = ChiSquareTest()
+            val pValue = chiSquareTest.chiSquareTest(expected, lsbCounts.map { it.toLong() }.toLongArray())
+            pValue shouldBeGreaterThanOrEqual 0.05
+        }
+    }
+
+    "should handle upper case letters" {
+        val text = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        for(pixels in imageData) {
+            val encodedPixels = encodeText(text.toList(), pixels)
+            decodeText(encodedPixels).joinToString("").lowercase() shouldBe text.lowercase()
+        }
+    }
+
+    "should handle numbers" {
+        val text = "0123456789"
+        for(pixels in imageData) {
+            val encodedPixels = encodeText(text.toList(), pixels)
+            decodeText(encodedPixels).joinToString("") shouldBe text
+        }
     }
 })
 

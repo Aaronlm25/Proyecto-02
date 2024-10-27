@@ -5,7 +5,7 @@ import java.io.File
  * Reads the file and converts it to a list of characters.
  * @return A list of the characters in the text.
 */
-fun readFile(pathText : String): List<Char> {
+fun readFile(path : String): List<Char> {
     return listOf()
 }
 
@@ -16,6 +16,6 @@ fun readFile(pathText : String): List<Char> {
  * @param textPath Path to which the message will be written.
  * @return The file with the message.
 */
-fun toFile(characters : List<Char>, textPath: String): File {
-    return File(textPath)
+fun toFile(characters : List<Char>, path: String): File {
+    return File(path)
 }
