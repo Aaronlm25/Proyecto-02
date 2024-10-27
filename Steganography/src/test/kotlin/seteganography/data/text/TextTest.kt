@@ -2,10 +2,6 @@ package steganography.data.text
 
 import steganography.data.text.readFile
 import steganography.data.text.toFile
-import steganography.data.text.getRegulars
-import steganography.data.text.readFull
-import steganography.data.text.reassemble
-import steganography.data.text.replaceAlphabet
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.assertions.throwables.shouldThrow
