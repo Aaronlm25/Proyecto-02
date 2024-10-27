@@ -13,17 +13,9 @@ import java.lang.StringBuilder
  * @return A list of the characters in the text.
  * @throws FileNotFoundException If the file doesn't exist.
 */
-fun readFile(pathText : String, type:Int): List<Any> {
-    val filetext = File(pathText).readText()
-    val text = mutableListOf<Any>()
-    if (type == 1){
-        for (char in filetext) {
-            text.add(char) 
-        }
-        return text
-    }else{
-        throw IllegalArgumentException()
-    }
+fun readFile(path : String): List<Char> {
+    val text = File(path).readText()
+    return text.toList()
 }
 
 /**

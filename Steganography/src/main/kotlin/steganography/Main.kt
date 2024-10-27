@@ -66,7 +66,7 @@ fun getTextFromFile(): List<Any> {
         try {
             println("Proporcione la ruta del archivo con el texto a ocultar.")
             val textPath = readNonNullInput()
-            return readFile(textPath,1)
+            return readFile(textPath)
         } catch (e: Exception) {
             println("No se pudo abrir el archivo que proporcionó!")
         }
