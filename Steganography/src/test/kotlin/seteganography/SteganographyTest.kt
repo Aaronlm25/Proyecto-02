@@ -88,20 +88,32 @@ class SteganographyTest : StringSpec ({
     }
 
     "should changes not be apparent" {
+        val text = "Hidden message"
         for(pixels in imageData) {
-            val lsbCounts = IntArray(2)
-            for (y in 0 until pixels.size) {
-                for (x in 0 until pixels[0].size) {
+            val originalLsbCounts = IntArray(2)
+            for (y in pixels.indices) {
+                for (x in pixels[0].indices) {
                     val lsb = pixels[y][x] and 1
-                    lsbCounts[lsb]++
+                    originalLsbCounts[lsb]++
                 }
             }
-            val expected = DoubleArray(2) { lsbCounts.sum() / 2.0 }
+
+            val encodedPixels = encodeText(text.toList(), pixels)
+            val encodedLsbCounts = IntArray(2)
+            for (y in encodedPixels.indices) {
+                for (x in encodedPixels[0].indices) {
+                    val lsb = encodedPixels[y][x] and 1
+                    encodedLsbCounts[lsb]++
+                }
+            }
+
+            val expected = DoubleArray(2) { originalLsbCounts.sum() / 2.0 }
             val chiSquareTest = ChiSquareTest()
-            val pValue = chiSquareTest.chiSquareTest(expected, lsbCounts.map { it.toLong() }.toLongArray())
+            val pValue = chiSquareTest.chiSquareTest(expected, encodedLsbCounts.map { it.toLong() }.toLongArray())
             pValue shouldBeGreaterThanOrEqual 0.05
         }
     }
+
 
     "should handle upper case letters" {
         val text = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
