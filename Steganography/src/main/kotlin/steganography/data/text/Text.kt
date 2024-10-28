@@ -19,7 +19,7 @@ private val alphabet = mapOf(
     'ú' to 41, '1' to 42, '2' to 43, '3' to 44, '4' to 45, 
     '5' to 46, '6' to 47, '7' to 48, '8' to 49, '9' to 50,
     '#' to 51, '$' to 52, '%' to 53, '&' to 54, '[' to 55,
-    ']' to 56, '{' to 57, '}' to 58
+    ']' to 56, '{' to 57, '}' to 58, ' ' to 59, '\n' to 60
     )
 /**
  * Reads the file at a specified path and converts it to a list of characters.
@@ -67,7 +67,7 @@ fun toFile(characters : List<Char>, textPath: String): File {
  * @param fileText Text to compress.
  * @return A map with the regular expressions in the text bound to an integer.
  */
-private fun findRegulars(fileText: String): Map<String, String> {
+fun findRegulars(fileText: String): Map<String, String> {
     var text = fileText
     val pattern = Pattern.compile("\\b\\w+\\s+\\w+\\b")
     val regulars = mutableListOf<String>()
@@ -86,7 +86,7 @@ private fun findRegulars(fileText: String): Map<String, String> {
         val splittext = pattern.split(fileText)
         text = splittext.joinToString(" ")
     }    
-    var i = 59
+    var i = 61
     for (item in regulars) {
         regEx[item] = i.toString()
         i++
