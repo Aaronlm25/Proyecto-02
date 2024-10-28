@@ -151,7 +151,7 @@ class SteganographyTest : StringSpec ({
 
     "should verify that image size is insufficient for the text" {
         val originalImagePath = "src/test/resources/full_blue.png"
-        val textPath = "src/test/resources/example.txt"
+        val textPath = "src/test/resources/large.txt"
             val originalPixels = loadImage(originalImagePath)
             val textToEncode = File(textPath).readText().toList()
                 val requiredSize = textToEncode.size * 8 // bytes a bits
