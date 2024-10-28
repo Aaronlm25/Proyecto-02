@@ -51,4 +51,20 @@ fun saveImage(pixels: Array<IntArray>, filePath: String): Boolean {
         e.printStackTrace()
         false
     }
-}   
+}
+/**
+ * Provission method
+ * 
+ * read a file
+ */
+fun load(path:String): BufferedImage{
+    return ImageIO.read(File(path))
+}
+/**
+ * Provissional method
+ * 
+ * get a pixel
+ */
+fun getColor(image: BufferedImage, x:Int, y: Int): Int{
+    return image.getRGB(x, y)
+}

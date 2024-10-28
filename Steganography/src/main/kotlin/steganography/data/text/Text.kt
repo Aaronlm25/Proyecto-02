@@ -6,7 +6,6 @@ import java.io.FileNotFoundException
 import java.util.regex.Pattern
 import java.util.regex.Matcher
 import java.util.HashMap
-import java.lang.StringBuilder
 
 /**
  * Reads the file and converts it to a list of characters.
@@ -103,35 +102,4 @@ fun replaceAlphabet(alphabet: Map<String,String>, content: String): String{
         text = matcher.replaceAll(a)
     }
     return text
-}
-/**
- * Provisional method created to test regEx.
- */
-fun map(expressions: List<String>): Map<String, String> {
-    val regEx = mutableMapOf<String, String>()
-    var i = 1
-    for (item in expressions) {
-        regEx[i.toString()] = item
-        i++
-    }
-    return regEx
-}
-/**
- * Provisional method created to test regEx.
- * 
- * Recrea el texto original a partir del texto comprimido.
- * @param alphabet Contains regular expressions and their corresponding value.
- * @param content Text on which the substitution will be applied following 
- * the alphabet.
- */
-fun reassemble(alphabet: Map<String, String>, content: String): String {
-    val pattern = Pattern.compile("\\d+(?=\\D)")
-    val matcher = pattern.matcher(content)
-    val result = StringBuffer()
-    while (matcher.find()) {
-        val replacement = alphabet[matcher.group()] ?: matcher.group()
-        matcher.appendReplacement(result, replacement)
-    }
-    matcher.appendTail(result)
-    return result.toString()
 }
