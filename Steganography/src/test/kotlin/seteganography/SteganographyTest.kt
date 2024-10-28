@@ -130,6 +130,34 @@ class SteganographyTest : StringSpec ({
             decodeText(encodedPixels).joinToString("") shouldBe text
         }
     }
+
+    "should verify that original and encoded images are different" {
+        val originalImagePath = "src/test/resources/checkerboard_144x144.png"
+        val textPath = "src/test/resources/example.txt"
+            val originalPixels = loadImage(originalImagePath)
+            val encodedPixels = encodeText("Secret Message".toList(), originalPixels)
+            encodedPixels shouldNotBe originalPixels
+    }
+
+    "should verify that image size is sufficient for the text" {
+        val originalImagePath = "src/test/resources/all_black_144x144.png"
+        val textPath = "src/test/resources/example.txt"
+            val originalPixels = loadImage(originalImagePath)
+            val textToEncode = File(textPath).readText().toList()
+                val requiredSize = textToEncode.size * 8 // bytes a bits
+                val availableSize = originalPixels.size * originalPixels[0].size * 3 // RGB
+                availableSize shouldBeGreaterThan requiredSize
+    }
+
+    "should verify that image size is insufficient for the text" {
+        val originalImagePath = "src/test/resources/full_blue.png"
+        val textPath = "src/test/resources/example.txt"
+            val originalPixels = loadImage(originalImagePath)
+            val textToEncode = File(textPath).readText().toList()
+                val requiredSize = textToEncode.size * 8 // bytes a bits
+                val availableSize = originalPixels.size * originalPixels[0].size * 3 // RGB
+                availableSize shouldBeLessThan requiredSize
+    }
 })
 
 fun getText(size: Int) : List<Char> {
