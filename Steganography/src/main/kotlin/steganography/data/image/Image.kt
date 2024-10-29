@@ -3,52 +3,45 @@ package steganography.data.image
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
+import java.awt.Graphics2D
 
 /**
  * Loads an image from the specified file path.
  *
  * @param filePath The path of the image file.
- * @return 2D arrays of the image pixels
+ * @return buffered image.
  */
-fun loadImage(filePath: String): Array<IntArray> {
-    val image: BufferedImage = ImageIO.read(File(filePath))
-    val width = image.width
-    val height = image.height
-    val pixels = Array(height) { IntArray(width) }
+fun loadImagePNG(filePath: String): BufferedImage {
+   val pixels = ImageIO.read(File(filePath))
+   return pixels
+}
 
-    for (y in 0 until height) {
-        for (x in 0 until width) {
-            pixels[y][x] = image.getRGB(x, y)
-        }
-    }
+/**
+ * Loads an image from the specified file path.
+ *
+ * @param filePath The path of the image file.
+ * @return buffered image.
+ */
+fun loadImageJPEG(inputPath: String): BufferedImage {
+    val jpgImage: BufferedImage = ImageIO.read(File(inputPath))
 
-    return pixels
+    val pngImage = BufferedImage(jpgImage.width, jpgImage.height, BufferedImage.TYPE_INT_ARGB)
+
+    val g: Graphics2D = pngImage.createGraphics()
+    g.drawImage(jpgImage, 0, 0, null)
+    g.dispose()
+
+    return pngImage
 }
 
 /**
  * Saves the modified image to the specified file path.
  *
- * @param pixels The 2D pixel array of the image.
+ * @param pixels as buffered image.
  * @param filePath The path where the image should be saved.
- * @return True if the image was saved successfully, otherwise false.
+ * @param imageType The type of the image.
+ * @return exepction if the image could not be saved.
  */
-fun saveImage(pixels: Array<IntArray>, filePath: String): Boolean {
-    if (pixels.isEmpty()) return false
-
-    val height = pixels.size
-    val width = pixels[0].size
-    val image = BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
-
-    for (y in 0 until height) {
-        for (x in 0 until width) {
-            image.setRGB(x, y, pixels[y][x])
-        }
-    }
-
-    return try {
-        ImageIO.write(image, "png", File(filePath))
-    } catch (e: Exception) {
-        e.printStackTrace()
-        false
-    }
+fun saveImage(pixels: BufferedImage, filePath: String, imageType: String) {
+        ImageIO.write(pixels, imageType, File(filePath))
 }
