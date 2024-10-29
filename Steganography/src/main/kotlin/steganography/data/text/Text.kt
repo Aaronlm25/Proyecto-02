@@ -67,7 +67,7 @@ fun toFile(characters : List<Char>, textPath: String): File {
  * @param fileText Text to compress.
  * @return A map with the regular expressions in the text bound to an integer.
  */
-fun findRegulars(fileText: String): Map<String, String> {
+private fun findRegulars(fileText: String): Map<String, String> {
     var text = fileText
     val pattern = Pattern.compile("\\b\\w+\\s+\\w+\\b")
     val regulars = mutableListOf<String>()

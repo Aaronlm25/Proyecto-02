@@ -3,7 +3,8 @@ package steganography
 import steganography.encodeText
 import steganography.decodeText
 import steganography.data.image.loadImage
-import steganography.data.text.readFile
+import steganography.data.text.readFull
+import steganography.data.text.compress
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -28,9 +29,9 @@ class SteganographyTest : StringSpec ({
         for(pixels in imageData) {
             val width = pixels.size
             val height = pixels[0].size 
-            var text = getText(width * height * 3)
+            var text = ""
             shouldThrow<IllegalStateException> {
-                encodeText(text.toList(), pixels)
+                encodeText(text, pixels)
             }
         }
     }
@@ -41,7 +42,7 @@ class SteganographyTest : StringSpec ({
         val text = file.readText()
         shouldThrow<IllegalStateException> {
             val pixels = loadImage("src/test/resources/images/random_noise_1440x900.png")
-            encodeText(text.toList(), pixels)
+            encodeText(text, pixels)
         }
     }
 
@@ -49,8 +50,8 @@ class SteganographyTest : StringSpec ({
         val text1 = "First encoding"
         val text2 = "Second encoding"
         val pixels = imageData.get(0)
-        val encodedImage1 = encodeText(text1.toList(), pixels)
-        val encodedImage2 = encodeText(text2.toList(), encodedImage1)
+        val encodedImage1 = encodeText(text1, pixels)
+        val encodedImage2 = encodeText(text2, encodedImage1)
         val decodedText = decodeText(encodedImage2)
         decodedText shouldBe text2.toList()
     }
@@ -58,7 +59,7 @@ class SteganographyTest : StringSpec ({
     
 
     "should encode text correctly into the pixel array" {
-        val text = readFile("src/test/resources/text/short.txt")
+        val text = readFull("src/test/resources/text/short.txt")
         for(pixels in imageData) {
             val encodedPixels = encodeText(text, pixels)
             encodedPixels shouldNotBe pixels
@@ -66,7 +67,7 @@ class SteganographyTest : StringSpec ({
     }
 
     "should decode text correctly from the pixel array" {
-        val text = readFile("src/test/resources/text/short.txt")
+        val text = readFull("src/test/resources/text/short.txt")
         for(pixels in imageData) {
             val encodedPixels = encodeText(text, pixels)
             decodeText(encodedPixels) shouldBe text
@@ -80,7 +81,7 @@ class SteganographyTest : StringSpec ({
     }
     
     "should handle some common special characters during encoding and decoding" {
-        val text = ("!.+-?¿àèìòù¡¿/!").toList()
+        val text = ("!.+-?¿àèìòù¡¿/!")
         for(pixels in imageData) {
             val encodedPixels = encodeText(text, pixels)
             decodeText(encodedPixels) shouldBe text
@@ -106,7 +107,7 @@ class SteganographyTest : StringSpec ({
     "should handle upper case letters" {
         val text = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         for(pixels in imageData) {
-            val encodedPixels = encodeText(text.toList(), pixels)
+            val encodedPixels = encodeText(text, pixels)
             decodeText(encodedPixels).joinToString("").lowercase() shouldBe text.lowercase()
         }
     }
@@ -114,7 +115,7 @@ class SteganographyTest : StringSpec ({
     "should handle numbers" {
         val text = "0123456789"
         for(pixels in imageData) {
-            val encodedPixels = encodeText(text.toList(), pixels)
+            val encodedPixels = encodeText(text, pixels)
             decodeText(encodedPixels).joinToString("") shouldBe text
         }
     }
