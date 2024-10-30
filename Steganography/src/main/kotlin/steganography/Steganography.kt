@@ -43,6 +43,21 @@ fun encodeText(text: String,pixels: Array<IntArray>): Array<IntArray> {
     return pixels
 }
 
+private val reverseAlphabet = mapOf(
+     1 to 'a', 2 to 'b', 3 to 'c', 4 to 'd', 5 to 'e',
+    6 to 'f', 7 to 'g', 8 to 'h', 9 to 'i', 10 to 'j',
+    11 to 'k', 12 to 'l', 13 to 'm', 14 to 'n', 15 to 'o',
+    16 to 'p', 17 to 'q', 18 to 'r', 19 to 's', 20 to 't',
+    21 to 'u', 22 to 'v', 23 to 'w', 24 to 'x', 25 to 'y',
+    26 to 'z', 27 to '?', 28 to '!', 29 to '@', 30 to '(',
+    31 to ')', 32 to ':', 33 to ',', 34 to '.', 35 to '-',
+    36 to '\'', 37 to 'á', 38 to 'é', 39 to 'í', 40 to 'ó',
+    41 to 'ú', 42 to '1', 43 to '2', 44 to '3', 45 to '4',
+    46 to '5', 47 to '6', 48 to '7', 49 to '8', 50 to '9',
+    51 to '#', 52 to '$', 53 to '%', 54 to '&', 55 to '[',
+    56 to ']', 57 to '{', 58 to '}', 59 to ' ', 60 to '\n'
+    )
+
 /** 
  * Decodes an image represented by an integer array of the pixels into the 
  * original text.
@@ -55,8 +70,14 @@ fun encodeText(text: String,pixels: Array<IntArray>): Array<IntArray> {
  */
 @Throws(IllegalStateException::class)
 fun decodeText(pixels: Array<IntArray>): List<Char> {
-    return listOf()
+    val decimals = decode(pixels)    
+    val string = mutableListOf<Char>()
+    for (decimal in decimals) {
+        reverseAlphabet[decimal]?.let { string.add(it) }
+    }
+    return string
 }
+
 /**
  * Implementacion basica, solo reune los bits modificados, no hace la conversion
  * para texto o regular expression.
@@ -65,7 +86,7 @@ fun decodeText(pixels: Array<IntArray>): List<Char> {
  * Tiene un error. Agarra bits aun cuando ya no se necesitan es por la forma en la que 
  * condicione el for.
  */
-fun decode(pixels: Array<IntArray>): List<Int> {
+private fun decode(pixels: Array<IntArray>): List<Int> {
     val seed = pixels[0][0].toLong()
     val algorithm = Random(seed)
     val binaryText = mutableListOf<Int>()
@@ -82,6 +103,6 @@ fun decode(pixels: Array<IntArray>): List<Int> {
     val compact = stringList.chunked(10).map { it.joinToString("") }
     for (i in compact) {
         decimals.add(i.toInt(2))
-    }
+    }    
     return decimals
 }

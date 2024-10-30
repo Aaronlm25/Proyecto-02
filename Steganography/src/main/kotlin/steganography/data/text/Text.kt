@@ -5,7 +5,7 @@ import java.io.IOException
 import java.io.FileNotFoundException
 import java.util.regex.Pattern
 import java.util.regex.Matcher
-import java.util.HashMap
+import java.util.HashMap    
 
 private val alphabet = mapOf(
     'a' to 1, 'b' to 2, 'c' to 3, 'd' to 4, 'e' to 5, 
