@@ -32,17 +32,6 @@ fun readFile(path : String): List<Char> {
     return text.toList()
 }
 /**
- * Reads the text at the specified path and returns the full text
- * as a string and all words in the text are converted to lowercase.
- *
- * @param pathFile Path of the text to read.
- * @return The full text of the file at the path.
- */
-fun readFull(path: String):String{
-    val lineas = File(path).readText().lowercase()
-    return lineas
-}
-/**
  * Writes a list of characters to a file at the specified path.
  * 
  * @param characters List of characters.
@@ -61,59 +50,6 @@ fun toFile(characters : List<Char>, textPath: String): File {
     return file
 }
 /**
- * Gets the expressions in a text that match a specific pattern and
- * creates a map containing all these expressions bound to an integer.
- *
- * @param fileText Text to compress.
- * @return A map with the regular expressions in the text bound to an integer.
- */
-private fun findRegulars(fileText: String): Map<String, String> {
-    var text = fileText
-    val pattern = Pattern.compile("\\b\\w+\\s+\\w+\\b")
-    val regulars = mutableListOf<String>()
-    val regEx = mutableMapOf<String, String>()
-    while (true) {
-        val matcher = pattern.matcher(text)
-        var found = false
-        while (matcher.find()) {
-            found = true
-            val match = matcher.group()
-            if (match !in regulars) {
-                regulars.add(match)
-            }
-        }
-        if (!found) break
-        val splittext = pattern.split(fileText)
-        text = splittext.joinToString(" ")
-    }    
-    var i = 61
-    for (item in regulars) {
-        regEx[item] = i.toString()
-        i++
-    }
-    return regEx
-}
-/**
- * Replaces words in a text with the corresponding integer value
- * according to the provided map
- *
- * @param alphabet Contains the expressions in the text and their
- * corresponding value.
- * @param content Text to be replaced based on the provided map.
- * @return The provided text but the words will be replaced by
- * the values ​​from the map.
- */
-private fun replaceMap(map: Map<String,String>, content: String): String{
-    var text = content
-    for (expression in map.keys) {
-        val pattern = Pattern.compile(expression)
-        val matcher = pattern.matcher(text)
-        val a = map[expression]
-        text = matcher.replaceAll(a)
-    }
-    return text
-}
-/**
  * Replaces words in a text with the corresponding integer value according
  * to the alphabet.
  *
@@ -121,36 +57,14 @@ private fun replaceMap(map: Map<String,String>, content: String): String{
  * to the alphabet.
  * @return A list with the integer that corresponds to each word in the text.
  */
-private fun replaceAlphabet(content:String):List<Int>{
-    val text = content.toCharArray()
+fun replaceAlphabet(text:List<Char>):List<Int>{
     val numbers = mutableListOf<Int>()
-    var currentNumber = ""
     for (char in text) {
-        if (char.isDigit()) {
-            currentNumber += char
-        }else if (char.isWhitespace() && currentNumber.isNotEmpty()){
-            numbers.add(currentNumber.toInt())
-            currentNumber = ""
-        } else if (char.lowercaseChar().isLetter()){
+        if (char.lowercaseChar().isLetter()){
             alphabet[char]?.let { numbers.add(it) }
         } else{
             alphabet[char]?.let { numbers.add(it) }
         }
     }
-    if (currentNumber.isNotEmpty()) {
-        numbers.add(currentNumber.toInt())
-    }
     return numbers
-}
-/**
- * Compresses a text and converts words to integer values.
- * 
- * @param text Text to be compressed.
- * @return List of integer values ​​representing the words in the text.
- */
-fun compress(text: String): List<Int>{
-    val regularsMap = findRegulars(text)
-    val replaced = replaceMap(regularsMap, text)
-    val compressText = replaceAlphabet(replaced)
-    return compressText
 }

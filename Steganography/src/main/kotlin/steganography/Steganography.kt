@@ -1,6 +1,6 @@
 package steganography
 
-import steganography.data.text.compress
+import steganography.data.text.replaceAlphabet
 import java.util.Random
 import java.awt.image.BufferedImage
 
@@ -12,10 +12,10 @@ import java.awt.image.BufferedImage
  * @return 2D pixel array with the message encoded.
  * @throws IllegalStateException if the text is too large for the pixels array.
  */
-fun encodeText(text: String,pixels: Array<IntArray>): Array<IntArray> {
-    val totalPixels = pixels.size * pixels[0].size //Largo por alto de la matriz de pixeles
+fun encodeText(text: List<Char>,pixels: BufferedImage): BufferedImage {
+    /**val totalPixels = pixels.size * pixels[0].size //Largo por alto de la matriz de pixeles
     val algorithm = Random(pixels[0][0].toLong()) //Determinara cual pixel cambiar (la semilla es la componente 0,0).
-    val compressText = compress(text) //LIsta de enteros que representan las palabras y letras en el texto.
+    val compressText = replaceAlphabet(text) //LIsta de enteros que representan las palabras y letras en el texto.
     val binaries = compressText.map { it.toString(2).padStart(6, '0') }
     var current = 0
     val modifiedPixels = mutableSetOf<Pair<Int,Int>>() //Pixeles que se vayan modificando.
@@ -41,7 +41,7 @@ fun encodeText(text: String,pixels: Array<IntArray>): Array<IntArray> {
             pixels[y][x] = newRgb
             current++ //Indicamos que se va a usar otro pixel.
         }
-    }
+    }*/
     return pixels
 }
 
