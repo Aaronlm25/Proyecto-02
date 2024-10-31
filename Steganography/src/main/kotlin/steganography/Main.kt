@@ -3,9 +3,10 @@ package steganography
 import kotlin.text.trim
 import kotlin.io.readlnOrNull
 import steganography.data.text.toFile
-import steganography.data.text.readFull
-import steganography.data.image.loadImage
+import steganography.data.text.readFile
+import steganography.data.image.loadImagePNG
 import steganography.data.image.saveImage
+import java.awt.image.BufferedImage
 
 fun main() {
     var active = true
@@ -49,7 +50,7 @@ fun hideTextInImage() {
     val encoded = encodeText(text, pixels)
     println("Proporcione la ruta de la imagen resultante.")
     val resultPath = readNonNullInput()
-    saveImage(encoded, resultPath)
+    saveImage(encoded, resultPath, "PNG")
 }
 
 fun revealTextFromImage() {
@@ -61,24 +62,24 @@ fun revealTextFromImage() {
     println("Se ha decodificado el mensaje en la imagen en: $resultPath")
 }
 
-fun getTextFromFile(): String {
+fun getTextFromFile(): List<Char> {
     while (true) {
         try {
             println("Proporcione la ruta del archivo con el texto a ocultar.")
             val textPath = readNonNullInput()
-            return readFull(textPath)
+            return readFile(textPath)
         } catch (e: Exception) {
             println("No se pudo abrir el archivo que proporcionó!")
         }
     }
 }
 
-fun getPixelsFromImage(prompt : String): Array<IntArray> {
+fun getPixelsFromImage(prompt : String): BufferedImage {
     while (true) {
         try {
             println(prompt)
             val imagePath = readNonNullInput()
-            return loadImage(imagePath)
+            return loadImagePNG(imagePath)
         } catch (e: Exception) {
             println("No se pudo abrir el archivo que proporcionó!")
         }
