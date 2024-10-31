@@ -2,6 +2,8 @@ package steganography
 
 import steganography.data.text.compress
 import java.util.Random
+import java.awt.image.BufferedImage
+
 /**
  * Encodes the text into an image represented by an integer array of the pixels.
  *
@@ -14,7 +16,7 @@ fun encodeText(text: String,pixels: Array<IntArray>): Array<IntArray> {
     val totalPixels = pixels.size * pixels[0].size //Largo por alto de la matriz de pixeles
     val algorithm = Random(pixels[0][0].toLong()) //Determinara cual pixel cambiar (la semilla es la componente 0,0).
     val compressText = compress(text) //LIsta de enteros que representan las palabras y letras en el texto.
-    val binaries = compressText.map { it.toString(2).padStart(10, '0') }
+    val binaries = compressText.map { it.toString(2).padStart(6, '0') }
     var current = 0
     val modifiedPixels = mutableSetOf<Pair<Int,Int>>() //Pixeles que se vayan modificando.
     for (binary in binaries) { //Los binarios son un Strinf (No me funen).
@@ -69,7 +71,7 @@ private val reverseAlphabet = mapOf(
  * @throws IllegalStateException if no key is found on the pixels array.
  */
 @Throws(IllegalStateException::class)
-fun decodeText(pixels: Array<IntArray>): List<Char> {
+fun decodeText(pixels: BufferedImage): List<Char> {
     val decimals = decode(pixels)    
     val string = mutableListOf<Char>()
     for (decimal in decimals) {
@@ -79,28 +81,25 @@ fun decodeText(pixels: Array<IntArray>): List<Char> {
 }
 
 /**
- * Implementacion basica, solo reune los bits modificados, no hace la conversion
- * para texto o regular expression.
- * 
- * 
- * Tiene un error. Agarra bits aun cuando ya no se necesitan es por la forma en la que 
- * condicione el for.
+* Auxiliary function to decode the text from the image.
+*
+* @param pixels A BufferedImage of the image.
+* @return A list with the numerical value of the letters.
  */
-private fun decode(pixels: Array<IntArray>): List<Int> {
-    val seed = pixels[0][0].toLong()
+private fun decode(pixels: BufferedImage): List<Int> {
+    val seed = pixels.getRGB(0, 0).toLong()
     val algorithm = Random(seed)
     val binaryText = mutableListOf<Int>()
-    val totalPixels = pixels.size * pixels[0].size
+    val totalPixels = pixels.width * pixels.getHeight()
     val decimals = mutableListOf<Int>()
     for (i in 0 until totalPixels) {
-        val x = algorithm.nextInt(pixels[0].size) // Valor de la columna
-        val y = algorithm.nextInt(pixels.size) // Valor de la fila
-        val blue = pixels[y][x] and 0xFF // Obtener el valor azul del píxel
-        // Extraer el bit menos significativo del azul(LSB)
+        val x = algorithm.nextInt(pixels.width)
+        val y = algorithm.nextInt(pixels.height) 
+        val blue = pixels.getRGB(x, y) and 0xFF 
         binaryText.add(blue and 1)
     }
     val stringList = binaryText.map { it.toString() }
-    val compact = stringList.chunked(10).map { it.joinToString("") }
+    val compact = stringList.chunked(6).map { it.joinToString("") }
     for (i in compact) {
         decimals.add(i.toInt(2))
     }    
