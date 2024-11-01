@@ -14,7 +14,6 @@ import steganography.data.image.saveImage
 class ImageTest : StringSpec({
     val directory = "src/test/resources/images"
     lateinit var imagePaths: List<String>
-
     beforeSpec {
         imagePaths = listPngFiles(directory)
     }
@@ -22,11 +21,11 @@ class ImageTest : StringSpec({
     "should image pixels not be changed" {
         for (path in imagePaths) {
             val originalImage = ImageIO.read(File(path))
-            val image = loadImage(path)
+            val image = loadImagePNG(path) // Cambiado a loadImagePNG
             var imageName = path.substringAfterLast("/images")
             imageName = imageName.substringBeforeLast(".png")
             val savePath = "$directory/${imageName}_saved.png"
-            saveImage(image, savePath) shouldBe true
+            saveImage(image, savePath, "PNG") // Especificar el tipo de imagen
             val savedImage = ImageIO.read(File(savePath))
             savedImage.width shouldBe image.width
             savedImage.height shouldBe image.height
@@ -40,23 +39,22 @@ class ImageTest : StringSpec({
 
     "should load an image from a valid file path" {
         val filePath = "$directory/random_noise_16x16.png"
-        val image = loadImage(filePath)
+        val image = loadImagePNG(filePath) // Cambiado a loadImagePNG
         image shouldNotBe null
     }
 
     "should throw an IOException when trying to load from an invalid file path" {
         val filePath = "invalid/path/to/image.png"
         shouldThrow<IOException> {
-            loadImage(filePath)
+            loadImagePNG(filePath) // Cambiado a loadImagePNG
         }
     }
 
     "should save an image to the specified file path" {
         val originalFilePath = "$directory/random_noise_16x16.png"
         val saveFilePath = "$directory/random_noise_16x16_saved.png"
-        val image = loadImage(originalFilePath)
-        val result = saveImage(image, saveFilePath)
-        result shouldBe true
+        val image = loadImagePNG(originalFilePath) // Cambiado a loadImagePNG
+        saveImage(image, saveFilePath, "PNG") // Especificar el tipo de imagen
         val savedImageFile = File(saveFilePath)
         savedImageFile.exists() shouldBe true
         savedImageFile.delete()
@@ -65,11 +63,11 @@ class ImageTest : StringSpec({
     "should return false when trying to save an image to an invalid path" {
         val originalFilePath = "$directory/random_noise_16x16.png"
         val invalidFilePath = "invalid/path/to/save_image.png"
-        val image = loadImage(originalFilePath)
-        val result = saveImage(image, invalidFilePath)
-        result shouldBe false
+        val image = loadImagePNG(originalFilePath) // Cambiado a loadImagePNG
+        shouldThrow<IOException> {
+            saveImage(image, invalidFilePath, "PNG") // Especificar el tipo de imagen y esperar excepción
+        }
     }
-
     afterSpec {
         val dir = File(directory)
         if (dir.exists() && dir.isDirectory) {

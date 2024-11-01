@@ -127,7 +127,7 @@ class SteganographyTest : StringSpec ({
     }
 
     "should verify that original and encoded images are different" {
-        val originalImagePath = "src/test/resources/checkerboard_144x144.png"
+        val originalImagePath = "src/test/resources/images.png"
         val text = readFile("src/test/resources/example.txt")
             val originalImage = loadImage(originalImagePath)
             val encodedImage = encodeText(text, originalImage)
