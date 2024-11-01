@@ -26,5 +26,17 @@ fun readFile(path : String): List<Char> {
  * @throws IOException If the path is invalid.
 */
 fun toFile(characters : List<Char>, path: String): File {
-    return File(path)
+    // Implementation
+}
+
+/**
+ * Replaces words in a text with the corresponding integer value according
+ * to the alphabet.
+ *
+ * @param content Text with the words you want to exchange according
+ * to the alphabet.
+ * @return A list with the integer that corresponds to each word in the text.
+ */
+fun replaceAlphabet(text:List<Char>): List<Int> {
+    // Implementation
 }

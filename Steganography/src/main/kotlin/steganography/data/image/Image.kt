@@ -6,21 +6,23 @@ import javax.imageio.ImageIO
 
 /**
  * Loads an image from the specified file path.
+ * 
+ * Handles PNG and JPG.
  *
- * @param filePath The path of the image file.
- * @return 2D arrays of the image pixels
+ * @param path The path of the image file.
+ * @return A BufferedImage object representing the loaded image.
  */
-fun loadImage(path: String): Array<IntArray> {
-    return arrayOf()
+fun loadImage(filePath: String): BufferedImage {
+    // Implementation
 }
+
 
 /**
  * Saves the modified image to the specified file path.
  *
- * @param pixels The 2D pixel array of the image.
- * @param filePath The path where the image should be saved.
- * @return True if the image was saved successfully, otherwise false.
+ * @param image as buffered image.
+ * @param path The path where the image should be saved.
  */
-fun saveImage(pixels: Array<IntArray>, path: String): Boolean {
-    return true
+fun saveImage(image: BufferedImage, path: String) {
+    // Implementation
 }

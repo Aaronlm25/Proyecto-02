@@ -1,5 +1,7 @@
 package steganography
 
+import java.awt.image.BufferedImage
+
 /**
  * Encodes the text into an image represented by an integer array of the pixels.
  *
@@ -8,9 +10,8 @@ package steganography
  * @return 2D pixel array with the message encoded.
  * @throws IllegalStateException if the text is too large for the pixels array.
  */
-fun encodeText(text: List<Any>, pixels : Array<IntArray>): Array<IntArray> {
+fun encodeText(text: List<Char>, image: BufferedImage): BufferedImage {
     // Implementation
-    return pixels
 }
 
 /** 
@@ -23,8 +24,6 @@ fun encodeText(text: List<Any>, pixels : Array<IntArray>): Array<IntArray> {
  * @return The decoded text.
  * @throws IllegalStateException if no key is found on the pixels array.
  */
-@Throws(IllegalStateException::class)
-fun decodeText(pixels: Array<IntArray>): List<Char> {
+fun decodeText(image: BufferedImage): List<Char>  {
     // Implementation
-    return emptyList()
 }
