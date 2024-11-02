@@ -10,6 +10,16 @@ import steganography.decodeText
 import steganography.encodeText
 import java.awt.image.BufferedImage
 import java.io.IOException
+import java.nio.file.Paths
+import org.jline.reader.LineReaderBuilder
+import org.jline.reader.LineReader
+import org.jline.terminal.TerminalBuilder
+import org.jline.builtins.Completers.FileNameCompleter 
+
+val lineReader = LineReaderBuilder.builder()
+    .terminal(TerminalBuilder.terminal())
+    .completer(FileNameCompleter())
+    .build()
 
 fun main() {
     var active = true
@@ -26,8 +36,8 @@ fun main() {
                 }
                 else -> println("Introduzca una opción válida (u) (h) (x).")
             }
-        } catch (iae: IllegalArgumentException) {
-            println(iae.message)
+        } catch (e: Exception) {
+            println(e.message)
         }
     }
 }
@@ -36,6 +46,7 @@ fun displayMenu() {
     println(
         """
         Esteganografía.
+        (Pulse tab para autocompletar)
         (h) Ocultar texto en imagen.
         (u) Develar texto de imagen.
         (x) Salir.
@@ -44,20 +55,22 @@ fun displayMenu() {
 }
 
 fun readNonNullInput(): String {
-    return readLine()?.trim() ?: throw IllegalArgumentException("Todos los parámetros son necesarios")
+    return lineReader.readLine().trim()
 }
 
 fun hideTextInImage() {
     val text = getTextFromFile()
-    val pixels = getPixelsFromImage("Proporcione la ruta de la imagen donde se ocultarà el texto.")
+    val pixels = getImage("Proporcione la ruta de la imagen donde se ocultarà el texto.")
     val encoded = encodeText(text, pixels)
     println("Proporcione la ruta de la imagen resultante.")
     val resultPath = readNonNullInput()
+    println(resultPath)
     saveImage(encoded, resultPath)
+    println("El texto se ha ocultado exitosamente en : $resultPath")
 }
 
 fun revealTextFromImage() {
-    val pixels = getPixelsFromImage("Proporcione la ruta de la imagen que contiene los datos ocultos.")
+    val pixels = getImage("Proporcione la ruta de la imagen que contiene los datos ocultos.")
     println("Proporcione el nombre del archivo en el que se guardará el texto develado.")
     val resultPath = readNonNullInput()
     val text = decodeText(pixels)
@@ -77,7 +90,7 @@ fun getTextFromFile(): List<Char> {
     }
 }
 
-fun getPixelsFromImage(prompt: String): BufferedImage {
+fun getImage(prompt: String): BufferedImage {
     while (true) {
         try {
             println(prompt)

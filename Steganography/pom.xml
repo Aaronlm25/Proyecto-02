@@ -99,6 +99,12 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.jline</groupId>
+      <artifactId>jline</artifactId>
+      <version>3.21.0</version>
+    </dependency>
+
+    <dependency>
       <groupId>io.kotest</groupId>
       <artifactId>kotest-runner-junit5-jvm</artifactId>
       <version>${kotest.version}</version>

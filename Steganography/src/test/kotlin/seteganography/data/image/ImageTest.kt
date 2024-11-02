@@ -4,6 +4,7 @@ import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.assertions.throwables.shouldNotThrowAny
 import java.io.File
 import javax.imageio.ImageIO
 import java.io.IOException
@@ -97,6 +98,42 @@ class ImageTest : StringSpec({
                 shouldThrow<IOException> {
                     saveImage(image, invalidFilePath)
                 }
+            }
+        }
+    }
+
+    "should throw IllegalArgumentException if extension is not supported" {
+        val invalidFilePaths = listOf(
+            "saved_image.jpeg",  
+            "saved_image.",                 
+            "saved_image.gif",   
+            "saved_image.svg",   
+            "saved_image.bmp",   
+            "saved_image.heic",    
+            "saved_image.tiff",  
+            "saved_image.raw",    
+            "saved_image.psd",    
+            "saved_image.ai",     
+            "saved_image.webp",   
+            "saved_image.dng",    
+            "saved_image.cr2",       
+            ".",                  
+            " ",                  
+            "",      
+        )
+        val path = images[pngDirectory]!!.get(0)
+        val image = loadImage(path)
+        for(invalidFilePath in invalidFilePaths) {
+            shouldThrow<IllegalArgumentException> {
+                saveImage(image, invalidFilePath)
+            }
+            File(invalidFilePath).delete()
+        }
+        for ((directory, imagePaths) in images) {
+            shouldNotThrowAny {
+                val extension = path.substringAfterLast(".")
+                val saveFilePath = "$directory/saved_image.$extension"
+                saveImage(image, saveFilePath)
             }
         }
     }
