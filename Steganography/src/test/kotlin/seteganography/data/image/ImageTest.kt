@@ -10,81 +10,103 @@ import java.io.IOException
 import java.awt.image.BufferedImage
 import steganography.data.image.loadImage
 import steganography.data.image.saveImage
+import kotlin.collections.emptyList
+import kotlin.collections.MutableList
 
 class ImageTest : StringSpec({
-    val directory = "src/test/resources/images"
-    lateinit var imagePaths: List<String>
+    val imageDirectory = "src/test/resources/images"
+    val pngDirectory = "$imageDirectory/png"
+    val jpgDirectory = "$imageDirectory/jpg"
+    lateinit var images: MutableMap<String, MutableList<String>>
+
     beforeSpec {
-        imagePaths = listPngFiles(directory)
+        images = mutableMapOf(
+            pngDirectory to mutableListOf(),
+            jpgDirectory to mutableListOf()
+        )
+        File(pngDirectory).listFiles { file -> file.extension == "png" }?.forEach { file ->
+            images[pngDirectory]!!.add(file.absolutePath)
+        }
+        File(jpgDirectory).listFiles { file -> file.extension == "jpg" }?.forEach { file ->
+            images[jpgDirectory]!!.add(file.absolutePath)
+        }
     }
 
     "should image pixels not be changed" {
-        for (path in imagePaths) {
-            val originalImage = ImageIO.read(File(path))
-            val image = loadImage(path)
-            var imageName = path.substringAfterLast("/images")
-            imageName = imageName.substringBeforeLast(".png")
-            val savePath = "$directory/${imageName}_saved.png"
-            saveImage(image, savePath)
-            val savedImage = ImageIO.read(File(savePath))
-            savedImage.width shouldBe image.width
-            savedImage.height shouldBe image.height
-            for (y in 0 until image.height) {
-                for (x in 0 until image.width) {
-                    originalImage.getRGB(x, y) shouldBe savedImage.getRGB(x, y)
+        for ((directory, imagePaths) in images) {
+            for (path in imagePaths) {
+                val originalImage = ImageIO.read(File(path))
+                val image = loadImage(path)
+                val extension = path.substringAfterLast(".")
+                var imageName = path.substringAfterLast("/images")
+                imageName = imageName.substringBeforeLast(".")
+                val savePath = "$directory/${imageName}_saved.$extension"
+                saveImage(image, savePath)
+                val savedImage = ImageIO.read(File(savePath))
+                savedImage.width shouldBe image.width
+                savedImage.height shouldBe image.height
+                for (y in 0 until image.height) {
+                    for (x in 0 until image.width) {
+                        originalImage.getRGB(x, y) shouldBe savedImage.getRGB(x, y)
+                    }
                 }
             }
         }
     }
 
     "should load an image from a valid file path" {
-        val filePath = "$directory/random_noise_16x16.png"
-        val image = loadImage(filePath)
-        image shouldNotBe null
-    }
-
-    "should throw an IOException when trying to load from an invalid file path" {
-        val filePath = "invalid/path/to/image.png"
-        shouldThrow<IOException> {
-            loadImage(filePath)
-        }
-    }
-
-    "should save an image to the specified file path" {
-        val originalFilePath = "$directory/random_noise_16x16.png"
-        val saveFilePath = "$directory/random_noise_16x16_saved.png"
-        val image = loadImage(originalFilePath)
-        saveImage(image, saveFilePath)
-        val savedImageFile = File(saveFilePath)
-        savedImageFile.exists() shouldBe true
-        savedImageFile.delete()
-    }
-
-    "should return false when trying to save an image to an invalid path" {
-        val originalFilePath = "$directory/random_noise_16x16.png"
-        val invalidFilePath = "invalid/path/to/save_image.png"
-        val image = loadImage(originalFilePath) 
-        shouldThrow<IOException> {
-            saveImage(image, invalidFilePath) 
-        }
-    }
-    afterSpec {
-        val dir = File(directory)
-        if (dir.exists() && dir.isDirectory) {
-            dir.listFiles { file -> file.name.endsWith("_saved.png") }?.forEach { file ->
-                file.delete()
+        for ((directory, imagePaths) in images) {
+            for (path in imagePaths) {
+                val image = loadImage(path)
+                image shouldNotBe null
             }
         }
     }
-})
 
-fun listPngFiles(directory: String): List<String> {
-    val dir = File(directory)
-    val pngFiles = mutableListOf<String>()
-    if (dir.exists() && dir.isDirectory) {
-        dir.listFiles { file -> file.extension == "png" }?.forEach { file ->
-            pngFiles.add(file.absolutePath)
+    "should throw an IOException when trying to load from an invalid file path" {
+        val invalidPath = "invalid/path/to/image.png"
+        val invalidFormat = "$pngDirectory/image.jpeg"
+        shouldThrow<IOException> {
+            loadImage(invalidPath)
+        }
+        shouldThrow<IllegalStateException> {
+            loadImage(invalidFormat)
+        }
+        
+    }
+
+    "should save an image to the specified file path" {
+        for ((directory, imagePaths) in images) {
+            for (path in imagePaths) {
+                val extension = path.substringAfterLast(".")
+                val saveFilePath = "$directory/saved_image.$extension"
+                val image = loadImage(path)
+                saveImage(image, saveFilePath)
+                val savedImageFile = File(saveFilePath)
+                savedImageFile.exists() shouldBe true
+                savedImageFile.delete()
+            }
         }
     }
-    return pngFiles
-}
+
+    "should return false when trying to save an image to an invalid path" {
+        for ((directory, imagePaths) in images) {
+            for (path in imagePaths) {
+                val invalidFilePath = "invalid/path/to/save_image.png"
+                val image = loadImage(path)
+                shouldThrow<IOException> {
+                    saveImage(image, invalidFilePath)
+                }
+            }
+        }
+    }
+
+    afterSpec {
+        File(pngDirectory).listFiles { file -> file.extension == "_saved.png" }?.forEach { file ->
+            file.delete()
+        }
+        File(jpgDirectory).listFiles { file -> file.extension == "_saved.jpg" }?.forEach { file ->
+            file.delete()
+        }
+    }
+})

@@ -24,8 +24,13 @@ class SteganographyTest : StringSpec ({
 
     beforeSpec {
         imageData = mutableListOf()
-        val pngFiles = File("src/test/resources/images").listFiles { _, name -> name.endsWith(".png") } ?: arrayOf()
+        val pngFiles = File("src/test/resources/images/png").listFiles { _, name -> name.endsWith(".png") } ?: arrayOf()
         pngFiles.forEach { file: File ->
+            val image = loadImage(file.path)
+            imageData.add(image)
+        }
+        val jpgFiles = File("src/test/resources/images/jpg").listFiles { _, name -> name.endsWith(".jpg") } ?: arrayOf()
+        jpgFiles.forEach { file: File ->
             val image = loadImage(file.path)
             imageData.add(image)
         }
@@ -49,7 +54,7 @@ class SteganographyTest : StringSpec ({
         val file = File(path)
         val text = file.readText()
         shouldThrow<IllegalStateException> {
-            val image = loadImage("src/test/resources/images/$testImage$")
+            val image = loadImage("src/test/resources/images/png/$testImage")
             encodeText(text.toList(), image)
         }
     }
@@ -141,7 +146,7 @@ class SteganographyTest : StringSpec ({
     }
 
     "should verify that original and encoded images are different" {
-        val originalImagePath = "src/test/resources/images/$testImage$"
+        val originalImagePath = "src/test/resources/images/png/$testImage"
         val text = readFile("src/test/resources/example.txt")
             val originalImage = loadImage(originalImagePath)
             val encodedImage = encodeText(text, originalImage)
