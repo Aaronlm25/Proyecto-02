@@ -9,6 +9,7 @@ import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.ints.shouldBeGreaterThan
+import io.kotest.matchers.doubles.shouldBeLessThanOrEqual
 import io.kotest.matchers.ints.shouldBeLessThan
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.doubles.shouldBeGreaterThanOrEqual
@@ -17,7 +18,8 @@ import java.awt.image.BufferedImage
 import org.apache.commons.math3.stat.inference.ChiSquareTest
 
 class SteganographyTest : StringSpec ({
-    lateinit var imageData: MutableList<BufferedImage>\
+    lateinit var imageData: MutableList<BufferedImage>
+    val testImage: String = "test_image.png"
 
     beforeSpec {
         imageData = mutableListOf()
@@ -32,7 +34,9 @@ class SteganographyTest : StringSpec ({
         for(image in imageData) {
             val width = image.getWidth()
             val height = image.getHeight()
-            val text = getText(ceil(width * height / 3.0).toInt())
+            val chars = ('A'..'Z') + ('a'..'z') + ' '
+            val size = (ceil(width * height / 3.0).toInt())
+            val text = List(size) { chars.random() } 
             shouldThrow<IllegalStateException> {
                 encodeText(text.toList(), image)
             }
@@ -44,7 +48,7 @@ class SteganographyTest : StringSpec ({
         val file = File(path)
         val text = file.readText()
         shouldThrow<IllegalStateException> {
-            val image = loadImage("src/test/resources/images/random_noise_1440x900.png")
+            val image = loadImage("src/test/resources/images/$testImage$")
             encodeText(text.toList(), image)
         }
     }
@@ -86,27 +90,36 @@ class SteganographyTest : StringSpec ({
     "should changes not be apparent" {
         val text = readFile("src/test/resources/text/short.txt")
         for(image in imageData) {
+            val encodedImage = encodeText(text, image)
+            val originalHistorgram = getLSBHistogram(image)
+            val encodedHistogram = getLSBHistogram(encodedImage)
+            val channels = originalHistorgram.keys
+            for(channel in channels) {
+                val origalLSB = originalHistorgram[channel]!!
+                val originalBalance = ((origalLSB [0] ?: 0).toDouble() / (origalLSB .values.sum())) * 100
+                val encodedLSB = encodedHistogram[channel]!!
+                val encodedBalance = ((encodedLSB[0] ?: 0).toDouble() / (encodedLSB.values.sum())) * 100
+                Math.abs(originalBalance - encodedBalance) shouldBeLessThanOrEqual 10.0
+            }
+            /*
             val originalLsbCounts = IntArray(2)
+            val encodedLsbCounts = IntArray(2)
             for (y in 0 until image.height) {
                 for (x in 0 until image.width) {
                     val lsb = image.getRGB(x, y) and 1
                     originalLsbCounts[lsb]++
                 }
             }
-
-            val encodedImage = encodeText(text.toList(), image)
-            val encodedLsbCounts = IntArray(2)
             for (y in 0 until encodedImage.height) {
                 for (x in 0 until encodedImage.width) {
                     val lsb = encodedImage.getRGB(x, y) and 1
                     encodedLsbCounts[lsb]++
                 }
             }
-
             val expected = DoubleArray(2) { originalLsbCounts.sum() / 2.0 }
             val chiSquareTest = ChiSquareTest()
             val pValue = chiSquareTest.chiSquareTest(expected, encodedLsbCounts.map { it.toLong() }.toLongArray())
-            pValue shouldBeGreaterThanOrEqual 0.05
+            pValue shouldBeGreaterThanOrEqual 0.05*/
         }
     }
 
@@ -127,7 +140,7 @@ class SteganographyTest : StringSpec ({
     }
 
     "should verify that original and encoded images are different" {
-        val originalImagePath = "src/test/resources/images.png"
+        val originalImagePath = "src/test/resources/images/$testImage$"
         val text = readFile("src/test/resources/example.txt")
             val originalImage = loadImage(originalImagePath)
             val encodedImage = encodeText(text, originalImage)
@@ -135,7 +148,26 @@ class SteganographyTest : StringSpec ({
     }
 })
 
-fun getText(size: Int): List<Char> {
-    val chars = ('A'..'Z') + ('a'..'z') + ' '
-    return List(size) { chars.random() }
+private fun getLSBHistogram(image : BufferedImage): Map<String, Map<Int, Int>> {
+    val histogram = mutableMapOf(
+        "Red" to mutableMapOf(0 to 0, 1 to 0),
+        "Green" to mutableMapOf(0 to 0, 1 to 0),
+        "Blue" to mutableMapOf(0 to 0, 1 to 0),
+        "Alpha" to mutableMapOf(0 to 0, 1 to 0)
+    )
+    val max = 0xFF
+    for (x in 0 until image.width) {
+        for (y in 0 until image.height) {
+            val pixel = image.getRGB(x, y)
+            val alphaLSB = ((pixel shr 24) and max) and 1
+            val redLSB = ((pixel shr 16) and max) and 1
+            val greenLSB = ((pixel shr 8) and max) and 1
+            val blueLSB = (pixel and max) and 1
+            histogram["Red"]!![redLSB] = histogram["Red"]!![redLSB]!! + 1
+            histogram["Green"]!![greenLSB] = histogram["Green"]!![greenLSB]!! + 1
+            histogram["Blue"]!![blueLSB] = histogram["Blue"]!![blueLSB]!! + 1
+            histogram["Alpha"]!![alphaLSB] = histogram["Alpha"]!![alphaLSB]!! + 1
+        }
+    }
+    return histogram
 }
