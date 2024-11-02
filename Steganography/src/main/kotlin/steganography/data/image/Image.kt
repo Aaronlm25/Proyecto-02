@@ -12,21 +12,21 @@ import java.awt.Graphics2D
  * @return The loaded BufferedImage.
  * @throws IOException If an error occurs during reading.
  */
-fun loadImagePNG(filePath: String): BufferedImage {
-   val pixels = ImageIO.read(File(filePath))
+private fun loadImagePNG(path: String): BufferedImage {
+   val pixels = ImageIO.read(File(path))
    return pixels
 }
 
 /**
  * Loads a JPEG image from the specified file path and converts it to a PNG image.
  *
- * @param filePath The path of the image file.
+ * @param path The path of the image file.
  * @return The converted BufferedImage.
  * @throws IOException If an error occurs during reading.
  * @throws IllegalArgumentException If the provided parameters are invalid.
  */
-fun loadImageJPEG(inputPath: String): BufferedImage {
-    val jpgImage: BufferedImage = ImageIO.read(File(inputPath))
+private fun loadImageJPEG(path: String): BufferedImage {
+    val jpgImage: BufferedImage = ImageIO.read(File(path))
 
     val pngImage = BufferedImage(jpgImage.width, jpgImage.height, BufferedImage.TYPE_INT_ARGB)
 
@@ -38,14 +38,26 @@ fun loadImageJPEG(inputPath: String): BufferedImage {
 }
 
 /**
+ * Loads an image from the specified file path.
+ * 
+ * Handles PNG and JPG.
+ *
+ * @param path The path of the image file.
+ * @return A BufferedImage object representing the loaded image.
+ */
+fun loadImage(path: String): BufferedImage {
+    // Implementation
+}
+
+
+/**
  * Saves the modified image to the specified file path.
  *
- * @param pixels The BufferedImage to save.
- * @param filePath The path where the image should be saved.
- * @param imageType The type of the image (e.g., "png", "jpg").
+ * @param image as buffered image.
+ * @param path The path where the image should be saved.
  * @throws IOException If an error occurs during writing.
  * @throws IllegalArgumentException If the provided parameters are invalid.
  */
-fun saveImage(pixels: BufferedImage, filePath: String, imageType: String) {
-        ImageIO.write(pixels, imageType, File(filePath))
+fun saveImage(image: BufferedImage, path: String) {
+    // Implementation
 }

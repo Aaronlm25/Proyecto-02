@@ -28,8 +28,7 @@ private val alphabet = mapOf(
  * @return A list of the characters in the text.
  */
 fun readFile(path : String): List<Char> {
-    val text = File(path).readText()
-    return text.toList()
+    return listOf()
 }
 /**
  * Writes a list of characters to a file at the specified path.
@@ -39,16 +38,10 @@ fun readFile(path : String): List<Char> {
  * @return The file with the message.
  * @throws IOException If the path is invalid.
 */
-fun toFile(characters : List<Char>, textPath: String): File {
-    if (!textPath.endsWith(".txt")) {
-        throw IOException("Invalid path.")
-    }
-    val file = File(textPath)
-    file.createNewFile()
-    val text = characters.joinToString("")
-    file.writeText(text)
-    return file
+fun toFile(characters : List<Char>, path: String): File {
+    // Implementation
 }
+
 /**
  * Replaces words in a text with the corresponding integer value according
  * to the alphabet.
@@ -57,6 +50,7 @@ fun toFile(characters : List<Char>, textPath: String): File {
  * to the alphabet.
  * @return A list with the integer that corresponds to each word in the text.
  */
+<<<<<<< HEAD
 fun replaceAlphabet(text:List<Char>):List<Int>{
     val numbers = mutableListOf<Int>()
     for (char in text) {
@@ -67,4 +61,8 @@ fun replaceAlphabet(text:List<Char>):List<Int>{
         }
     }
     return numbers
+=======
+fun replaceAlphabet(text:List<Char>): List<Int> {
+    // Implementation
+>>>>>>> beta
 }

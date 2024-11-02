@@ -12,8 +12,8 @@ import java.awt.image.BufferedImage
  * @return 2D pixel array with the message encoded.
  * @throws IllegalStateException if the text is too large for the pixels array.
  */
-fun encodeText(text: List<Char>,pixels: BufferedImage): BufferedImage {
-    val seed = pixels.getRGB(0, 0).toLong()
+fun encodeText(text: List<Char>, image: BufferedImage): BufferedImage {
+    val seed = image.getRGB(0, 0).toLong()
     val algorithm = Random(seed)
     val textValues = replaceAlphabet(text)
     val binaries = textValues.map { it.toString(2).padStart(6, '0') }
@@ -43,7 +43,7 @@ fun encodeText(text: List<Char>,pixels: BufferedImage): BufferedImage {
             current++ //Indicamos que se va a usar otro pixel.
         }
     }*/
-    return pixels
+    return image
 }
 
 private val reverseAlphabet = mapOf(
@@ -71,9 +71,8 @@ private val reverseAlphabet = mapOf(
  * @return The decoded text.
  * @throws IllegalStateException if no key is found on the pixels array.
  */
-@Throws(IllegalStateException::class)
-fun decodeText(pixels: BufferedImage): List<Char> {
-    val decimals = decode(pixels)    
+fun decodeText(image: BufferedImage): List<Char> {
+    val decimals = decode(image)    
     val string = mutableListOf<Char>()
     for (decimal in decimals) {
         reverseAlphabet[decimal]?.let { string.add(it) }
@@ -84,19 +83,19 @@ fun decodeText(pixels: BufferedImage): List<Char> {
 /**
 * Auxiliary function to decode the text from the image.
 *
-* @param pixels A BufferedImage of the image.
+* @param image A BufferedImage of the image.
 * @return A list with the numerical value of the letters.
  */
-private fun decode(pixels: BufferedImage): List<Int> {
-    val seed = pixels.getRGB(0, 0).toLong()
+private fun decode(image: BufferedImage): List<Int> {
+    val seed = image.getRGB(0, 0).toLong()
     val algorithm = Random(seed)
     val binaryText = mutableListOf<Int>()
-    val totalPixels = pixels.width * pixels.getHeight()
+    val totalPixels = image.width * image.getHeight()
     val decimals = mutableListOf<Int>()
     for (i in 0 until totalPixels) {
-        val x = algorithm.nextInt(pixels.width)
-        val y = algorithm.nextInt(pixels.height) 
-        val blue = pixels.getRGB(x, y) and 0xFF 
+        val x = algorithm.nextInt(image.width)
+        val y = algorithm.nextInt(image.height) 
+        val blue = image.getRGB(x, y) and 0xFF 
         binaryText.add(blue and 1)
     }
     val stringList = binaryText.map { it.toString() }
