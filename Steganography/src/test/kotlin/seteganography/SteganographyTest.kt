@@ -131,35 +131,24 @@ class SteganographyTest : StringSpec ({
 
     "should encode be hard to detect" {
         val text = readFile("src/test/resources/text/short.txt")
-        val imagesToTest = imageData.take(2) 
+        val imagesToTest = imageData.take(2) // Seleccionar las dos primeras imágenes
         for (image in imagesToTest) {
             val encodedImage = encodeText(text, image)
-            
-            // Contar LSBs originales
-            val originalLsbCounts = IntArray(2)
-            for (x in 0 until image.width) {
-                for (y in 0 until image.height) {
-                    val lsb = image.getRGB(x, y) and 1
-                    originalLsbCounts[lsb]++
-                }
+
+            // Obtener histogramas de intensidad
+            val originalHistogram = getIntensityHistogram(image)
+            val encodedHistogram = getIntensityHistogram(encodedImage)
+
+            // Realizar prueba de Chi-cuadrado para cada canal
+            val channels = listOf("Red", "Green", "Blue", "Alpha")
+            for (channel in channels) {
+                val originalCounts = originalHistogram[channel]!!
+                val encodedCounts = encodedHistogram[channel]!!
+                val expected = DoubleArray(256) { originalCounts.sum() / 256.0 }
+                val chiSquareTest = ChiSquareTest()
+                val pValue = chiSquareTest.chiSquareTest(expected, encodedCounts.map { it.toLong() }.toLongArray())
+                pValue shouldBeGreaterThanOrEqual 0.05
             }
-    
-            // Contar LSBs codificados
-            val encodedLsbCounts = IntArray(2)
-            for (x in 0 until encodedImage.width) {
-                for (y in 0 until encodedImage.height) {
-                    val lsb = encodedImage.getRGB(x, y) and 1
-                    encodedLsbCounts[lsb]++
-                }
-            }
-    
-            // Realizar prueba de Chi-cuadrado
-            val expected = DoubleArray(2) { originalLsbCounts.sum() / 2.0 }
-            val chiSquareTest = ChiSquareTest()
-            val pValue = chiSquareTest.chiSquareTest(expected, encodedLsbCounts.map { it.toLong() }.toLongArray())
-            
-            // Verificar que el valor p sea mayor o igual a 0.05
-            pValue shouldBeGreaterThanOrEqual 0.05
         }
     }
 
@@ -207,6 +196,30 @@ private fun getLSBHistogram(image : BufferedImage): Map<String, Map<Int, Int>> {
             histogram["Green"]!![greenLSB] = histogram["Green"]!![greenLSB]!! + 1
             histogram["Blue"]!![blueLSB] = histogram["Blue"]!![blueLSB]!! + 1
             histogram["Alpha"]!![alphaLSB] = histogram["Alpha"]!![alphaLSB]!! + 1
+        }
+    }
+    return histogram
+}
+
+// Función para obtener el histograma de intensidad
+private fun getIntensityHistogram(image: BufferedImage): Map<String, IntArray> {
+    val histogram = mutableMapOf(
+        "Red" to IntArray(256),
+        "Green" to IntArray(256),
+        "Blue" to IntArray(256),
+        "Alpha" to IntArray(256)
+    )
+    for (x in 0 until image.width) {
+        for (y in 0 until image.height) {
+            val pixel = image.getRGB(x, y)
+            val alpha = (pixel shr 24) and 0xFF
+            val red = (pixel shr 16) and 0xFF
+            val green = (pixel shr 8) and 0xFF
+            val blue = pixel and 0xFF
+            histogram["Red"]!![red]++
+            histogram["Green"]!![green]++
+            histogram["Blue"]!![blue]++
+            histogram["Alpha"]!![alpha]++
         }
     }
     return histogram
