@@ -129,6 +129,40 @@ class SteganographyTest : StringSpec ({
         }
     }
 
+    "should encode be hard to detect" {
+        val text = readFile("src/test/resources/text/short.txt")
+        val imagesToTest = imageData.take(2) 
+        for (image in imagesToTest) {
+            val encodedImage = encodeText(text, image)
+            
+            // Contar LSBs originales
+            val originalLsbCounts = IntArray(2)
+            for (x in 0 until image.width) {
+                for (y in 0 until image.height) {
+                    val lsb = image.getRGB(x, y) and 1
+                    originalLsbCounts[lsb]++
+                }
+            }
+    
+            // Contar LSBs codificados
+            val encodedLsbCounts = IntArray(2)
+            for (x in 0 until encodedImage.width) {
+                for (y in 0 until encodedImage.height) {
+                    val lsb = encodedImage.getRGB(x, y) and 1
+                    encodedLsbCounts[lsb]++
+                }
+            }
+    
+            // Realizar prueba de Chi-cuadrado
+            val expected = DoubleArray(2) { originalLsbCounts.sum() / 2.0 }
+            val chiSquareTest = ChiSquareTest()
+            val pValue = chiSquareTest.chiSquareTest(expected, encodedLsbCounts.map { it.toLong() }.toLongArray())
+            
+            // Verificar que el valor p sea mayor o igual a 0.05
+            pValue shouldBeGreaterThanOrEqual 0.05
+        }
+    }
+
     "should handle upper case letters" {
         val text = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         for(image in imageData) {
