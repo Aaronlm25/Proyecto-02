@@ -6,6 +6,8 @@ import steganography.data.text.toFile
 import steganography.data.text.readFile
 import steganography.data.image.loadImage
 import steganography.data.image.saveImage
+import steganography.decodeText
+import steganography.encodeText
 import java.awt.image.BufferedImage
 import java.io.IOException
 
