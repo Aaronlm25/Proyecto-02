@@ -6,6 +6,8 @@ import steganography.data.text.toFile
 import steganography.data.text.readFile
 import steganography.data.image.loadImage
 import steganography.data.image.saveImage
+import java.awt.image.BufferedImage
+import java.io.IOException
 
 fun main() {
     var active = true
@@ -61,7 +63,7 @@ fun revealTextFromImage() {
     println("Se ha decodificado el mensaje en la imagen en: $resultPath")
 }
 
-fun getTextFromFile(): List<Any> {
+fun getTextFromFile(): List<Char> {
     while (true) {
         try {
             println("Proporcione la ruta del archivo con el texto a ocultar.")
@@ -73,14 +75,16 @@ fun getTextFromFile(): List<Any> {
     }
 }
 
-fun getPixelsFromImage(prompt : String): Array<IntArray> {
+fun getPixelsFromImage(prompt: String): BufferedImage {
     while (true) {
         try {
             println(prompt)
             val imagePath = readNonNullInput()
             return loadImage(imagePath)
-        } catch (e: Exception) {
-            println("No se pudo abrir el archivo que proporcionó!")
+        } catch (e: IOException) {
+            println("Error: No se pudo leer la imagen desde la ruta proporcionada. Asegúrese de que el archivo existe y es accesible.")
+        } catch (e: IllegalArgumentException) {
+            println("Error: El archivo proporcionado no es una imagen válida o tiene un formato no soportado.")
         }
     }
 }

@@ -12,7 +12,7 @@ import javax.imageio.ImageIO
  * @param path The path of the image file.
  * @return A BufferedImage object representing the loaded image.
  */
-fun loadImage(filePath: String): BufferedImage {
+fun loadImage(path: String): BufferedImage {
     // Implementation
 }
 
