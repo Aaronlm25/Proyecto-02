@@ -2,6 +2,7 @@ package steganography.data.image
 
 import java.awt.image.BufferedImage
 import java.io.File
+import java.io.IOException
 import javax.imageio.ImageIO
 import java.awt.Graphics2D
 
@@ -18,22 +19,19 @@ private fun loadImagePNG(path: String): BufferedImage {
 }
 
 /**
- * Loads a JPEG image from the specified file path and converts it to a PNG image.
+ * Loads a JPG image from the specified file path and converts it to a PNG image.
  *
  * @param path The path of the image file.
  * @return The converted BufferedImage.
  * @throws IOException If an error occurs during reading.
  * @throws IllegalArgumentException If the provided parameters are invalid.
  */
-private fun loadImageJPEG(path: String): BufferedImage {
+private fun loadImageJPG(path: String): BufferedImage {
     val jpgImage: BufferedImage = ImageIO.read(File(path))
-
     val pngImage = BufferedImage(jpgImage.width, jpgImage.height, BufferedImage.TYPE_INT_ARGB)
-
     val g: Graphics2D = pngImage.createGraphics()
     g.drawImage(jpgImage, 0, 0, null)
     g.dispose()
-
     return pngImage
 }
 
@@ -44,9 +42,15 @@ private fun loadImageJPEG(path: String): BufferedImage {
  *
  * @param path The path of the image file.
  * @return A BufferedImage object representing the loaded image.
+ * @throws IllegalStateException If the provided image is not png or jpg.
  */
 fun loadImage(path: String): BufferedImage {
-    // Implementation
+    val type = path.substringAfterLast(".")
+    if(type == "png")
+        return loadImagePNG(path)
+    else if(type == "jpg")
+        return loadImageJPG(path)
+    throw IllegalStateException("La extension del archivo no es valida.")
 }
 
 
@@ -59,5 +63,6 @@ fun loadImage(path: String): BufferedImage {
  * @throws IllegalArgumentException If the provided parameters are invalid.
  */
 fun saveImage(image: BufferedImage, path: String) {
-    // Implementation
+    val type = path.substringAfterLast(".")
+    ImageIO.write(image, type, File(path))
 }

@@ -21,6 +21,7 @@ private val alphabet = mapOf(
     '#' to 51, '$' to 52, '%' to 53, '&' to 54, '[' to 55,
     ']' to 56, '{' to 57, '}' to 58, ' ' to 59, '\n' to 60
     )
+
 /**
  * Reads the file at a specified path and converts it to a list of characters.
  *
@@ -28,8 +29,10 @@ private val alphabet = mapOf(
  * @return A list of the characters in the text.
  */
 fun readFile(path : String): List<Char> {
-    return listOf()
+    val file = File(path)
+    return file.readText().toList()
 }
+
 /**
  * Writes a list of characters to a file at the specified path.
  * 
@@ -39,7 +42,10 @@ fun readFile(path : String): List<Char> {
  * @throws IOException If the path is invalid.
 */
 fun toFile(characters : List<Char>, path: String): File {
-    // Implementation
+    val file = File(path)
+    val text = characters.joinToString("")
+    file.writeText(text)
+    return file
 }
 
 /**
@@ -50,8 +56,7 @@ fun toFile(characters : List<Char>, path: String): File {
  * to the alphabet.
  * @return A list with the integer that corresponds to each word in the text.
  */
-<<<<<<< HEAD
-fun replaceAlphabet(text:List<Char>):List<Int>{
+fun replaceAlphabet(text: List<Char>): List<Int>{
     val numbers = mutableListOf<Int>()
     for (char in text) {
         if (char.lowercaseChar().isLetter()){
@@ -61,8 +66,4 @@ fun replaceAlphabet(text:List<Char>):List<Int>{
         }
     }
     return numbers
-=======
-fun replaceAlphabet(text:List<Char>): List<Int> {
-    // Implementation
->>>>>>> beta
 }
