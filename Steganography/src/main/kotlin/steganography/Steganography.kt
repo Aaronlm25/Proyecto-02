@@ -52,7 +52,7 @@ fun encodeText(text: List<Char>,pixels: BufferedImage): BufferedImage {
             val newBlue = channel(blue, bit1)//Guarda el 1er bit en blue
             val newAlpha = channel(alpha, bit2)//Guarda el 2do bit en alpha
             val newRgb = (newAlpha shl 24) or (red shl 16) or (green shl 8) or newBlue
-            pixels.setRGB(x, y, newRgb) //Modificamos el valor del pixel guardando la infromacion desada
+            pixels.setRGB(y, x, newRgb) //Modificamos el valor del pixel guardando la infromacion desada
             current++ //Indicamos que se va a usar otro pixel.
         }
     }
