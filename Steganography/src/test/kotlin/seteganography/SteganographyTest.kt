@@ -62,7 +62,7 @@ class SteganographyTest : StringSpec ({
     "should not handle multiple encodings" {
         val text1 = "First encoding"
         val text2 = "Second encoding"
-        val image = imageData.get(0)
+        val image = imageData.get(3)
         val encodedImage1 = encodeText(text1.toList(), image)
         val encodedImage2 = encodeText(text2.toList(), encodedImage1)
         val decodedText = decodeText(encodedImage2)
@@ -146,7 +146,7 @@ class SteganographyTest : StringSpec ({
 
     "should verify that original and encoded images are different" {
         val originalImagePath = "src/test/resources/images/png/$testImage"
-        val text = readFile("src/test/resources/text/example.txt")
+        val text = readFile("src/test/resources/text/short.txt")
             val originalImage = loadImage(originalImagePath)
             val encodedImage = encodeText(text, originalImage)
             encodedImage shouldNotBe originalImage
