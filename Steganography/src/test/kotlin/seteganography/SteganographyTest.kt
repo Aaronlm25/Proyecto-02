@@ -72,14 +72,18 @@ class SteganographyTest : StringSpec ({
     "should encode text correctly in image" {
         val text = readFile("src/test/resources/text/short.txt")
         for(image in imageData) {
+            if(text.size >= image.height * image.width * 3)
+                continue
             val encodedImage = encodeText(text, image)
-            encodedImage shouldNotBe image
+            comparePixels(encodedImage, image) shouldBe false
         }
     }
 
     "should decode text correctly from image" {
         val text = readFile("src/test/resources/text/short.txt")
         for(image in imageData) {
+            if(text.size >= image.height * image.width * 3)
+                continue
             val encodedImage = encodeText(text, image)
             decodeText(encodedImage) shouldBe text
         }
@@ -88,6 +92,8 @@ class SteganographyTest : StringSpec ({
     "should handle some common special characters during encoding and decoding" {
         val text = ("!.+-?¿àèìòù¡¿/!").toList()
         for(image in imageData) {
+            if(text.size >= image.height * image.width * 3)
+                continue
             val encodedImage = encodeText(text, image)
             decodeText(encodedImage) shouldBe text
         }
@@ -96,6 +102,8 @@ class SteganographyTest : StringSpec ({
     "should changes not be apparent" {
         val text = readFile("src/test/resources/text/short.txt")
         for(image in imageData) {
+            if(text.size >= image.height * image.width * 3)
+                continue
             val encodedImage = encodeText(text, image)
             val originalHistorgram = getLSBHistogram(image)
             val encodedHistogram = getLSBHistogram(encodedImage)
@@ -114,6 +122,8 @@ class SteganographyTest : StringSpec ({
         val text = readFile("src/test/resources/text/short.txt")
         val imagesToTest = imageData.take(2)
         for (image in imagesToTest) {
+            if(text.size >= image.height * image.width * 3)
+                continue
             val encodedImage = encodeText(text, image)
             val originalHistogram = getIntensityHistogram(image)
             val encodedHistogram = getIntensityHistogram(encodedImage)
@@ -129,29 +139,44 @@ class SteganographyTest : StringSpec ({
     }
 
     "should handle upper case letters" {
-        val text = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        val text = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toList()
         for(image in imageData) {
+            if(text.size >= image.height * image.width * 3)
+                continue
             val encodedImage = encodeText(text.toList(), image)
-            decodeText(encodedImage).joinToString("").lowercase() shouldBe text.lowercase()
+            decodeText(encodedImage).joinToString("").lowercase() shouldBe text.joinToString("").lowercase()
         }
     }
 
     "should handle numbers" {
-        val text = "0123456789"
+        val text = "0123456789".toList()
         for(image in imageData) {
+            if(text.size >= image.height * image.width * 3)
+                continue
             val encodedImage = encodeText(text.toList(), image)
-            decodeText(encodedImage).joinToString("") shouldBe text
+            decodeText(encodedImage).joinToString("") shouldBe text.joinToString("")
         }
     }
 
     "should verify that original and encoded images are different" {
         val originalImagePath = "src/test/resources/images/png/$testImage"
         val text = readFile("src/test/resources/text/short.txt")
-            val originalImage = loadImage(originalImagePath)
-            val encodedImage = encodeText(text, originalImage)
-            encodedImage shouldNotBe originalImage
+        val originalImage = loadImage(originalImagePath)
+        val encodedImage = encodeText(text, originalImage)
+        encodedImage shouldNotBe originalImage
     }
 })
+
+private fun comparePixels(image1: BufferedImage, image2: BufferedImage): Boolean {
+    for (x in 0 until image1.width) {
+        for (y in 0 until image1.height) {
+            if (image1.getRGB(x, y) != image2.getRGB(x, y)) {
+                return false
+            }
+        }
+    }
+    return true
+}
 
 private fun getLSBHistogram(image : BufferedImage): Map<String, Map<Int, Int>> {
     val histogram = mutableMapOf(

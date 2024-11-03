@@ -48,6 +48,8 @@ fun encodeText(text: List<Char>, image: BufferedImage): BufferedImage {
             // modifcarlo esto es provicional 
             if (textIndex == length) 
                 return image
+            if (x + 2 >= image.width) 
+                continue
             // consideramos tres pixeles consecuitivos esto se hara igual en lsb matching
             val pixel1 = image.getRGB(x, y)
             val pixel2 = image.getRGB(x + 1, y)
