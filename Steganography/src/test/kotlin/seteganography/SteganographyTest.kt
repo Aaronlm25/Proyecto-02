@@ -20,7 +20,7 @@ import org.apache.commons.math3.stat.inference.ChiSquareTest
 
 class SteganographyTest : StringSpec ({
     lateinit var imageData: MutableList<BufferedImage>
-    val testImage: String = "test_image.png"
+    val testImage: String = "images.png"
 
     beforeSpec {
         imageData = mutableListOf()
@@ -112,7 +112,7 @@ class SteganographyTest : StringSpec ({
 
     "should encode be hard to detect" {
         val text = readFile("src/test/resources/text/short.txt")
-        val imagesToTest = imageData.take(2) // Seleccionar las dos primeras imágenes
+        val imagesToTest = imageData.take(2)
         for (image in imagesToTest) {
             val encodedImage = encodeText(text, image)
             val originalHistogram = getIntensityHistogram(image)
@@ -146,7 +146,7 @@ class SteganographyTest : StringSpec ({
 
     "should verify that original and encoded images are different" {
         val originalImagePath = "src/test/resources/images/png/$testImage"
-        val text = readFile("src/test/resources/example.txt")
+        val text = readFile("src/test/resources/text/example.txt")
             val originalImage = loadImage(originalImagePath)
             val encodedImage = encodeText(text, originalImage)
             encodedImage shouldNotBe originalImage
