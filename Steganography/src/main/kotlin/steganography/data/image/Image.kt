@@ -50,7 +50,7 @@ fun loadImage(path: String): BufferedImage {
         return loadImagePNG(path)
     else if(type == "jpg")
         return loadImageJPG(path)
-    throw IllegalStateException("La extension del archivo no es valida.")
+    throw IllegalStateException("Tipo de archivo inválido.")
 }
 
 
