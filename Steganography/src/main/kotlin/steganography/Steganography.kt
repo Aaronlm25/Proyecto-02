@@ -106,17 +106,28 @@ private fun modifyLSB(channel: Int, bit: Int): Int {
  * @throws IllegalStateException if no key is found on the pixels array.
  */
 fun decodeText(image: BufferedImage): List<Char> {
-    // Implementation
-    return listOf()
-}
-
-/**
-* Auxiliary function to decode the text from the image.
-*
-* @param image A BufferedImage of the image.
-* @return A list with the numerical value of the letters.
- */
-private fun decode(image: BufferedImage): List<Int> {
-    // Implementation
-    return listOf()
+    val seed = image.getRGB(0, 0).toLong()
+    val length = image.getRGB(image.width - 1, 0)
+    val text = mutableListOf<Char>()
+    for(y in 0 until image.height) {
+        for (x in 1 until image.width step 3) {
+            if (text.size == length) 
+                return text
+            val pixel1 = image.getRGB(x, y)
+            val pixel2 = image.getRGB(x + 1, y)
+            val pixel3 = image.getRGB(x + 2, y)
+            val alpha1 = (pixel1 shr 24) and 0xff
+            val blue1 = pixel1 and 0xff
+            val alpha2 = (pixel2 shr 24) and 0xff
+            val blue2 = pixel2 and 0xff
+            val alpha3 = (pixel3 shr 24) and 0xff
+            val blue3 = pixel3 and 0xff
+            val charValue = ((alpha1 and 1) shl 5) or ((blue1 and 1) shl 4) or
+                            ((alpha2 and 1) shl 3) or ((blue2 and 1) shl 2) or
+                            ((alpha3 and 1) shl 1) or (blue3 and 1)
+            val char = intToChar[charValue] ?: ' '
+            text.add(char)
+        }
+    }
+    return text
 }
