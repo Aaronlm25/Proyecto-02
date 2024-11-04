@@ -1,5 +1,4 @@
 package steganography.data.image
-
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.IOException
@@ -27,14 +26,10 @@ private fun loadImagePNG(path: String): BufferedImage {
  */
 private fun convertJPGtoPNG(path: String): BufferedImage {
     val jpgImage: BufferedImage = ImageIO.read(File(path))
-
     val tempFile = File.createTempFile("temp_image", ".png")
     ImageIO.write(jpgImage, "png", tempFile)
-    
     val pngImage: BufferedImage = ImageIO.read(tempFile)
-    
     tempFile.delete()
-    
     return pngImage
 }
 
