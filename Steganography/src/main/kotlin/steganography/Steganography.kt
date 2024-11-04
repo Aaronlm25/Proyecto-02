@@ -30,65 +30,58 @@ private val intToChar = charToInt.entries.associate { (k, v) -> v to k }
  * @throws IllegalStateException if the text is too large for the pixels array.
  */
 fun encodeText(text: List<Char>, image: BufferedImage): BufferedImage {
-    // Importante hagan los calculos para que se lance la respectiva excepcion
-    // cuando el texto es muy largo para la imagen, por cada pixel hay dos bits del char
-    // esto es un char esta en cada 3 pixeles
-    // ahorita esta el metodo lsb replace (el mas basico)
-    // esto es el generador para el lsb matching
     val random = Random(image.getRGB(0, 0).toLong())
     val length = text.size
     var textIndex = 0
-    // no modificamos la semilla pues en x vamos desde el 1
-    for(y in 0 until image.height) {
-        // considera tres pixeles por caracter
-        for (x in 1 until image.width step 3) {
-            // cuando se se guarden todos los caracteres se sale 
-            // modifcarlo esto es provicional 
+
+    if (length * 3 > image.width * image.height) {
+        throw IllegalStateException("Text is too large to be encoded in the image")
+    }
+
+    for (y in 0 until image.height) {
+        for (x in 0 until image.width step 3) {
             if (textIndex == length) {
-                // le dice al decode hasta donde llega el texto
-                image.setRGB(image.width - 1, image.height - 1, (length * 3))
-                println(Integer.toBinaryString(image.getRGB(image.width - 1, image.height - 1)))
+                image.setRGB(image.width - 1, image.height - 1, length * 3)
                 return image
             }
-            if (x + 2 >= image.width) 
-                continue
-            // consideramos tres pixeles consecuitivos esto se hara igual en lsb matching
+
+            if (x + 2 >= image.width) continue
+
             val pixel1 = image.getRGB(x, y)
             val pixel2 = image.getRGB(x + 1, y)
             val pixel3 = image.getRGB(x + 2, y)
-            // vemos por la representacion de la letra en nuestro alfabeto
+
             val charValue = charToInt[text[textIndex]] ?: 0
-            // consideramos los 8 bits de cada canal (recordar que los 8 bit representan un numero)
-            // del 0 al 255
+
             val alpha1 = (pixel1 shr 24) and 0xff
             val blue1 = pixel1 and 0xff
-            // agregamos el primer bit del caracter en el canal alpha y luego el segundo
-            // bit en el azul y asi sucesivamente 
             val newAlpha1 = modifyLSB(alpha1, (charValue shr 5) and 1)
             val newBlue1 = modifyLSB(blue1, (charValue shr 4) and 1)
-            // creamos el nuevo pixel con nuestros canales modificados ignorando los demas 
-            val newPixel1 = ((newAlpha1 shl 24) and 0XFF) or (pixel1 and 0x00FFFF00) or newBlue1
+            val newPixel1 = (newAlpha1 shl 24) or (pixel1 and 0x00FFFF00) or newBlue1
+
             val alpha2 = (pixel2 shr 24) and 0xff
             val blue2 = pixel2 and 0xff
             val newAlpha2 = modifyLSB(alpha2, (charValue shr 3) and 1)
             val newBlue2 = modifyLSB(blue2, (charValue shr 2) and 1)
-            val newPixel2 = ((newAlpha2 shl 24) and 0XFF) or (pixel2 and 0x00FFFF00) or newBlue2
+            val newPixel2 = (newAlpha2 shl 24) or (pixel2 and 0x00FFFF00) or newBlue2
+
             val alpha3 = (pixel3 shr 24) and 0xff
             val blue3 = pixel3 and 0xff
             val newAlpha3 = modifyLSB(alpha3, (charValue shr 1) and 1)
             val newBlue3 = modifyLSB(blue3, charValue and 1)
-            val newPixel3 = ((newAlpha3 shl 24) and 0XFF) or (pixel3 and 0x00FFFF00) or newBlue3
-            // modifica los pixeles en la misma imagen
+            val newPixel3 = (newAlpha3 shl 24) or (pixel3 and 0x00FFFF00) or newBlue3
+
             image.setRGB(x, y, newPixel1)
             image.setRGB(x + 1, y, newPixel2)
             image.setRGB(x + 2, y, newPixel3)
+
             textIndex++
         }
     }
-    // le dice al decode hasta donde llega el texto
-    image.setRGB(image.width - 1, image.height - 1, length * 3)
+
     return image
 }
+
 /**
  * Modifies the LSB of the desired channel.
  * @param channel The channel to be modified.

@@ -165,6 +165,41 @@ class SteganographyTest : StringSpec ({
         val encodedImage = encodeText(text, originalImage)
         encodedImage shouldNotBe originalImage
     }
+
+    "should modify alpha channel correctly" {
+        // Cargar una imagen de prueba desde los recursos
+        val originalImagePath = "src/test/resources/images/png/test_image.png"
+        val image = loadImage(originalImagePath)
+
+        // Verificar que la imagen tenga un canal alpha
+        image.colorModel.hasAlpha() shouldBe true
+
+        // Texto a codificar
+        val text = listOf('a') // 'a' -> 1 en el mapa charToInt
+
+        // Guardar los valores originales del canal alpha
+        val originalAlpha1 = (image.getRGB(0, 0) shr 24) and 0xff
+        val originalAlpha2 = (image.getRGB(1, 0) shr 24) and 0xff
+        val originalAlpha3 = (image.getRGB(2, 0) shr 24) and 0xff
+
+        // Codificar el texto en la imagen
+        val encodedImage = encodeText(text, image)
+
+        // Verificar los valores del canal alpha
+        val expectedAlpha1 = modifyLSB(originalAlpha1, (1 shr 5) and 1)
+        val expectedAlpha2 = modifyLSB(originalAlpha2, (1 shr 3) and 1)
+        val expectedAlpha3 = modifyLSB(originalAlpha3, (1 shr 1) and 1)
+
+        val actualAlpha1 = (encodedImage.getRGB(0, 0) shr 24) and 0xff
+        val actualAlpha2 = (encodedImage.getRGB(1, 0) shr 24) and 0xff
+        val actualAlpha3 = (encodedImage.getRGB(2, 0) shr 24) and 0xff
+
+        actualAlpha1 shouldBe expectedAlpha1
+        actualAlpha2 shouldBe expectedAlpha2
+        actualAlpha3 shouldBe expectedAlpha3
+    }
+
+    
 })
 
 private fun comparePixels(image1: BufferedImage, image2: BufferedImage): Boolean {
@@ -223,4 +258,9 @@ private fun getIntensityHistogram(image: BufferedImage): Map<String, IntArray> {
         }
     }
     return histogram
+}
+
+// Función auxiliar para modificar el LSB
+private fun modifyLSB(value: Int, bit: Int): Int {
+    return (value and 0xFE) or bit
 }
