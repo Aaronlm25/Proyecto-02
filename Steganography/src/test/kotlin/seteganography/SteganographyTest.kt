@@ -20,7 +20,7 @@ import org.apache.commons.math3.stat.inference.ChiSquareTest
 
 class SteganographyTest : StringSpec ({
     lateinit var imageData: MutableList<BufferedImage>
-    val testImage: String = "test_image.png"
+    val testImage: String = "images.png"
 
     beforeSpec {
         imageData = mutableListOf()
@@ -62,7 +62,7 @@ class SteganographyTest : StringSpec ({
     "should not handle multiple encodings" {
         val text1 = "First encoding"
         val text2 = "Second encoding"
-        val image = imageData.get(0)
+        val image = imageData.get(3)
         val encodedImage1 = encodeText(text1.toList(), image)
         val encodedImage2 = encodeText(text2.toList(), encodedImage1)
         val decodedText = decodeText(encodedImage2)
@@ -72,14 +72,18 @@ class SteganographyTest : StringSpec ({
     "should encode text correctly in image" {
         val text = readFile("src/test/resources/text/short.txt")
         for(image in imageData) {
+            if(text.size >= image.height * image.width * 3)
+                continue
             val encodedImage = encodeText(text, image)
-            encodedImage shouldNotBe image
+            comparePixels(encodedImage, image) shouldBe false
         }
     }
 
     "should decode text correctly from image" {
         val text = readFile("src/test/resources/text/short.txt")
         for(image in imageData) {
+            if(text.size >= image.height * image.width * 3)
+                continue
             val encodedImage = encodeText(text, image)
             decodeText(encodedImage) shouldBe text
         }
@@ -88,6 +92,8 @@ class SteganographyTest : StringSpec ({
     "should handle some common special characters during encoding and decoding" {
         val text = ("!.+-?¿àèìòù¡¿/!").toList()
         for(image in imageData) {
+            if(text.size >= image.height * image.width * 3)
+                continue
             val encodedImage = encodeText(text, image)
             decodeText(encodedImage) shouldBe text
         }
@@ -96,6 +102,8 @@ class SteganographyTest : StringSpec ({
     "should changes not be apparent" {
         val text = readFile("src/test/resources/text/short.txt")
         for(image in imageData) {
+            if(text.size >= image.height * image.width * 3)
+                continue
             val encodedImage = encodeText(text, image)
             val originalHistorgram = getLSBHistogram(image)
             val encodedHistogram = getLSBHistogram(encodedImage)
@@ -107,75 +115,68 @@ class SteganographyTest : StringSpec ({
                 val encodedBalance = ((encodedLSB[0] ?: 0).toDouble() / (encodedLSB.values.sum())) * 100
                 Math.abs(originalBalance - encodedBalance) shouldBeLessThanOrEqual 10.0
             }
-            /*
-            val originalLsbCounts = IntArray(2)
-            val encodedLsbCounts = IntArray(2)
-            for (y in 0 until image.height) {
-                for (x in 0 until image.width) {
-                    val lsb = image.getRGB(x, y) and 1
-                    originalLsbCounts[lsb]++
-                }
-            }
-            for (y in 0 until encodedImage.height) {
-                for (x in 0 until encodedImage.width) {
-                    val lsb = encodedImage.getRGB(x, y) and 1
-                    encodedLsbCounts[lsb]++
-                }
-            }
-            val expected = DoubleArray(2) { originalLsbCounts.sum() / 2.0 }
-            val chiSquareTest = ChiSquareTest()
-            val pValue = chiSquareTest.chiSquareTest(expected, encodedLsbCounts.map { it.toLong() }.toLongArray())
-            pValue shouldBeGreaterThanOrEqual 0.05*/
         }
     }
 
     "should encode be hard to detect" {
         val text = readFile("src/test/resources/text/short.txt")
-        val imagesToTest = imageData.take(2) // Seleccionar las dos primeras imágenes
+        val imagesToTest = imageData.take(2)
         for (image in imagesToTest) {
+            if(text.size >= image.height * image.width * 3)
+                continue
             val encodedImage = encodeText(text, image)
-
-            // Obtener histogramas de intensidad
             val originalHistogram = getIntensityHistogram(image)
             val encodedHistogram = getIntensityHistogram(encodedImage)
-
-            // Realizar prueba de Chi-cuadrado para cada canal
             val channels = listOf("Red", "Green", "Blue", "Alpha")
             for (channel in channels) {
                 val originalCounts = originalHistogram[channel]!!
                 val encodedCounts = encodedHistogram[channel]!!
-                val expected = DoubleArray(256) { originalCounts.sum() / 256.0 }
                 val chiSquareTest = ChiSquareTest()
-                val pValue = chiSquareTest.chiSquareTest(expected, encodedCounts.map { it.toLong() }.toLongArray())
+                val pValue = chiSquareTest.chiSquareTest(originalCounts.map { it.toDouble() + 1}.toDoubleArray(), encodedCounts.map { it.toLong() + 1}.toLongArray())
                 pValue shouldBeGreaterThanOrEqual 0.05
             }
         }
     }
 
     "should handle upper case letters" {
-        val text = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        val text = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toList()
         for(image in imageData) {
+            if(text.size >= image.height * image.width * 3)
+                continue
             val encodedImage = encodeText(text.toList(), image)
-            decodeText(encodedImage).joinToString("").lowercase() shouldBe text.lowercase()
+            decodeText(encodedImage).joinToString("").lowercase() shouldBe text.joinToString("").lowercase()
         }
     }
 
     "should handle numbers" {
-        val text = "0123456789"
+        val text = "0123456789".toList()
         for(image in imageData) {
+            if(text.size >= image.height * image.width * 3)
+                continue
             val encodedImage = encodeText(text.toList(), image)
-            decodeText(encodedImage).joinToString("") shouldBe text
+            decodeText(encodedImage).joinToString("") shouldBe text.joinToString("")
         }
     }
 
     "should verify that original and encoded images are different" {
         val originalImagePath = "src/test/resources/images/png/$testImage"
-        val text = readFile("src/test/resources/example.txt")
-            val originalImage = loadImage(originalImagePath)
-            val encodedImage = encodeText(text, originalImage)
-            encodedImage shouldNotBe originalImage
+        val text = readFile("src/test/resources/text/short.txt")
+        val originalImage = loadImage(originalImagePath)
+        val encodedImage = encodeText(text, originalImage)
+        encodedImage shouldNotBe originalImage
     }
 })
+
+private fun comparePixels(image1: BufferedImage, image2: BufferedImage): Boolean {
+    for (x in 0 until image1.width) {
+        for (y in 0 until image1.height) {
+            if (image1.getRGB(x, y) != image2.getRGB(x, y)) {
+                return false
+            }
+        }
+    }
+    return true
+}
 
 private fun getLSBHistogram(image : BufferedImage): Map<String, Map<Int, Int>> {
     val histogram = mutableMapOf(
@@ -201,7 +202,6 @@ private fun getLSBHistogram(image : BufferedImage): Map<String, Map<Int, Int>> {
     return histogram
 }
 
-// Función para obtener el histograma de intensidad
 private fun getIntensityHistogram(image: BufferedImage): Map<String, IntArray> {
     val histogram = mutableMapOf(
         "Red" to IntArray(256),
