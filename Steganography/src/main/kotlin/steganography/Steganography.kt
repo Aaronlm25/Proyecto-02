@@ -103,31 +103,36 @@ private fun modifyLSB(channel: Int, bit: Int): Int {
  * @throws IllegalStateException if no key is found on the pixels array.
  */
 fun decodeText(image: BufferedImage): List<Char> {
-    val seed = image.getRGB(0, 0)
-    val length = image.getRGB(image.width - 1, image.height - 1)
+    val length = image.getRGB(image.width - 1, image.height - 1) / 3
     val text = mutableListOf<Char>()
     var textIndex = 0
-    for(y in 0 until image.height) {
-        for (x in 1 until image.width step 3) {
-            if(textIndex == length)
+
+    for (y in 0 until image.height) {
+        for (x in 0 until image.width step 3) {
+            if (textIndex == length) {
                 return text
-            if (x + 2 >= image.width) 
-                continue
+            }
+
+            if (x + 2 >= image.width) continue
+
             val pixel1 = image.getRGB(x, y)
             val pixel2 = image.getRGB(x + 1, y)
             val pixel3 = image.getRGB(x + 2, y)
+
             val alpha1 = (pixel1 shr 24) and 1
             val blue1 = pixel1 and 1
             val alpha2 = (pixel2 shr 24) and 1
             val blue2 = pixel2 and 1
             val alpha3 = (pixel3 shr 24) and 1
             val blue3 = pixel3 and 1
-            var charValue = 1 and alpha1
-            charValue = (charValue shl 1) or (blue1)
-            charValue = (charValue shl 1) or (alpha2)
-            charValue = (charValue shl 1) or (blue2)
-            charValue = (charValue shl 1) or (alpha3)
-            charValue = (charValue shl 1) or (blue3)
+
+            var charValue = alpha1
+            charValue = (charValue shl 1) or blue1
+            charValue = (charValue shl 1) or alpha2
+            charValue = (charValue shl 1) or blue2
+            charValue = (charValue shl 1) or alpha3
+            charValue = (charValue shl 1) or blue3
+
             val char = intToChar[charValue] ?: ' '
             text.add(char)
             textIndex++
