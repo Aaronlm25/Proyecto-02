@@ -38,16 +38,18 @@ fun encodeText(text: List<Char>, image: BufferedImage): BufferedImage {
     val random = Random(image.getRGB(0, 0).toLong())
     val length = text.size
     var textIndex = 0
-    // le dice al decode hasta donde llega el texto
-    image.setRGB(image.width - 1, 0, length)
     // no modificamos la semilla pues en x vamos desde el 1
     for(y in 0 until image.height) {
         // considera tres pixeles por caracter
         for (x in 1 until image.width step 3) {
             // cuando se se guarden todos los caracteres se sale 
             // modifcarlo esto es provicional 
-            if (textIndex == length) 
+            if (textIndex == length) {
+                // le dice al decode hasta donde llega el texto
+                image.setRGB(image.width - 1, image.height - 1, (length * 3))
+                println(Integer.toBinaryString(image.getRGB(image.width - 1, image.height - 1)))
                 return image
+            }
             if (x + 2 >= image.width) 
                 continue
             // consideramos tres pixeles consecuitivos esto se hara igual en lsb matching
@@ -65,17 +67,17 @@ fun encodeText(text: List<Char>, image: BufferedImage): BufferedImage {
             val newAlpha1 = modifyLSB(alpha1, (charValue shr 5) and 1)
             val newBlue1 = modifyLSB(blue1, (charValue shr 4) and 1)
             // creamos el nuevo pixel con nuestros canales modificados ignorando los demas 
-            val newPixel1 = (newAlpha1 shl 24) or (pixel1 and 0x00FFFF00) or newBlue1
+            val newPixel1 = ((newAlpha1 shl 24) and 0XFF) or (pixel1 and 0x00FFFF00) or newBlue1
             val alpha2 = (pixel2 shr 24) and 0xff
             val blue2 = pixel2 and 0xff
             val newAlpha2 = modifyLSB(alpha2, (charValue shr 3) and 1)
             val newBlue2 = modifyLSB(blue2, (charValue shr 2) and 1)
-            val newPixel2 = (newAlpha2 shl 24) or (pixel2 and 0x00FFFF00) or newBlue2
+            val newPixel2 = ((newAlpha2 shl 24) and 0XFF) or (pixel2 and 0x00FFFF00) or newBlue2
             val alpha3 = (pixel3 shr 24) and 0xff
             val blue3 = pixel3 and 0xff
             val newAlpha3 = modifyLSB(alpha3, (charValue shr 1) and 1)
             val newBlue3 = modifyLSB(blue3, charValue and 1)
-            val newPixel3 = (newAlpha3 shl 24) or (pixel3 and 0x00FFFF00) or newBlue3
+            val newPixel3 = ((newAlpha3 shl 24) and 0XFF) or (pixel3 and 0x00FFFF00) or newBlue3
             // modifica los pixeles en la misma imagen
             image.setRGB(x, y, newPixel1)
             image.setRGB(x + 1, y, newPixel2)
@@ -83,6 +85,8 @@ fun encodeText(text: List<Char>, image: BufferedImage): BufferedImage {
             textIndex++
         }
     }
+    // le dice al decode hasta donde llega el texto
+    image.setRGB(image.width - 1, image.height - 1, length * 3)
     return image
 }
 /**
@@ -92,7 +96,7 @@ fun encodeText(text: List<Char>, image: BufferedImage): BufferedImage {
  * @return The modified channel.
  */
 private fun modifyLSB(channel: Int, bit: Int): Int {
-    return (0xFFFFFFE or bit) and channel
+    return (channel and 0xFE) or (bit and 1)
 }
 
 /** 
@@ -106,27 +110,34 @@ private fun modifyLSB(channel: Int, bit: Int): Int {
  * @throws IllegalStateException if no key is found on the pixels array.
  */
 fun decodeText(image: BufferedImage): List<Char> {
-    val seed = image.getRGB(0, 0).toLong()
-    val length = image.getRGB(image.width - 1, 0)
+    val seed = image.getRGB(0, 0)
+    val length = image.getRGB(image.width - 1, image.height - 1)
     val text = mutableListOf<Char>()
+    var textIndex = 0
     for(y in 0 until image.height) {
         for (x in 1 until image.width step 3) {
-            if (text.size == length) 
+            if(textIndex == length)
                 return text
+            if (x + 2 >= image.width) 
+                continue
             val pixel1 = image.getRGB(x, y)
             val pixel2 = image.getRGB(x + 1, y)
             val pixel3 = image.getRGB(x + 2, y)
-            val alpha1 = (pixel1 shr 24) and 0xff
-            val blue1 = pixel1 and 0xff
-            val alpha2 = (pixel2 shr 24) and 0xff
-            val blue2 = pixel2 and 0xff
-            val alpha3 = (pixel3 shr 24) and 0xff
-            val blue3 = pixel3 and 0xff
-            val charValue = ((alpha1 and 1) shl 5) or ((blue1 and 1) shl 4) or
-                            ((alpha2 and 1) shl 3) or ((blue2 and 1) shl 2) or
-                            ((alpha3 and 1) shl 1) or (blue3 and 1)
+            val alpha1 = (pixel1 shr 24) and 1
+            val blue1 = pixel1 and 1
+            val alpha2 = (pixel2 shr 24) and 1
+            val blue2 = pixel2 and 1
+            val alpha3 = (pixel3 shr 24) and 1
+            val blue3 = pixel3 and 1
+            var charValue = 1 and alpha1
+            charValue = (charValue shl 1) or (blue1)
+            charValue = (charValue shl 1) or (alpha2)
+            charValue = (charValue shl 1) or (blue2)
+            charValue = (charValue shl 1) or (alpha3)
+            charValue = (charValue shl 1) or (blue3)
             val char = intToChar[charValue] ?: ' '
             text.add(char)
+            textIndex++
         }
     }
     return text

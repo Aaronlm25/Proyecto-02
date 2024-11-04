@@ -14,8 +14,15 @@ import java.awt.Graphics2D
  * @throws IOException If an error occurs during reading.
  */
 private fun loadImagePNG(path: String): BufferedImage {
-   val pixels = ImageIO.read(File(path))
-   return pixels
+    val originalImage = ImageIO.read(File(path))
+    if (originalImage.type == BufferedImage.TYPE_INT_ARGB) {
+        return originalImage
+    }
+    val imageWithAlpha = BufferedImage(originalImage.width, originalImage.height, BufferedImage.TYPE_INT_ARGB)
+    val graphics = imageWithAlpha.createGraphics()
+    graphics.drawImage(originalImage, 0, 0, null)
+    graphics.dispose()
+    return imageWithAlpha
 }
 
 /**
@@ -49,7 +56,7 @@ fun loadImage(path: String): BufferedImage {
     if(type == "png")
         return loadImagePNG(path)
     else if(type == "jpg")
-        return loadImageJPG(path)
+        return loadImagePNG(path)
     throw IllegalStateException("Tipo de archivo inválido.")
 }
 
