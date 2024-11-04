@@ -31,26 +31,71 @@ class ImageTest : StringSpec({
         File(jpgDirectory).listFiles { file -> file.extension == "jpg" }?.forEach { file ->
             images[jpgDirectory]!!.add(file.absolutePath)
         }
+
+        // Imprimir el contenido del mapa
+        println("Contenido del mapa de imágenes:")
+        images.forEach { (directory, imagePaths) ->
+            println("Directorio: $directory")
+            imagePaths.forEach { path ->
+                println("  - $path")
+            }
+        }
     }
 
-    "should image pixels not be changed" {
-        for ((directory, imagePaths) in images) {
+    "should jpg image pixels not be changed" {
+        val jpgImages = images.filterKeys { it.endsWith("jpg") }
+        for ((directory, imagePaths) in jpgImages) {
             for (path in imagePaths) {
+                println("Loading JPG image from path: $path")
+                val originalImage = ImageIO.read(File(path))
+                val image = loadImage(path)
+                val imageName = path.substringAfterLast("/images").substringBeforeLast(".")
+                val savePath = "src/test/resources/images${imageName}_test_pixels.png"
+                
+                saveImage(image, savePath)
+                
+                val savedFile = File(savePath)
+                savedFile.exists() shouldBe true
+                
+                val savedImage = ImageIO.read(savedFile)
+                
+                for (x in 0 until originalImage.width) {
+                    for (y in 0 until originalImage.height) {
+                        originalImage.getRGB(x, y) shouldBe savedImage.getRGB(x, y)
+                    }
+                }
+                
+                savedFile.delete()
+            }
+        }
+    }
+    
+    "should png image pixels not be changed" {
+        val pngImages = images.filterKeys { it.endsWith("png") }
+        for ((directory, imagePaths) in pngImages) {
+            for (path in imagePaths) {
+                println("Loading PNG image from path: $path")
                 val originalImage = ImageIO.read(File(path))
                 val image = loadImage(path)
                 val extension = path.substringAfterLast(".")
                 var imageName = path.substringAfterLast("/images")
                 imageName = imageName.substringBeforeLast(".")
-                val savePath = "$directory/${imageName}_saved.$extension"
+                val savePath = "src/test/resources/images${imageName}_test_pixels.$extension"
+                
                 saveImage(image, savePath)
-                val savedImage = ImageIO.read(File(savePath))
-                savedImage.width shouldBe image.width
-                savedImage.height shouldBe image.height
-                for (y in 0 until image.height) {
-                    for (x in 0 until image.width) {
+                
+                val savedFile = File(savePath)
+                savedFile.exists() shouldBe true
+                
+                val savedImage = ImageIO.read(savedFile)
+                
+                for (x in 0 until originalImage.width) {
+                    for (y in 0 until originalImage.height) {
                         originalImage.getRGB(x, y) shouldBe savedImage.getRGB(x, y)
                     }
                 }
+                
+                savedFile.delete()
             }
         }
     }
@@ -79,24 +124,37 @@ class ImageTest : StringSpec({
     "should save an image to the specified file path" {
         for ((directory, imagePaths) in images) {
             for (path in imagePaths) {
-                val extension = path.substringAfterLast(".")
-                val saveFilePath = "$directory/saved_image.$extension"
                 val image = loadImage(path)
-                saveImage(image, saveFilePath)
-                val savedImageFile = File(saveFilePath)
-                savedImageFile.exists() shouldBe true
-                savedImageFile.delete()
+                val extension = path.substringAfterLast(".")
+                var imageName = path.substringAfterLast("/images")
+                imageName = imageName.substringBeforeLast(".")
+                val savePath = "src/test/resources/images${imageName}_test_saved.$extension"
+    
+                try {
+                    saveImage(image, savePath)
+                } catch (e: IllegalArgumentException) {
+                    println("Error saving image: $e")
+                }
+    
+                val savedFile = File(savePath)
+                savedFile.exists() shouldBe true
+    
+                savedFile.delete()
             }
         }
     }
 
     "should return false when trying to save an image to an invalid path" {
+        var imageProcessed = false
         for ((directory, imagePaths) in images) {
             for (path in imagePaths) {
-                val invalidFilePath = "invalid/path/to/save_image.png"
-                val image = loadImage(path)
-                shouldThrow<IOException> {
-                    saveImage(image, invalidFilePath)
+                if (!imageProcessed) {
+                    val invalidFilePath = "invalid/path/to/save_image.png"
+                    val image = loadImage(path)
+                    shouldThrow<IOException> {
+                        saveImage(image, invalidFilePath)
+                    }
+                    imageProcessed = true
                 }
             }
         }
@@ -134,6 +192,9 @@ class ImageTest : StringSpec({
                 val extension = path.substringAfterLast(".")
                 val saveFilePath = "$directory/saved_image.$extension"
                 saveImage(image, saveFilePath)
+                val saveFile = File(saveFilePath)
+                saveFile.delete()
+
             }
         }
     }

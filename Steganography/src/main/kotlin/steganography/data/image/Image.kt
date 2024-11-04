@@ -14,31 +14,27 @@ import java.awt.Graphics2D
  * @throws IOException If an error occurs during reading.
  */
 private fun loadImagePNG(path: String): BufferedImage {
-    val originalImage = ImageIO.read(File(path))
-    if (originalImage.type == BufferedImage.TYPE_INT_ARGB) {
-        return originalImage
-    }
-    val imageWithAlpha = BufferedImage(originalImage.width, originalImage.height, BufferedImage.TYPE_INT_ARGB)
-    val graphics = imageWithAlpha.createGraphics()
-    graphics.drawImage(originalImage, 0, 0, null)
-    graphics.dispose()
-    return imageWithAlpha
+   val pixels = ImageIO.read(File(path))
+   return pixels
 }
 
 /**
- * Loads a JPG image from the specified file path and converts it to a PNG image.
+ * Converts a JPG image to a PNG BufferedImage.
  *
- * @param path The path of the image file.
- * @return The converted BufferedImage.
- * @throws IOException If an error occurs during reading.
- * @throws IllegalArgumentException If the provided parameters are invalid.
+ * @param path The path of the JPG image file.
+ * @return The converted BufferedImage in PNG format.
+ * @throws IOException If an error occurs during reading or writing.
  */
-private fun loadImageJPG(path: String): BufferedImage {
+private fun convertJPGtoPNG(path: String): BufferedImage {
     val jpgImage: BufferedImage = ImageIO.read(File(path))
-    val pngImage = BufferedImage(jpgImage.width, jpgImage.height, BufferedImage.TYPE_INT_ARGB)
-    val g: Graphics2D = pngImage.createGraphics()
-    g.drawImage(jpgImage, 0, 0, null)
-    g.dispose()
+
+    val tempFile = File.createTempFile("temp_image", ".png")
+    ImageIO.write(jpgImage, "png", tempFile)
+    
+    val pngImage: BufferedImage = ImageIO.read(tempFile)
+    
+    tempFile.delete()
+    
     return pngImage
 }
 
@@ -56,8 +52,8 @@ fun loadImage(path: String): BufferedImage {
     if(type == "png")
         return loadImagePNG(path)
     else if(type == "jpg")
-        return loadImagePNG(path)
-    throw IllegalStateException("Tipo de archivo inválido.")
+        return convertJPGtoPNG(path)
+    throw IllegalStateException("La extension del archivo no es valida.")
 }
 
 
@@ -70,6 +66,18 @@ fun loadImage(path: String): BufferedImage {
  * @throws IllegalArgumentException If the provided parameters are invalid.
  */
 fun saveImage(image: BufferedImage, path: String) {
-    val type = path.substringAfterLast(".")
-    ImageIO.write(image, type, File(path))
+    val type = path.substringAfterLast(".").lowercase()
+    if (type != "png" && type != "jpg") {
+        throw IllegalArgumentException("Invalid file extension: $type. Only 'png' and 'jpg' are supported.")
+    } else {
+        try {
+            val outputFile = File(path)
+            val result = ImageIO.write(image, type, outputFile)
+            if (!result) {
+                throw IOException("Failed to save the image. ImageIO.write returned false.")
+            }
+        } catch (e: IOException) {
+            throw e
+        }
+    }
 }
