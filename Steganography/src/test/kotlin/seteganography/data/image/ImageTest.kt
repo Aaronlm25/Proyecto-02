@@ -42,10 +42,39 @@ class ImageTest : StringSpec({
         }
     }
 
-    "should image pixels not be changed" {
-        for ((directory, imagePaths) in images) {
+    "should jpg image pixels not be changed" {
+        val jpgImages = images.filterKeys { it.endsWith("jpg") }
+        for ((directory, imagePaths) in jpgImages) {
             for (path in imagePaths) {
-                println("Loading image from path: $path")
+                println("Loading JPG image from path: $path")
+                val originalImage = ImageIO.read(File(path))
+                val image = loadImage(path)
+                val imageName = path.substringAfterLast("/images").substringBeforeLast(".")
+                val savePath = "src/test/resources/images${imageName}_test_pixels.png"
+                
+                saveImage(image, savePath)
+                
+                val savedFile = File(savePath)
+                savedFile.exists() shouldBe true
+                
+                val savedImage = ImageIO.read(savedFile)
+                
+                for (x in 0 until originalImage.width) {
+                    for (y in 0 until originalImage.height) {
+                        originalImage.getRGB(x, y) shouldBe savedImage.getRGB(x, y)
+                    }
+                }
+                
+                savedFile.delete()
+            }
+        }
+    }
+    
+    "should png image pixels not be changed" {
+        val pngImages = images.filterKeys { it.endsWith("png") }
+        for ((directory, imagePaths) in pngImages) {
+            for (path in imagePaths) {
+                println("Loading PNG image from path: $path")
                 val originalImage = ImageIO.read(File(path))
                 val image = loadImage(path)
                 val extension = path.substringAfterLast(".")
