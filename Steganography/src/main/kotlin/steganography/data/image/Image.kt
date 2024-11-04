@@ -25,7 +25,7 @@ private fun loadImagePNG(path: String): BufferedImage {
  * @return The converted BufferedImage in PNG format.
  * @throws IOException If an error occurs during reading or writing.
  */
-fun convertJPGtoPNG(path: String): BufferedImage {
+private fun convertJPGtoPNG(path: String): BufferedImage {
     val jpgImage: BufferedImage = ImageIO.read(File(path))
 
     val tempFile = File.createTempFile("temp_image", ".png")
