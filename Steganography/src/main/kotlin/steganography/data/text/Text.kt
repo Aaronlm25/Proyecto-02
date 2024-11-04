@@ -1,5 +1,4 @@
 package steganography.data.text
-
 import java.io.File
 import java.io.IOException
 import java.io.FileNotFoundException
@@ -29,8 +28,12 @@ private val alphabet = mapOf(
  * @return A list of the characters in the text.
  */
 fun readFile(path : String): List<Char> {
-    val file = File(path)
-    return file.readText().toList()
+    val type = path.substringAfterLast(".")
+    if(type == "txt") {
+        val file = File(path)
+        return file.readText().toList()
+    }
+    throw IllegalArgumentException("La extension del archivo no es valida.")
 }
 
 /**
