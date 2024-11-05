@@ -15,9 +15,9 @@ private val charToInt = mapOf(
     'ú' to 41, '1' to 42, '2' to 43, '3' to 44, '4' to 45,
     '5' to 46, '6' to 47, '7' to 48, '8' to 49, '9' to 50,
     '#' to 51, '$' to 52, '%' to 53, '&' to 54, '[' to 55,
-    ']' to 56, '{' to 57, '}' to 58, ' ' to 59, '\n' to 60
+    ']' to 56, '{' to 57, '}' to 58, ' ' to 59, '\n' to 60,
+    '0' to 61, '¿' to 62, '+' to 63, '/' to 64, '¡' to 65
 )
-
 private val intToChar = charToInt.entries.associate { (k, v) -> v to k }
 
 /**

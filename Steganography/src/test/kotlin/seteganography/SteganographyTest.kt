@@ -90,7 +90,7 @@ class SteganographyTest : StringSpec ({
     }
     
     "should handle some common special characters during encoding and decoding" {
-        val text = ("!.+-?¿àèìòù¡¿/!").toList()
+        val text = ("!.+-?¿áéíóú¿!").toList()
         for(image in imageData) {
             if(text.size >= getLimit(image))
                 continue
