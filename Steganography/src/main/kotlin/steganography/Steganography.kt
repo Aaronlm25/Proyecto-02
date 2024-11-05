@@ -35,7 +35,7 @@ fun encodeText(text: List<Char>, image: BufferedImage): BufferedImage {
     var textIndex = 0
 
     if (length * 3 > image.width * image.height) {
-        throw IllegalStateException("Text is too large to be encoded in the image")
+        throw IllegalStateException("El texto es demasiado largo para la imagen.")
     }
 
     for (y in 0 until image.height) {
