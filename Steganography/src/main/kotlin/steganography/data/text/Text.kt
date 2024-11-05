@@ -18,7 +18,13 @@ private val alphabet = mapOf(
     'ú' to 41, '1' to 42, '2' to 43, '3' to 44, '4' to 45, 
     '5' to 46, '6' to 47, '7' to 48, '8' to 49, '9' to 50,
     '#' to 51, '$' to 52, '%' to 53, '&' to 54, '[' to 55,
-    ']' to 56, '{' to 57, '}' to 58, ' ' to 59, '\n' to 60
+    ']' to 56, '{' to 57, '}' to 58, ' ' to 59, '\n' to 60,
+    'A' to 61, 'B' to 62, 'C' to 63, 'D' to 64, 'E' to 65, 
+    'F' to 66, 'G' to 67, 'H' to 68, 'I' to 69, 'J' to 70, 
+    'K' to 71, 'L' to 72, 'M' to 73, 'N' to 74, 'O' to 75, 
+    'P' to 76, 'Q' to 77, 'R' to 78, 'S' to 79, 'T' to 80, 
+    'U' to 81, 'V' to 82, 'W' to 83, 'X' to 84, 'Y' to 85, 
+    'Z' to 86, 'ñ' to 87, 'Ñ' to 88, 'ñ' to 89
     )
 
 /**

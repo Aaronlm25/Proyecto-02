@@ -33,7 +33,7 @@ fun encodeText(text: List<Char>, image: BufferedImage): BufferedImage {
     val length = text.size
     var textIndex = 0
     for(y in 0 until image.height) {
-        for (x in 1 until image.width step 3) {
+        for (x in 1 until image.width step 4) {
             if (textIndex == length) {
                 image.setRGB(image.width - 1, image.height - 1, (length * 3))
                 return image
@@ -97,7 +97,7 @@ fun decodeText(image: BufferedImage): List<Char> {
     var textIndex = 0
 
     for (y in 0 until image.height) {
-        for (x in 0 until image.width step 3) {
+        for (x in 0 until image.width step 4) {
             if (textIndex == length) {
                 return text
             }
