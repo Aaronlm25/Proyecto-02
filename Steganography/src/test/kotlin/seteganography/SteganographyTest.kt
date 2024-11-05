@@ -208,3 +208,8 @@ private fun getIntensityHistogram(image: BufferedImage): Map<String, IntArray> {
     }
     return histogram
 }
+
+// Función auxiliar para modificar el LSB
+private fun modifyLSB(value: Int, bit: Int): Int {
+    return (value and 0xFE) or bit
+}

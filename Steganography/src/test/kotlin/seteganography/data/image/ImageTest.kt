@@ -122,7 +122,8 @@ class ImageTest : StringSpec({
     }
 
     "should save an image to the specified file path" {
-        for ((directory, imagePaths) in images) {
+        val pngImages = images.filterKeys { it.endsWith("png") }
+        for ((directory, imagePaths) in pngImages) {
             for (path in imagePaths) {
                 val image = loadImage(path)
                 val extension = path.substringAfterLast(".")

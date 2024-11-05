@@ -14,6 +14,13 @@ import java.awt.Graphics2D
  */
 private fun loadImagePNG(path: String): BufferedImage {
    val pixels = ImageIO.read(File(path))
+   if(pixels.colorModel.hasAlpha()==false){
+       val image = BufferedImage(pixels.width, pixels.height, BufferedImage.TYPE_INT_ARGB)
+       val g: Graphics2D = image.createGraphics()
+       g.drawImage(pixels, 0, 0, null)
+       g.dispose()
+       return image
+   }
    return pixels
 }
 
