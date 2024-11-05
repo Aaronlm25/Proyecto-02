@@ -136,4 +136,32 @@ class TextTest : StringSpec ({
             toFile(characters, filePath)
         }
     }
+
+    "should throw IllegalArgumentException if extension is not supported" {
+        val invalidFilePaths = listOf(
+            "text.text",  
+            "text.",                 
+            "text.pdf",   
+            "text.svg",   
+            "text.docx",   
+            "text.html",    
+            "text.xml",  
+            "text.csv",    
+            "text.json",    
+            "text.ai",     
+            "text.xsd",   
+            "text.gli",    
+            "text.gol",       
+            ".",                  
+            " ",                  
+            "",      
+        )
+        for(invalidFilePath in invalidFilePaths) {
+            val file = File(invalidFilePath)
+            shouldThrow<IllegalArgumentException> {
+                readFile(invalidFilePath)
+            }
+            File(invalidFilePath).delete()
+        }
+    }
 })

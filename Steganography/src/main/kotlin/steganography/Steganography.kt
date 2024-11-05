@@ -1,5 +1,4 @@
 package steganography
-
 import steganography.data.text.replaceAlphabet
 import java.util.Random
 import java.awt.image.BufferedImage
@@ -33,32 +32,24 @@ fun encodeText(text: List<Char>, image: BufferedImage): BufferedImage {
     val random = Random(image.getRGB(0, 0).toLong())
     val length = text.size
     var textIndex = 0
-
-    if (length * 3 > image.width * image.height) {
-        throw IllegalStateException("Text is too large to be encoded in the image")
-    }
-
-    for (y in 0 until image.height) {
-        for (x in 0 until image.width step 3) {
+    for(y in 0 until image.height) {
+        for (x in 1 until image.width step 3) {
             if (textIndex == length) {
-                image.setRGB(image.width - 1, image.height - 1, length * 3)
+                image.setRGB(image.width - 1, image.height - 1, (length * 3))
+                println(Integer.toBinaryString(image.getRGB(image.width - 1, image.height - 1)))
                 return image
             }
-
-            if (x + 2 >= image.width) continue
-
+            if (x + 2 >= image.width) 
+                continue
             val pixel1 = image.getRGB(x, y)
             val pixel2 = image.getRGB(x + 1, y)
             val pixel3 = image.getRGB(x + 2, y)
-
             val charValue = charToInt[text[textIndex]] ?: 0
-
             val alpha1 = (pixel1 shr 24) and 0xff
             val blue1 = pixel1 and 0xff
             val newAlpha1 = modifyLSB(alpha1, (charValue shr 5) and 1)
             val newBlue1 = modifyLSB(blue1, (charValue shr 4) and 1)
-            val newPixel1 = (newAlpha1 shl 24) or (pixel1 and 0x00FFFF00) or newBlue1
-
+            val newPixel1 = ((newAlpha1 shl 24) and 0XFF) or (pixel1 and 0x00FFFF00) or newBlue1
             val alpha2 = (pixel2 shr 24) and 0xff
             val blue2 = pixel2 and 0xff
             val newAlpha2 = modifyLSB(alpha2, (charValue shr 3) and 1)
@@ -69,8 +60,7 @@ fun encodeText(text: List<Char>, image: BufferedImage): BufferedImage {
             val blue3 = pixel3 and 0xff
             val newAlpha3 = modifyLSB(alpha3, (charValue shr 1) and 1)
             val newBlue3 = modifyLSB(blue3, charValue and 1)
-            val newPixel3 = (newAlpha3 shl 24) or (pixel3 and 0x00FFFF00) or newBlue3
-
+            val newPixel3 = ((newAlpha3 shl 24) and 0XFF) or (pixel3 and 0x00FFFF00) or newBlue3
             image.setRGB(x, y, newPixel1)
             image.setRGB(x + 1, y, newPixel2)
             image.setRGB(x + 2, y, newPixel3)
@@ -78,7 +68,7 @@ fun encodeText(text: List<Char>, image: BufferedImage): BufferedImage {
             textIndex++
         }
     }
-
+    image.setRGB(image.width - 1, image.height - 1, length * 3)
     return image
 }
 

@@ -1,5 +1,4 @@
 package steganography
-
 import kotlin.text.trim
 import kotlin.io.readlnOrNull
 import steganography.data.text.toFile
