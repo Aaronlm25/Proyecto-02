@@ -36,7 +36,6 @@ fun encodeText(text: List<Char>, image: BufferedImage): BufferedImage {
         for (x in 1 until image.width step 3) {
             if (textIndex == length) {
                 image.setRGB(image.width - 1, image.height - 1, (length * 3))
-                println(Integer.toBinaryString(image.getRGB(image.width - 1, image.height - 1)))
                 return image
             }
             if (x + 2 >= image.width) 

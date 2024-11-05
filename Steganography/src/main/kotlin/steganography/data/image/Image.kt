@@ -70,13 +70,13 @@ fun loadImage(path: String): BufferedImage {
 fun saveImage(image: BufferedImage, path: String) {
     val type = path.substringAfterLast(".").lowercase()
     if (type != "png" && type != "jpg") {
-        throw IllegalArgumentException("Invalid file extension: $type. Only 'png' and 'jpg' are supported.")
+        throw IllegalArgumentException("Tipo de archivo inválido: $type. Solo se admiten archivos de tipo 'png' y 'jpg'.")
     } else {
         try {
             val outputFile = File(path)
             val result = ImageIO.write(image, type, outputFile)
             if (!result) {
-                throw IOException("Failed to save the image. ImageIO.write returned false.")
+                throw IOException("Error al guardar la imágen.")
             }
         } catch (e: IOException) {
             throw e
