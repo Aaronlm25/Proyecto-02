@@ -13,7 +13,7 @@ private val charToInt = mapOf(
     '\'' to 36, 'á' to 37, 'é' to 38, 'í' to 39, 'ó' to 40, 
     'ú' to 41, '1' to 42, '2' to 43, '3' to 44, '4' to 45, 
     '5' to 46, '6' to 47, '7' to 48, '8' to 49, '9' to 50,
-    '#' to 51, '$' to 52, '%' to 53, '&' to 54, '[' to 55,
+    '#' to 51, '$' to 52, '%' to 53, '0' to 54, '[' to 55,
     ']' to 56, '{' to 57, '}' to 58, ' ' to 59, '\n' to 60,
 )
 
@@ -26,119 +26,67 @@ private val intToChar = charToInt.entries.associate { (key, value) -> value to k
  * @return An object of type BufferedImage.
  * @throws IllegalStateException if the text is too large for the pixels array or contains invalid characters.
  */
-fun encodeText(text: List<Char>, image: BufferedImage): BufferedImage {
-    val length = text.size
+fun encodeText(text: List<Char>, imageO: BufferedImage): BufferedImage {
+    if (text.size * 3 > imageO.width * imageO.height) throw IllegalStateException("El texto es demasiado largo para la imagen.")
+    if (!text.all { it in charToInt }) throw IllegalStateException("El texto contiene caracteres invalidos")
+    val image = getImage(imageO)
     var textIndex = 0
-    var lastX = 1
-    var lastY = 0
-
-    if (length * 3 > image.width * image.height) {
-        throw IllegalStateException("El texto es demasiado largo para la imagen.")
-    }
-
+    //Lista de binarios
+    val textValues = replaceAlphabet(text).map { it.toString(2).padStart(6, '0')}
+    //println(textValues)
+    //Lista de bits
+    val bits =  textValues.flatMap { it.map { char -> char.toString().toInt() } }
     for (y in 0 until image.height) {
-        for (x in 1 until image.width step 3) {
-            if (textIndex == length) {
-                image.setRGB(image.width - 1, image.height - 1, length * 3)
-                val goal = charToInt['~'] ?: 0
-                image.setRGB(lastX, lastY, goal)
+        for (x in 0 until image.width) {
+            if (textIndex == bits.size) {
                 return image
             }
-
-            if (x + 3 >= image.width) continue
-
-            val charValue = charToInt[text[textIndex]] ?: 0
-
-            val pixel1 = image.getRGB(x, y)
-            val pixel2 = image.getRGB(x + 1, y)
-            val pixel3 = image.getRGB(x + 2, y)
+            //println(bits[textIndex])
+            val pixel1 = image.getRGB(y, x)
 
             val alpha1 = (pixel1 shr 24) and 0xff
             val blue1 = pixel1 and 0xff
-            val alpha2 = (pixel2 shr 24) and 0xff
-            val blue2 = pixel2 and 0xff
-            val alpha3 = (pixel3 shr 24) and 0xff
-            val blue3 = pixel3 and 0xff
+            var lsbBlue1 = getLSB(blue1)
+            var lsbAlpha1 = getLSB(alpha1)
 
-
-            val lsbBlue1 = getLSB(blue1)
-            val lsbBlue2 = getLSB(blue2)
-            val lsbBlue3 = getLSB(blue3)
-            val lsbAlpha1 = getLSB(alpha1)
-            val lsbAlpha2 = getLSB(alpha2)
-            val lsbAlpha3 = getLSB(alpha3)
-
-            var lastBlue1 = blue1
-            var lastBlue2 = blue2
-            var lastBlue3 = blue3
-            var lastAlpha1 = alpha1
-            var lastAlpha2 = alpha2
-            var lastAlpha3 = alpha3
-
-            if (!(((charValue shr 5) and 1) == lsbBlue1)) {
-                if (blue1 + 1 < 255){
-                    lastBlue1 = blue1 + 1
-                } else {
-                    lastBlue1 = blue1 - 1
+            if (!(bits[textIndex] == lsbBlue1)) {
+                if (blue1 < 255 && blue1 > 0) {
+                    lsbBlue1 = if (lsbBlue1 == 0) blue1 + 1 else blue1 - 1
+                } else if (blue1 == 255) {
+                    lsbBlue1 = blue1 - 1
+                } else if (blue1 == 0) {
+                    lsbBlue1 = blue1 + 1
                 }
             }
-
-            if(!(((charValue shr 4) and 1) == lsbAlpha1)) {
-                if (alpha1 + 1 < 255){
-                    lastAlpha1 = alpha1 + 1
-                }else {
-                    lastAlpha1 = alpha1 - 1
-                }
-            }
-
-            if(!(((charValue shr 3) and 1) == lsbBlue2)) {
-                if (blue2 + 1 < 255){
-                    lastBlue2 = blue2 + 1
-                }else {
-                    lastBlue2 = blue2 - 1
-                }           
-            } 
-
-            if(!(((charValue shr 2) and 1) == lsbAlpha2)) {
-                if (alpha2 + 1 < 255){
-                    lastAlpha2 = alpha2 + 1
-                }else {
-                    lastAlpha2 = alpha2 - 1
-                }
-            }
- 
-            if(!(((charValue shr 1) and 1) == lsbBlue3)) {
-                if (blue3 + 1 < 255){
-                    lastBlue3 = blue3 + 1 
-                }else {
-                    lastBlue3 = blue3 - 1
-                }           
-            }
-
-            if(!((charValue and 1) == lsbAlpha3)) {
-                if (alpha3 + 1 < 255){
-                    lastAlpha3 = alpha3 + 1
-                }else {
-                    lastAlpha3 = alpha3 - 1
-                }
-            }
-                        
-            val newPixel1 = (lastAlpha1 shl 24) or (pixel1 and 0x00FFFF00) or lastBlue1          
-            val newPixel2 = (lastAlpha2 shl 24) or (pixel2 and 0x00FFFF00) or lastBlue2        
-            val newPixel3 = (lastAlpha3 shl 24) or (pixel3 and 0x00FFFF00) or lastBlue3
-
-            image.setRGB(x, y, newPixel1)
-            image.setRGB(x + 1, y, newPixel2)
-            image.setRGB(x + 2, y, newPixel3)
-
             textIndex++
-            lastX++
-        }
-        lastY++
-    }
+            if(!((bits[textIndex]) == lsbAlpha1)) {
+                if (alpha1 < 255 && alpha1 > 0) {
+                    lsbAlpha1 = if (lsbAlpha1 == 0) alpha1 + 1 else alpha1 - 1
+                } else if (alpha1 == 255) {
+                    lsbAlpha1 = alpha1 - 1
+                } else if (alpha1 == 0) {
+                    lsbAlpha1 = alpha1 + 1
+                }
+            }
+            val newPixel1 = (lsbAlpha1 shl 24) or (pixel1 and 0x00FFFF00) or lsbBlue1
 
-    image.setRGB(image.width - 1, image.height - 1, length * 3)
+            image.setRGB(y, x, newPixel1)
+            textIndex++
+        }
+    }
+    
     return image
+}
+
+/**
+ * 
+ */
+private fun getImage(image : BufferedImage): BufferedImage {
+    val modifiedImage = BufferedImage(image.width, image.height, image.type)
+    val graphics = modifiedImage.createGraphics()
+    graphics.drawImage(image, 0, 0, null)
+    graphics.dispose()
+    return modifiedImage
 }
 
 /**
@@ -160,9 +108,26 @@ private fun modifyPixel(pixel: Int, bit1: Int, bit2: Int): Int {
 }
 
 private fun getLSB(channel: Int): Int {
-    return (channel and 0xFE)
+    return (channel and 1)
 }
 
+/**
+ * Replaces words in a text with the corresponding integer value according
+ * to the alphabet.
+ *
+ * @param content Text with the words you want to exchange according
+ * to the alphabet.
+ * @return A list with the integer that corresponds to each word in the text.
+ */
+private fun replaceAlphabet(text: List<Char>): List<Int>{
+    val numbers = mutableListOf<Int>()
+    for (char in text) {
+        charToInt[char.lowercaseChar()]?.let { numbers.add(it) }
+    }
+    numbers.add(0)
+    //print(numbers+"\n")
+    return numbers
+}
 /** 
  * Decodes an image represented by an integer array of the pixels into the 
  * original text.
@@ -172,31 +137,34 @@ private fun getLSB(channel: Int): Int {
  * @throws IllegalStateException if no key is found on the pixels array.
  */
 fun decodeText(image: BufferedImage): List<Char> {
-    val length = image.getRGB(image.width - 1, image.height - 1) / 3
     val text = mutableListOf<Char>()
-    var textIndex = 0
-
+    val bits = StringBuilder()
+    
     for (y in 0 until image.height) {
-        for (x in 0 until image.width step 3) {
-            if (textIndex == length) {
-                return text
+        for (x in 0 until image.width) {
+            val rgb = image.getRGB(y, x)
+            
+            // Extraemos el LSB del canal alpha y blue
+            val alphaLSB = (rgb shr 24) and 1
+            val blueLSB = rgb and 1
+
+            bits.append(blueLSB)
+            bits.append(alphaLSB)
+            //println(blueLSB.toString()+"  "+alphaLSB.toString())
+            // Verificamos si ya tenemos 6 bits para formar un carácter
+            if (bits.length == 6) {
+                //println(bits)
+                val charValue = Integer.parseInt(bits.toString(), 2)
+                //println("Bits: ${bits.toString()}, Char Value: $charValue") // Depuración
+                if (bits.toString() == "000000"||charValue > 60) {
+                    return text // Detiene la decodificación y retorna el texto decodificado
+                } else{
+                    val char = intToChar[charValue] ?: throw IllegalStateException("char invalido")
+                    text.add(char)
+                    bits.clear()
+                }
             }
-
-            if (x + 2 >= image.width) continue
-
-            val pixel1 = image.getRGB(x, y)
-            val pixel2 = image.getRGB(x + 1, y)
-            val pixel3 = image.getRGB(x + 2, y)
-
-            val charValue = ((pixel1 and 1) shl 5) or ((pixel1 shr 16) and 1) or
-                            ((pixel2 and 1) shl 3) or ((pixel2 shr 16) and 1) or
-                            ((pixel3 and 1) shl 1) or ((pixel3 shr 16) and 1)
-
-            val char = intToChar[charValue] ?: throw IllegalStateException("Invalid character value: $charValue")
-            text.add(char)
-            textIndex++
         }
     }
-
     return text
 }

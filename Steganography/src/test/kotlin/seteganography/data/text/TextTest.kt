@@ -35,7 +35,7 @@ class TextTest : StringSpec ({
     "should be the list be same" {
         for(path in textPaths) {
             val text = File(path).readText()
-            val characters = text.toList()
+            val characters = text.lowercase().toList()
             characters shouldBe readFile(path)
         }
     }

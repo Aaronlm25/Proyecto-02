@@ -30,7 +30,7 @@ private val alphabet = mapOf(
  */
 fun readFile(path : String): List<Char> {
     val file = File(path)
-    return file.readText().toList()
+    return file.readText().lowercase().toList()
 }
 
 /**
@@ -46,24 +46,4 @@ fun toFile(characters : List<Char>, path: String): File {
     val text = characters.joinToString("")
     file.writeText(text)
     return file
-}
-
-/**
- * Replaces words in a text with the corresponding integer value according
- * to the alphabet.
- *
- * @param content Text with the words you want to exchange according
- * to the alphabet.
- * @return A list with the integer that corresponds to each word in the text.
- */
-fun replaceAlphabet(text: List<Char>): List<Int>{
-    val numbers = mutableListOf<Int>()
-    for (char in text) {
-        if (char.lowercaseChar().isLetter()){
-            alphabet[char]?.let { numbers.add(it) }
-        } else{
-            alphabet[char]?.let { numbers.add(it) }
-        }
-    }
-    return numbers
 }
