@@ -27,6 +27,8 @@ private val intToChar = charToInt.entries.associate { (key, value) -> value to k
  * @throws IllegalStateException if the text is too large for the pixels array or contains invalid characters.
  */
 fun encodeText(text: List<Char>, imageO: BufferedImage): BufferedImage {
+    /*
+    Mi idea es implementar shuffle para mas placer, pero despues */
     if (text.size * 3 > imageO.width * imageO.height) throw IllegalStateException("El texto es demasiado largo para la imagen.")
     if (!text.all { it in charToInt }) throw IllegalStateException("El texto contiene caracteres invalidos")
     val image = getImage(imageO)
@@ -106,7 +108,9 @@ private fun modifyPixel(pixel: Int, bit1: Int, bit2: Int): Int {
     val newGreen = (green and 0xFE) or bit2
     return (alpha shl 24) or (newRed shl 16) or (newGreen shl 8) or blue
 }
-
+/**
+ * 
+ */
 private fun getLSB(channel: Int): Int {
     return (channel and 1)
 }
@@ -124,7 +128,7 @@ private fun replaceAlphabet(text: List<Char>): List<Int>{
     for (char in text) {
         charToInt[char.lowercaseChar()]?.let { numbers.add(it) }
     }
-    numbers.add(0)
+    numbers.add(0) //Es analogo a la ide de pablo pero con un numero que en teoria nunca sale
     //print(numbers+"\n")
     return numbers
 }
@@ -144,20 +148,19 @@ fun decodeText(image: BufferedImage): List<Char> {
         for (x in 0 until image.width) {
             val rgb = image.getRGB(y, x)
             
-            // Extraemos el LSB del canal alpha y blue
             val alphaLSB = (rgb shr 24) and 1
             val blueLSB = rgb and 1
 
             bits.append(blueLSB)
             bits.append(alphaLSB)
             //println(blueLSB.toString()+"  "+alphaLSB.toString())
-            // Verificamos si ya tenemos 6 bits para formar un carácter
+            // Verificamos si ya tenemos 6 bits para formar un carácter a reserva de meter mayusculas
             if (bits.length == 6) {
                 //println(bits)
                 val charValue = Integer.parseInt(bits.toString(), 2)
-                //println("Bits: ${bits.toString()}, Char Value: $charValue") // Depuración
+                //println("Bits: ${bits.toString()}, Char Value: $charValue")
                 if (bits.toString() == "000000"||charValue > 60) {
-                    return text // Detiene la decodificación y retorna el texto decodificado
+                    return text
                 } else{
                     val char = intToChar[charValue] ?: throw IllegalStateException("char invalido")
                     text.add(char)
