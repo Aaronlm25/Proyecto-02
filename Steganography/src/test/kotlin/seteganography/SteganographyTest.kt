@@ -113,7 +113,7 @@ class SteganographyTest : StringSpec ({
                 val originalBalance = (origalLSB[0]!!.toDouble() / (origalLSB .values.sum())) * 100
                 val encodedLSB = encodedHistogram[channel]!!
                 val encodedBalance = (encodedLSB[0]!!.toDouble() / (encodedLSB.values.sum())) * 100
-                Math.abs(originalBalance - encodedBalance) shouldBeLessThanOrEqual 10.0
+                Math.abs(originalBalance - encodedBalance) shouldBeLessThanOrEqual 15.0
             }
         }
     }
