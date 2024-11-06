@@ -32,6 +32,8 @@ private val alphabet = mapOf(
  *
  * @param The path of the text to read.
  * @return A list of the characters in the text.
+ * @throws FileNotFoundException If no file is found.
+ * @throws IllegalArgumentException If file is not txt.
  */
 fun readFile(path : String): List<Char> {
     val type = path.substringAfterLast(".")

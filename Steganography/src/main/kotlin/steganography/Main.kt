@@ -9,6 +9,7 @@ import steganography.decodeText
 import steganography.encodeText
 import java.awt.image.BufferedImage
 import java.io.IOException
+import java.io.FileNotFoundException
 import java.nio.file.Paths
 import org.jline.reader.LineReaderBuilder
 import org.jline.reader.LineReader
@@ -71,6 +72,7 @@ private fun saveImage(text : List<Char>, image : BufferedImage) {
             val resultPath = readNonNullInput()
             saveImage(encoded, resultPath)
             println("El texto se ha ocultado exitosamente en : $resultPath")
+            return
         } catch (ioe: IOException) {
             println("No se pudo guardar la imagen en la ruta proporcionada.")
         } catch(iae : IllegalArgumentException) {
@@ -87,6 +89,7 @@ private fun saveText(image : BufferedImage) {
             val text = decodeText(image)
             toFile(text, resultPath)
             println("Se ha decodificado el mensaje en la imagen en: $resultPath")
+            return
         } catch (ise: IOException) {
             println("No se pudo guardar el texto en la ruta que proporciono.")
         } catch (iae: IllegalArgumentException) {
@@ -105,6 +108,8 @@ private fun getText(): List<Char> {
             println("El archivo debe ser .txt")
         } catch (ise: IllegalStateException) {
             println("El archivo tiene caracteres no soportados.")
+        } catch(fnfe : FileNotFoundException) {
+            println("No se encontro el archivo.")
         }
     }
 }
@@ -119,6 +124,8 @@ private fun getImage(prompt: String): BufferedImage {
             println("Error: No se pudo leer la imagen desde la ruta proporcionada. Asegúrese de que el archivo existe y es accesible.")
         } catch (e: IllegalArgumentException) {
             println("Error: El archivo proporcionado no es una imagen válida o tiene un formato no soportado.")
+        } catch(fnfe : FileNotFoundException) {
+            println("No se encontro el archivo.")
         }
     }
 }
