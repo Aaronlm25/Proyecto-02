@@ -49,29 +49,26 @@ fun encodeText(text: List<Char>, image: BufferedImage): BufferedImage {
     for(y in 0 until height) {
         for (x in 1 until width) {
             val pixel = modifiedImage.getRGB(x, y)
-            for(i in 0 until 1) {
-                if(bitIndex == 4) {
+            for (i in 0..1) {
+                if (bitIndex == 7) {
                     textIndex++
                     if (textIndex == length) {
-                        modifiedImage.setRGB(width - 1, height - 1, (length * 4))
+                        modifiedImage.setRGB(width - 1, height - 1, length * 4)
                         return modifiedImage
                     }
                     charValue = charToInt[text[textIndex]] ?: 0
-                    bitIndex == 0
+                    bitIndex = 0
                 }
-                val currentChannel = (if (i % 2 == 0) (pixel shr 24) else pixel) and 0XFF
+                val currentChannel = if (i % 2 == 0) (pixel shr 24) and 0xFF else pixel and 0xFF
                 val newChannel = modifyLSB(currentChannel, (charValue shr bitIndex) and 1)
                 bitIndex++
                 val newPixel = if (i % 2 == 0) {
-                    (pixel shr 8) or newChannel
+                    (pixel shr 8) or (newChannel shl 24)
                 } else {
-                    (pixel shl 8) or newChannel
+                    (pixel and 0xFFFFF00) or newChannel
                 }
                 modifiedImage.setRGB(x, y, newPixel)
             }
-            println(pixel == modifiedImage.getRGB(x, y))
-            print("$charValue")
-            println("Old Pixel: ${Integer.toBinaryString(pixel)}, New getPixel: ${Integer.toBinaryString(modifiedImage.getRGB(x, y))}")
         }
     }
     modifiedImage.setRGB(width - 1, height - 1, length * 4)
