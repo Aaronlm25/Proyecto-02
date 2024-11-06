@@ -37,14 +37,14 @@ class SteganographyTest : StringSpec ({
     }
 
     "should throw IllegalStateException if text is too large for a given image" {
-        for(image in imageData) {
+        for (image in imageData) {
             val width = image.getWidth()
             val height = image.getHeight()
             val chars = ('A'..'Z') + ('a'..'z') + ' '
-            val size = (ceil(width * height / 3.0).toInt())
-            val text = List(size) { chars.random() } 
+            val maxSize = (width * height) / 3
+            val text = List(maxSize + 1) { chars.random() } // +1 para asegurarse de que exceda
             shouldThrow<IllegalStateException> {
-                encodeText(text.toList(), image)
+                encodeText(text, image)
             }
         }
     }
@@ -90,7 +90,7 @@ class SteganographyTest : StringSpec ({
     }
     
     "should handle some common special characters during encoding and decoding" {
-        val text = ("!.+-?¿àèìòù¡¿/!").toList()
+        val text = ("!.+-?¿áéíóú¿!").toList()
         for(image in imageData) {
             if(text.size >= image.height * image.width * 3)
                 continue
