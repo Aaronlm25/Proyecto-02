@@ -3,10 +3,6 @@ package steganography
 import java.awt.image.BufferedImage
 
 private val charToInt = mapOf(
-<<<<<<< HEAD
-    '!' to 0, '.' to 1, '+' to 2, '-' to 3, '?' to 4, '¿' to 5,
-    'á' to 6, 'é' to 7, 'í' to 8, 'ó' to 9, 'ú' to 10,
-=======
     'a' to 1, 'b' to 2, 'c' to 3, 'd' to 4, 'e' to 5, 
     'f' to 6, 'g' to 7, 'h' to 8, 'i' to 9, 'j' to 10, 
     'k' to 11, 'l' to 12, 'm' to 13, 'n' to 14, 'o' to 15, 
@@ -19,13 +15,6 @@ private val charToInt = mapOf(
     '5' to 46, '6' to 47, '7' to 48, '8' to 49, '9' to 50,
     '#' to 51, '$' to 52, '%' to 53, '&' to 54, '[' to 55,
     ']' to 56, '{' to 57, '}' to 58, ' ' to 59, '\n' to 60,
-    'A' to 61, 'B' to 62, 'C' to 63, 'D' to 64, 'E' to 65, 
-    'F' to 66, 'G' to 67, 'H' to 68, 'I' to 69, 'J' to 70, 
-    'K' to 71, 'L' to 72, 'M' to 73, 'N' to 74, 'O' to 75, 
-    'P' to 76, 'Q' to 77, 'R' to 78, 'S' to 79, 'T' to 80, 
-    'U' to 81, 'V' to 82, 'W' to 83, 'X' to 84, 'Y' to 85, 
-    'Z' to 86, 'ñ' to 87, 'Ñ' to 88, '~' to 89
->>>>>>> 766b5ae (Avance del metodo encode)
 )
 
 private val intToChar = charToInt.entries.associate { (key, value) -> value to key }
@@ -38,7 +27,6 @@ private val intToChar = charToInt.entries.associate { (key, value) -> value to k
  * @throws IllegalStateException if the text is too large for the pixels array or contains invalid characters.
  */
 fun encodeText(text: List<Char>, image: BufferedImage): BufferedImage {
-    val seed = Random(image.getRGB(0, 0).toLong())
     val length = text.size
     var textIndex = 0
     var lastX = 1
@@ -48,7 +36,6 @@ fun encodeText(text: List<Char>, image: BufferedImage): BufferedImage {
         throw IllegalStateException("El texto es demasiado largo para la imagen.")
     }
 
-    var textIndex = 0
     for (y in 0 until image.height) {
         for (x in 1 until image.width step 3) {
             if (textIndex == length) {
@@ -89,32 +76,56 @@ fun encodeText(text: List<Char>, image: BufferedImage): BufferedImage {
             var lastAlpha3 = alpha3
 
             if (!(((charValue shr 5) and 1) == lsbBlue1)) {
-                lastBlue1 = (blue1 + 1) % 256
+                if (blue1 + 1 < 255){
+                    lastBlue1 = blue1 + 1
+                } else {
+                    lastBlue1 = blue1 - 1
+                }
             }
 
             if(!(((charValue shr 4) and 1) == lsbAlpha1)) {
-                lastAlpha1 = (alpha1 + 1) % 256
+                if (alpha1 + 1 < 255){
+                    lastAlpha1 = alpha1 + 1
+                }else {
+                    lastAlpha1 = alpha1 - 1
+                }
             }
 
             if(!(((charValue shr 3) and 1) == lsbBlue2)) {
-                lastBlue2 = (blue2 + 1) % 256
+                if (blue2 + 1 < 255){
+                    lastBlue2 = blue2 + 1
+                }else {
+                    lastBlue2 = blue2 - 1
+                }           
             } 
 
             if(!(((charValue shr 2) and 1) == lsbAlpha2)) {
-                lastAlpha2 = (alpha2 + 1) % 256
+                if (alpha2 + 1 < 255){
+                    lastAlpha2 = alpha2 + 1
+                }else {
+                    lastAlpha2 = alpha2 - 1
+                }
             }
  
             if(!(((charValue shr 1) and 1) == lsbBlue3)) {
-                lastBlue3 = (blue3 + 1) % 256
+                if (blue3 + 1 < 255){
+                    lastBlue3 = blue3 + 1 
+                }else {
+                    lastBlue3 = blue3 - 1
+                }           
             }
 
             if(!((charValue and 1) == lsbAlpha3)) {
-                lastAlpha3 = (alpha3 + 1) % 256
+                if (alpha3 + 1 < 255){
+                    lastAlpha3 = alpha3 + 1
+                }else {
+                    lastAlpha3 = alpha3 - 1
+                }
             }
                         
             val newPixel1 = (lastAlpha1 shl 24) or (pixel1 and 0x00FFFF00) or lastBlue1          
             val newPixel2 = (lastAlpha2 shl 24) or (pixel2 and 0x00FFFF00) or lastBlue2        
-            val newPixel3 = (lastAlpha3 shl 24) or (pixel3 and 0x00FFFF00) or lastAlpha3
+            val newPixel3 = (lastAlpha3 shl 24) or (pixel3 and 0x00FFFF00) or lastBlue3
 
             image.setRGB(x, y, newPixel1)
             image.setRGB(x + 1, y, newPixel2)
