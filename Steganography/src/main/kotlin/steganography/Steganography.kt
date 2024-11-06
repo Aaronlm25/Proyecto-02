@@ -46,8 +46,8 @@ fun encodeText(text: List<Char>, image: BufferedImage): BufferedImage {
     val modifiedImage = getImage(image)
     var bitIndex = 0
     var charValue = charToInt[text[textIndex]] ?: 0
-    for(y in 0 until height) {
-        for (x in 1 until width) {
+    for (y in 0 until height) {
+        for (x in 0 until width) {
             val pixel = modifiedImage.getRGB(x, y)
             for (i in 0..1) {
                 if (bitIndex == 7) {
@@ -59,13 +59,13 @@ fun encodeText(text: List<Char>, image: BufferedImage): BufferedImage {
                     charValue = charToInt[text[textIndex]] ?: 0
                     bitIndex = 0
                 }
-                val currentChannel = if (i % 2 == 0) (pixel shr 24) and 0xFF else pixel and 0xFF
+                val currentChannel = if (i % 2 == 0) (pixel shr 16) and 0xFF else (pixel shr 8) and 0xFF
                 val newChannel = modifyLSB(currentChannel, (charValue shr bitIndex) and 1)
                 bitIndex++
                 val newPixel = if (i % 2 == 0) {
-                    (pixel shr 8) or (newChannel shl 24)
+                    (pixel and 0xFF00FFFF.toInt()) or (newChannel shl 16)
                 } else {
-                    (pixel and 0xFFFFF00) or newChannel
+                    (pixel and 0xFFFF00FF.toInt()) or (newChannel shl 8)
                 }
                 modifiedImage.setRGB(x, y, newPixel)
             }
@@ -129,13 +129,13 @@ fun decodeText(image: BufferedImage): List<Char> {
     var bitIndex = 0
     var charValue = 0
     for (y in 0 until height) {
-        for (x in 1 until width) {
+        for (x in 0 until width) {
             val pixel = image.getRGB(x, y)
-            for(i in 0 until 1) {
-                val currentChannelLSB = (if (i % 2 == 1) (pixel shr 24) else pixel) and 1
+            for (i in 0..1) {
+                val currentChannelLSB = if (i % 2 == 0) (pixel shr 16) and 1 else (pixel shr 8) and 1
                 bitIndex++
                 charValue = (charValue shl 1) or currentChannelLSB
-                if(bitIndex == 5) {
+                if (bitIndex == 7) {
                     textIndex++
                     if (textIndex == length) {
                         return text
