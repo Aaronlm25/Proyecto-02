@@ -3,8 +3,29 @@ package steganography
 import java.awt.image.BufferedImage
 
 private val charToInt = mapOf(
+<<<<<<< HEAD
     '!' to 0, '.' to 1, '+' to 2, '-' to 3, '?' to 4, '¿' to 5,
     'á' to 6, 'é' to 7, 'í' to 8, 'ó' to 9, 'ú' to 10,
+=======
+    'a' to 1, 'b' to 2, 'c' to 3, 'd' to 4, 'e' to 5, 
+    'f' to 6, 'g' to 7, 'h' to 8, 'i' to 9, 'j' to 10, 
+    'k' to 11, 'l' to 12, 'm' to 13, 'n' to 14, 'o' to 15, 
+    'p' to 16, 'q' to 17, 'r' to 18, 's' to 19, 't' to 20, 
+    'u' to 21, 'v' to 22, 'w' to 23, 'x' to 24, 'y' to 25, 
+    'z' to 26, '?' to 27, '!' to 28, '@' to 29, '(' to 30,
+    ')' to 31, ':' to 32, ',' to 33, '.' to 34, '-' to 35,
+    '\'' to 36, 'á' to 37, 'é' to 38, 'í' to 39, 'ó' to 40, 
+    'ú' to 41, '1' to 42, '2' to 43, '3' to 44, '4' to 45, 
+    '5' to 46, '6' to 47, '7' to 48, '8' to 49, '9' to 50,
+    '#' to 51, '$' to 52, '%' to 53, '&' to 54, '[' to 55,
+    ']' to 56, '{' to 57, '}' to 58, ' ' to 59, '\n' to 60,
+    'A' to 61, 'B' to 62, 'C' to 63, 'D' to 64, 'E' to 65, 
+    'F' to 66, 'G' to 67, 'H' to 68, 'I' to 69, 'J' to 70, 
+    'K' to 71, 'L' to 72, 'M' to 73, 'N' to 74, 'O' to 75, 
+    'P' to 76, 'Q' to 77, 'R' to 78, 'S' to 79, 'T' to 80, 
+    'U' to 81, 'V' to 82, 'W' to 83, 'X' to 84, 'Y' to 85, 
+    'Z' to 86, 'ñ' to 87, 'Ñ' to 88, '~' to 89
+>>>>>>> 766b5ae (Avance del metodo encode)
 )
 
 private val intToChar = charToInt.entries.associate { (key, value) -> value to key }
@@ -17,37 +38,92 @@ private val intToChar = charToInt.entries.associate { (key, value) -> value to k
  * @throws IllegalStateException if the text is too large for the pixels array or contains invalid characters.
  */
 fun encodeText(text: List<Char>, image: BufferedImage): BufferedImage {
+    val seed = Random(image.getRGB(0, 0).toLong())
     val length = text.size
-    if (length > (image.width * image.height) / 3) {
-        throw IllegalStateException("Text is too large for the image")
+    var textIndex = 0
+    var lastX = 1
+    var lastY = 0
+
+    if (length * 3 > image.width * image.height) {
+        throw IllegalStateException("El texto es demasiado largo para la imagen.")
     }
 
     var textIndex = 0
     for (y in 0 until image.height) {
-        for (x in 0 until image.width step 3) {
+        for (x in 1 until image.width step 3) {
             if (textIndex == length) {
                 image.setRGB(image.width - 1, image.height - 1, length * 3)
+                val goal = charToInt['~'] ?: 0
+                image.setRGB(lastX, lastY, goal)
                 return image
             }
 
-            if (x + 2 >= image.width) continue
+            if (x + 3 >= image.width) continue
+
+            val charValue = charToInt[text[textIndex]] ?: 0
 
             val pixel1 = image.getRGB(x, y)
             val pixel2 = image.getRGB(x + 1, y)
             val pixel3 = image.getRGB(x + 2, y)
 
-            val charValue = charToInt[text[textIndex]] ?: throw IllegalStateException("Invalid character: ${text[textIndex]}")
+            val alpha1 = (pixel1 shr 24) and 0xff
+            val blue1 = pixel1 and 0xff
+            val alpha2 = (pixel2 shr 24) and 0xff
+            val blue2 = pixel2 and 0xff
+            val alpha3 = (pixel3 shr 24) and 0xff
+            val blue3 = pixel3 and 0xff
 
-            val newPixel1 = modifyPixel(pixel1, (charValue shr 4) and 1, (charValue shr 5) and 1)
-            val newPixel2 = modifyPixel(pixel2, (charValue shr 2) and 1, (charValue shr 3) and 1)
-            val newPixel3 = modifyPixel(pixel3, charValue and 1, (charValue shr 1) and 1)
+
+            val lsbBlue1 = getLSB(blue1)
+            val lsbBlue2 = getLSB(blue2)
+            val lsbBlue3 = getLSB(blue3)
+            val lsbAlpha1 = getLSB(alpha1)
+            val lsbAlpha2 = getLSB(alpha2)
+            val lsbAlpha3 = getLSB(alpha3)
+
+            var lastBlue1 = blue1
+            var lastBlue2 = blue2
+            var lastBlue3 = blue3
+            var lastAlpha1 = alpha1
+            var lastAlpha2 = alpha2
+            var lastAlpha3 = alpha3
+
+            if (!(((charValue shr 5) and 1) == lsbBlue1)) {
+                lastBlue1 = (blue1 + 1) % 256
+            }
+
+            if(!(((charValue shr 4) and 1) == lsbAlpha1)) {
+                lastAlpha1 = (alpha1 + 1) % 256
+            }
+
+            if(!(((charValue shr 3) and 1) == lsbBlue2)) {
+                lastBlue2 = (blue2 + 1) % 256
+            } 
+
+            if(!(((charValue shr 2) and 1) == lsbAlpha2)) {
+                lastAlpha2 = (alpha2 + 1) % 256
+            }
+ 
+            if(!(((charValue shr 1) and 1) == lsbBlue3)) {
+                lastBlue3 = (blue3 + 1) % 256
+            }
+
+            if(!((charValue and 1) == lsbAlpha3)) {
+                lastAlpha3 = (alpha3 + 1) % 256
+            }
+                        
+            val newPixel1 = (lastAlpha1 shl 24) or (pixel1 and 0x00FFFF00) or lastBlue1          
+            val newPixel2 = (lastAlpha2 shl 24) or (pixel2 and 0x00FFFF00) or lastBlue2        
+            val newPixel3 = (lastAlpha3 shl 24) or (pixel3 and 0x00FFFF00) or lastAlpha3
 
             image.setRGB(x, y, newPixel1)
             image.setRGB(x + 1, y, newPixel2)
             image.setRGB(x + 2, y, newPixel3)
 
             textIndex++
+            lastX++
         }
+        lastY++
     }
 
     image.setRGB(image.width - 1, image.height - 1, length * 3)
@@ -72,7 +148,11 @@ private fun modifyPixel(pixel: Int, bit1: Int, bit2: Int): Int {
     return (alpha shl 24) or (newRed shl 16) or (newGreen shl 8) or blue
 }
 
-/**
+private fun getLSB(channel: Int): Int {
+    return (channel and 0xFE)
+}
+
+/** 
  * Decodes an image represented by an integer array of the pixels into the 
  * original text.
  *
