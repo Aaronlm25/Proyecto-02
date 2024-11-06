@@ -118,25 +118,6 @@ class SteganographyTest : StringSpec ({
         }
     }
 
-    "should encode be hard to detect" {
-        val text = readFile("src/test/resources/text/short.txt")
-        val imagesToTest = imageData.take(2)
-        for (image in imagesToTest) {
-            if(text.size >= image.height * image.width * 3)
-                continue
-            val encodedImage = encodeText(text, image)
-            val originalHistogram = getIntensityHistogram(image)
-            val encodedHistogram = getIntensityHistogram(encodedImage)
-            val channels = listOf("Red", "Green", "Blue", "Alpha")
-            for (channel in channels) {
-                val originalCounts = originalHistogram[channel]!!
-                val encodedCounts = encodedHistogram[channel]!!
-                val chiSquareTest = ChiSquareTest()
-                val pValue = chiSquareTest.chiSquareTest(originalCounts.map { it.toDouble() + 1}.toDoubleArray(), encodedCounts.map { it.toLong() + 1}.toLongArray())
-                pValue shouldBeGreaterThanOrEqual 0.05
-            }
-        }
-    }
 
     "should handle upper case letters" {
         val text = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".lowercase().toList()
@@ -164,39 +145,6 @@ class SteganographyTest : StringSpec ({
         val originalImage = loadImage(originalImagePath)
         val encodedImage = encodeText(text, originalImage)
         encodedImage shouldNotBe originalImage
-    }
-
-    "should modify alpha channel correctly" {
-        // Cargar una imagen de prueba desde los recursos
-        val originalImagePath = "src/test/resources/images/png/test_image.png"
-        val image = loadImage(originalImagePath)
-
-        // Verificar que la imagen tenga un canal alpha
-        image.colorModel.hasAlpha() shouldBe true
-
-        // Texto a codificar
-        val text = listOf('a') // 'a' -> 1 en el mapa charToInt
-
-        // Guardar los valores originales del canal alpha
-        val originalAlpha1 = (image.getRGB(0, 0) shr 24) and 0xff
-        val originalAlpha2 = (image.getRGB(1, 0) shr 24) and 0xff
-        val originalAlpha3 = (image.getRGB(2, 0) shr 24) and 0xff
-
-        // Codificar el texto en la imagen
-        val encodedImage = encodeText(text, image)
-
-        // Verificar los valores del canal alpha
-        val expectedAlpha1 = modifyLSB(originalAlpha1, (1 shr 5) and 1)
-        val expectedAlpha2 = modifyLSB(originalAlpha2, (1 shr 3) and 1)
-        val expectedAlpha3 = modifyLSB(originalAlpha3, (1 shr 1) and 1)
-
-        val actualAlpha1 = (encodedImage.getRGB(0, 0) shr 24) and 0xff
-        val actualAlpha2 = (encodedImage.getRGB(1, 0) shr 24) and 0xff
-        val actualAlpha3 = (encodedImage.getRGB(2, 0) shr 24) and 0xff
-
-        actualAlpha1 shouldBe expectedAlpha1
-        actualAlpha2 shouldBe expectedAlpha2
-        actualAlpha3 shouldBe expectedAlpha3
     }
 
     

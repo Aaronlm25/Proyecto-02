@@ -70,7 +70,8 @@ fun encodeText(text: List<Char>, imageO: BufferedImage): BufferedImage {
                     lsbAlpha1 = alpha1 + 1
                 }
             }
-            val newPixel1 = (lsbAlpha1 shl 24) or (pixel1 and 0x00FFFF00) or lsbBlue1
+
+            val newPixel1 = (modifyLSB(alpha1, lsbAlpha1) shl 24) or (pixel1 and 0x00FFFF00) or modifyLSB(blue1, lsbBlue1)
 
             image.setRGB(y, x, newPixel1)
             textIndex++
@@ -113,6 +114,16 @@ private fun modifyPixel(pixel: Int, bit1: Int, bit2: Int): Int {
  */
 private fun getLSB(channel: Int): Int {
     return (channel and 1)
+}
+
+/**
+ * Modifies the LSB of the desired channel.
+ * @param channel The channel to be modified.
+ * @param bit The bit to be compared with the channel's LSB.
+ * @return The modified channel.
+ */
+private fun modifyLSB(channel: Int, bit: Int): Int {
+    return (channel and 0xFE) or (bit and 1)
 }
 
 /**
