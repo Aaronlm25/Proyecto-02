@@ -139,8 +139,8 @@ fun decodeText(image: BufferedImage): List<Char> {
         for (x in 1 until width) {
             val pixel = image.getRGB(x, y)
             for(i in 0..1) {
-                val (currentChannel, _) = getCurrentChannel(pixel, i)
-                bits.append(currentChannel and 1)
+                val channel = getCurrentChannel(pixel, i).first
+                bits.append(channel and 1)
                 if (bits.length == 7) {
                     val charValue = Integer.parseInt(bits.toString(), 2)
                     val char = intToChar[charValue] ?: '0'
