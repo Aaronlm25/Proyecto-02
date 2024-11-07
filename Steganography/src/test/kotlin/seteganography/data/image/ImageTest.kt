@@ -31,22 +31,12 @@ class ImageTest : StringSpec({
         File(jpgDirectory).listFiles { file -> file.extension == "jpg" }?.forEach { file ->
             images[jpgDirectory]!!.add(file.absolutePath)
         }
-
-        // Imprimir el contenido del mapa
-        println("Contenido del mapa de imágenes:")
-        images.forEach { (directory, imagePaths) ->
-            println("Directorio: $directory")
-            imagePaths.forEach { path ->
-                println("  - $path")
-            }
-        }
     }
 
     "should jpg image pixels not be changed" {
         val jpgImages = images.filterKeys { it.endsWith("jpg") }
         for ((directory, imagePaths) in jpgImages) {
             for (path in imagePaths) {
-                println("Loading JPG image from path: $path")
                 val originalImage = ImageIO.read(File(path))
                 val image = loadImage(path)
                 val imageName = path.substringAfterLast("/images").substringBeforeLast(".")
@@ -74,7 +64,6 @@ class ImageTest : StringSpec({
         val pngImages = images.filterKeys { it.endsWith("png") }
         for ((directory, imagePaths) in pngImages) {
             for (path in imagePaths) {
-                println("Loading PNG image from path: $path")
                 val originalImage = ImageIO.read(File(path))
                 val image = loadImage(path)
                 val extension = path.substringAfterLast(".")
@@ -130,13 +119,7 @@ class ImageTest : StringSpec({
                 var imageName = path.substringAfterLast("/images")
                 imageName = imageName.substringBeforeLast(".")
                 val savePath = "src/test/resources/images${imageName}_test_saved.$extension"
-    
-                try {
-                    saveImage(image, savePath)
-                } catch (e: IllegalArgumentException) {
-                    println("Error saving image: $e")
-                }
-    
+                saveImage(image, savePath)
                 val savedFile = File(savePath)
                 savedFile.exists() shouldBe true
     
@@ -145,14 +128,14 @@ class ImageTest : StringSpec({
         }
     }
 
-    "should return false when trying to save an image to an invalid path" {
+    "should throw IllegalArgumentException when trying to save an image to an invalid path" {
         var imageProcessed = false
         for ((directory, imagePaths) in images) {
             for (path in imagePaths) {
                 if (!imageProcessed) {
                     val invalidFilePath = "invalid/path/to/save_image.png"
                     val image = loadImage(path)
-                    shouldThrow<IOException> {
+                    shouldThrow<IllegalArgumentException> {
                         saveImage(image, invalidFilePath)
                     }
                     imageProcessed = true
