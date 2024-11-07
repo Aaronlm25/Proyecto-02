@@ -23,9 +23,15 @@ private val charToInt = mapOf(
     'K' to 76, 'L' to 77, 'M' to 78, 'N' to 79, 'O' to 80,
     'P' to 81, 'Q' to 82, 'R' to 83, 'S' to 84, 'T' to 85,
     'U' to 86, 'V' to 87, 'W' to 88, 'X' to 89, 'Y' to 90,
-    'Z' to 91, '~' to 92
+    'Z' to 91, '~' to 92, 'Ñ' to 93, '^' to 94, '_' to 95,
+    '`' to 96, '|' to 97, '\\' to 98, 'ñ' to 99, ';' to 100,
+    '<' to 101, '=' to 102, '>' to 103, '?' to 104, '¡' to 105,
+    '¢' to 106, '£' to 107, '¤' to 108, '¥' to 109, '¦' to 110,
+    '§' to 111, '¨' to 112, '©' to 113, 'ª' to 114, '«' to 115,
+    '¬' to 116, '­' to 117, '®' to 118, '¯' to 119, '°' to 120,
+    '±' to 121, '²' to 122, '³' to 123, '´' to 124, 'µ' to 125,
+    '¶' to 126, '·' to 127, '¸' to 128
 )
-
 
 private val intToChar = charToInt.entries.associate { (k, v) -> v to k }
 
@@ -41,7 +47,7 @@ fun encodeText(text: List<Char>, image: BufferedImage): BufferedImage {
     val length = text.size
     val width = image.width
     val height = image.height
-    validateText(text, floor(image.width * image.height / 7.0).toInt() - 4)
+    validateText(text, floor(image.width * image.height / 6.5).toInt() - 4)
     var textIndex = 0
     val modifiedImage = getImage(image)
     var bitIndex = 0

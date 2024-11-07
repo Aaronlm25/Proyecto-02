@@ -44,7 +44,7 @@ fun main() {
                 else -> println("Introduzca una opción válida (u) (h) (x).")
             }
         } catch (ise: IllegalStateException) {
-            println("Perdida de informacion, el texto es muy largo para el tamano de la imagen.")
+            println(ise.message)
         }
     }
 }
