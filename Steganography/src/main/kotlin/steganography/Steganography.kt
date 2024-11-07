@@ -68,7 +68,7 @@ fun encodeText(text: List<Char>, image: BufferedImage): BufferedImage {
                     bitIndex = 0
                 }
                 val (currentChannel, displacement) = getCurrentChannel(pixel, i)
-                val newChannel = modifyLSB(currentChannel, (charValue shr bitIndex) and 1)
+                val newChannel = modifyLSB(currentChannel, (charValue shr 6 - bitIndex) and 1)
                 bitIndex++
                 val newPixel = getNewPixel(pixel, Pair(newChannel, displacement))
                 modifiedImage.setRGB(x, y, newPixel)
@@ -152,11 +152,6 @@ fun decodeText(image: BufferedImage): List<Char> {
         for (x in 1 until width) {
             val pixel = image.getRGB(x, y)
             for(i in 0..1) {
-                val (channel, displacement) = getCurrentChannel(pixel, i)
-                bits.append(channel and 1)
-                act.add((getCurrentChannel(pixel, i).first and 1).toString())
-                //println(blueLSB.toString()+"  "+alphaLSB.toString())
-                // Verificamos si ya tenemos 6 bits para formar un carácter a reserva de meter mayusculas
                 if (bits.length == 7) {
                     //println(bits)
                     val charValue = Integer.parseInt(bits.toString(), 2)
@@ -175,6 +170,11 @@ fun decodeText(image: BufferedImage): List<Char> {
                         return text
                     }
                 }
+                val (channel, displacement) = getCurrentChannel(pixel, i)
+                bits.append(channel and 1)
+                act.add((channel and 1).toString())
+                //println(blueLSB.toString()+"  "+alphaLSB.toString())
+                // Verificamos si ya tenemos 6 bits para formar un carácter a reserva de meter mayusculas
             }
         }
     }
