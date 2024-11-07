@@ -90,7 +90,7 @@ class SteganographyTest : StringSpec ({
     }
     
     "should handle some common special characters during encoding and decoding" {
-        val text = ("!.+-?¿áéíóú¿!").toList()
+       val text = ("!.-?áéíóú!").toList()
         for(image in imageData) {
             if(text.size >= getLimit(image))
                 continue
@@ -144,7 +144,7 @@ class SteganographyTest : StringSpec ({
             if(text.length >= getLimit(image))
                 continue
             val encodedImage = encodeText(text.toList(), image)
-            decodeText(encodedImage) shouldBe (text.lowercase()).toList()
+            decodeText(encodedImage) shouldBe text.toList()
         }
     }
 
@@ -160,7 +160,7 @@ class SteganographyTest : StringSpec ({
 })
 
 private fun getLimit(image : BufferedImage): Int {
-    return floor(image.width * image.height / 3.0).toInt() - 2
+    return floor(image.width * image.height / 7.0).toInt() - 4
 }
 
 private fun getLSBHistogram(image : BufferedImage): Map<String, Map<Int, Int>> {

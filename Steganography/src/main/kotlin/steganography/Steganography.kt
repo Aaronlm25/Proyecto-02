@@ -23,7 +23,7 @@ private val charToInt = mapOf(
     'K' to 76, 'L' to 77, 'M' to 78, 'N' to 79, 'O' to 80,
     'P' to 81, 'Q' to 82, 'R' to 83, 'S' to 84, 'T' to 85,
     'U' to 86, 'V' to 87, 'W' to 88, 'X' to 89, 'Y' to 90,
-    'Z' to 91
+    'Z' to 91, '~' to 92
 )
 
 
@@ -41,27 +41,19 @@ fun encodeText(text: List<Char>, image: BufferedImage): BufferedImage {
     val length = text.size
     val width = image.width
     val height = image.height
-    validateText(text, floor(image.width * image.height / 4.0).toInt() - 2)
+    validateText(text, floor(image.width * image.height / 7.0).toInt() - 4)
     var textIndex = 0
     val modifiedImage = getImage(image)
     var bitIndex = 0
     var charValue = charToInt[text[textIndex]] ?: 0
-    var temp = mutableListOf<List<String>>()
-    var act = mutableListOf<String>()
-    temp.add(act)
     for (y in 0 until height) {
         for (x in 1 until width) {
-            val pixel = modifiedImage.getRGB(x, y)
+            var pixel = modifiedImage.getRGB(x, y)
             for (i in 0..1) {   
                 if (bitIndex == 7) {
                     textIndex++
-                    act = mutableListOf<String>()
-                    temp.add(act)
                     if (textIndex == length) {
-                        for (row in temp) {
-                            println(row.joinToString(" "))
-                        }
-                        modifiedImage.setRGB(width - 1, height - 1, length * 4)
+                        modifiedImage.setRGB(width - 1, height - 1, length * 7)
                         return modifiedImage
                     }
                     charValue = charToInt[text[textIndex]] ?: 0
@@ -70,13 +62,12 @@ fun encodeText(text: List<Char>, image: BufferedImage): BufferedImage {
                 val (currentChannel, displacement) = getCurrentChannel(pixel, i)
                 val newChannel = modifyLSB(currentChannel, (charValue shr 6 - bitIndex) and 1)
                 bitIndex++
-                val newPixel = getNewPixel(pixel, Pair(newChannel, displacement))
-                modifiedImage.setRGB(x, y, newPixel)
-                act.add((getCurrentChannel(newPixel, i).first and 1).toString())
+                pixel = getNewPixel(pixel, Pair(newChannel, displacement))
+                modifiedImage.setRGB(x, y, pixel)
             }
         }
     }
-    modifiedImage.setRGB(width - 1, height - 1, length * 4)
+    modifiedImage.setRGB(width - 1, height - 1, length * 7)
     return modifiedImage
 }
 
@@ -139,42 +130,29 @@ private fun modifyLSB(channel: Int, bit: Int): Int {
  * @throws IllegalStateException if no key is found on the pixels array.
  */
 fun decodeText(image: BufferedImage): List<Char> {
-    val length = image.getRGB(image.width - 1, image.height - 1) / 4
+    val length = image.getRGB(image.width - 1, image.height - 1) / 7
+    println(length)
     val width = image.width
     val height = image.height
     val text = mutableListOf<Char>()
     val bits = StringBuilder()
     var index = 0
-    var temp = mutableListOf<List<String>>()
-    var act = mutableListOf<String>()
-    temp.add(act)
     for (y in 0 until height) {
         for (x in 1 until width) {
             val pixel = image.getRGB(x, y)
             for(i in 0..1) {
+                val (currentChannel, _) = getCurrentChannel(pixel, i)
+                bits.append(currentChannel and 1)
                 if (bits.length == 7) {
-                    //println(bits)
                     val charValue = Integer.parseInt(bits.toString(), 2)
-                    //println("Bits: ${bits.toString()}, Char Value: $charValue")
                     val char = intToChar[charValue] ?: '0'
                     text.add(char)
-                    println(bits.toString())
                     bits.clear()
                     index++
-                    act = mutableListOf<String>()
-                    temp.add(act)
                     if(index == length) {
-                        for (row in temp) {
-                            println(row.joinToString(" "))
-                        }
                         return text
                     }
                 }
-                val (channel, displacement) = getCurrentChannel(pixel, i)
-                bits.append(channel and 1)
-                act.add((channel and 1).toString())
-                //println(blueLSB.toString()+"  "+alphaLSB.toString())
-                // Verificamos si ya tenemos 6 bits para formar un carácter a reserva de meter mayusculas
             }
         }
     }
