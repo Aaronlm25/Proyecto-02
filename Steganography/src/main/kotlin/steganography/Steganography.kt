@@ -1,7 +1,7 @@
 package steganography
 
 import java.awt.image.BufferedImage
-
+import java.util.Random
 private val charToInt = mapOf(
     'a' to 1, 'b' to 2, 'c' to 3, 'd' to 4, 'e' to 5, 
     'f' to 6, 'g' to 7, 'h' to 8, 'i' to 9, 'j' to 10, 
@@ -27,62 +27,59 @@ private val intToChar = charToInt.entries.associate { (key, value) -> value to k
  * @throws IllegalStateException if the text is too large for the pixels array or contains invalid characters.
  */
 fun encodeText(text: List<Char>, imageO: BufferedImage): BufferedImage {
-    /*
-    Mi idea es implementar shuffle para mas placer, pero despues */
     if (text.size * 3 > imageO.width * imageO.height) throw IllegalStateException("El texto es demasiado largo para la imagen.")
     if (!text.all { it in charToInt }) throw IllegalStateException("El texto contiene caracteres invalidos")
     val image = getImage(imageO)
     var textIndex = 0
-    //Lista de binarios
     val textValues = replaceAlphabet(text).map { it.toString(2).padStart(6, '0')}
-    //println(textValues)
-    //Lista de bits
     val bits =  textValues.flatMap { it.map { char -> char.toString().toInt() } }
     for (y in 0 until image.height) {
         for (x in 0 until image.width) {
-            if (textIndex == bits.size) {
-                return image
-            }
-            //println(bits[textIndex])
+            if (textIndex == bits.size) return image
             val pixel1 = image.getRGB(y, x)
-
-            val alpha1 = (pixel1 shr 24) and 0xff
-            val blue1 = pixel1 and 0xff
-            var lsbBlue1 = getLSB(blue1)
-            var lsbAlpha1 = getLSB(alpha1)
-
-            if (!(bits[textIndex] == lsbBlue1)) {
-                if (blue1 < 255 && blue1 > 0) {
-                    lsbBlue1 = if (lsbBlue1 == 0) blue1 + 1 else blue1 - 1
-                } else if (blue1 == 255) {
-                    lsbBlue1 = blue1 - 1
-                } else if (blue1 == 0) {
-                    lsbBlue1 = blue1 + 1
-                }
-            }
+            var alpha1 = (pixel1 shr 24) and 0xff
+            var blue1 = pixel1 and 0xff
+            val lsbBlue1 = getLSB(blue1)
+            val lsbAlpha1 = getLSB(alpha1)
+            blue1 = changeColor(bits[textIndex], lsbBlue1, blue1)
             textIndex++
-            if(!((bits[textIndex]) == lsbAlpha1)) {
-                if (alpha1 < 255 && alpha1 > 0) {
-                    lsbAlpha1 = if (lsbAlpha1 == 0) alpha1 + 1 else alpha1 - 1
-                } else if (alpha1 == 255) {
-                    lsbAlpha1 = alpha1 - 1
-                } else if (alpha1 == 0) {
-                    lsbAlpha1 = alpha1 + 1
-                }
-            }
-
-            val newPixel1 = (modifyLSB(alpha1, lsbAlpha1) shl 24) or (pixel1 and 0x00FFFF00) or modifyLSB(blue1, lsbBlue1)
-
+            alpha1 = changeColor(bits[textIndex], lsbAlpha1, alpha1)
+            val newPixel1 = (alpha1 shl 24) or (pixel1 and 0x00FFFF00) or blue1
             image.setRGB(y, x, newPixel1)
             textIndex++
         }
     }
-    
     return image
 }
 
 /**
+ * Change the color of a channel, add or subtract one randomly.
  * 
+ * @param bit Bit to be inserted into the channel.
+ * @param lsbColor LSB of the current channel.
+ * @param colorChannel Current value in the channel.
+ * @return Updated channel color
+ */
+private fun changeColor(bit:Int, lsbColor: Int, colorChannel: Int): Int{
+    val random = Random()
+    var color = colorChannel
+    if (bit != lsbColor) {
+        if (color < 255 && color > 0) {
+            if (random.nextInt(0,1) == 0) color += 1 else color -= 1
+        } else if (color == 255) {
+            color -= 1
+        } else if (color == 0) {
+            color += 1
+        }
+    }
+    return color
+}
+
+/**
+ * Makes a copy of a BufferedImage object
+ * 
+ * @param image Image to be copied.
+ * @return BufferedImage type object with the values ​​of image.
  */
 private fun getImage(image : BufferedImage): BufferedImage {
     val modifiedImage = BufferedImage(image.width, image.height, image.type)
@@ -93,24 +90,10 @@ private fun getImage(image : BufferedImage): BufferedImage {
 }
 
 /**
- * Modifies the pixel by changing the least significant bits.
- * @param pixel The pixel to be modified.
- * @param bit1 The first bit to set.
- * @param bit2 The second bit to set.
- * @return The modified pixel.
- */
-private fun modifyPixel(pixel: Int, bit1: Int, bit2: Int): Int {
-    val alpha = (pixel shr 24) and 0xff
-    val red = (pixel shr 16) and 0xff
-    val green = (pixel shr 8) and 0xff
-    val blue = pixel and 0xff
-
-    val newRed = (red and 0xFE) or bit1
-    val newGreen = (green and 0xFE) or bit2
-    return (alpha shl 24) or (newRed shl 16) or (newGreen shl 8) or blue
-}
-/**
+ * Get the LSB of a specific channel.
  * 
+ * @param channel Channel from which you want to recover the LSB.
+ * @return The LSB of the channel.
  */
 private fun getLSB(channel: Int): Int {
     return (channel and 1)
@@ -118,6 +101,7 @@ private fun getLSB(channel: Int): Int {
 
 /**
  * Modifies the LSB of the desired channel.
+ * 
  * @param channel The channel to be modified.
  * @param bit The bit to be compared with the channel's LSB.
  * @return The modified channel.
@@ -139,8 +123,7 @@ private fun replaceAlphabet(text: List<Char>): List<Int>{
     for (char in text) {
         charToInt[char.lowercaseChar()]?.let { numbers.add(it) }
     }
-    numbers.add(0) //Es analogo a la ide de pablo pero con un numero que en teoria nunca sale
-    //print(numbers+"\n")
+    numbers.add(0)
     return numbers
 }
 /** 
@@ -164,12 +147,8 @@ fun decodeText(image: BufferedImage): List<Char> {
 
             bits.append(blueLSB)
             bits.append(alphaLSB)
-            //println(blueLSB.toString()+"  "+alphaLSB.toString())
-            // Verificamos si ya tenemos 6 bits para formar un carácter a reserva de meter mayusculas
             if (bits.length == 6) {
-                //println(bits)
                 val charValue = Integer.parseInt(bits.toString(), 2)
-                //println("Bits: ${bits.toString()}, Char Value: $charValue")
                 if (bits.toString() == "000000"||charValue > 60) {
                     return text
                 } else{
