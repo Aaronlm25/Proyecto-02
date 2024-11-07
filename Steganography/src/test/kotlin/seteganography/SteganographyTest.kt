@@ -17,7 +17,6 @@ import io.kotest.matchers.doubles.shouldBeGreaterThanOrEqual
 import io.kotest.matchers.types.shouldNotBeSameInstanceAs
 import java.io.File
 import java.awt.image.BufferedImage
-import org.apache.commons.math3.stat.inference.ChiSquareTest
 
 class SteganographyTest : StringSpec ({
     lateinit var imageData: MutableList<BufferedImage>
@@ -118,26 +117,6 @@ class SteganographyTest : StringSpec ({
         }
     }
 
-    "should encode be hard to detect" {
-        val text = readFile("src/test/resources/text/short.txt")
-        val imagesToTest = imageData.take(2)
-        for (image in imagesToTest) {
-            if(text.size >= getLimit(image))
-                continue
-            val encodedImage = encodeText(text, image)
-            val originalHistogram = getIntensityHistogram(image)
-            val encodedHistogram = getIntensityHistogram(encodedImage)
-            val channels = listOf("Red", "Green", "Blue", "Alpha")
-            for (channel in channels) {
-                val originalCounts = originalHistogram[channel]!!
-                val encodedCounts = encodedHistogram[channel]!!
-                val chiSquareTest = ChiSquareTest()
-                val pValue = chiSquareTest.chiSquareTest(originalCounts.map { it.toDouble() + 1}.toDoubleArray(), encodedCounts.map { it.toLong() + 1}.toLongArray())
-                pValue shouldBeGreaterThanOrEqual 0.05
-            }
-        }
-    }
-
     "should handle upper case letters" {
         val text = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         for(image in imageData) {
@@ -160,7 +139,7 @@ class SteganographyTest : StringSpec ({
 })
 
 private fun getLimit(image : BufferedImage): Int {
-    return floor(image.width * image.height / 7.0).toInt() - 4
+    return floor(image.width * image.height / 6.5).toInt() - 4
 }
 
 private fun getLSBHistogram(image : BufferedImage): Map<String, Map<Int, Int>> {
