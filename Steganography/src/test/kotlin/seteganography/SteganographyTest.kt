@@ -165,30 +165,6 @@ private fun getLSBHistogram(image : BufferedImage): Map<String, Map<Int, Int>> {
     return histogram
 }
 
-private fun getIntensityHistogram(image: BufferedImage): Map<String, IntArray> {
-    val histogram = mutableMapOf(
-        "Red" to IntArray(256),
-        "Green" to IntArray(256),
-        "Blue" to IntArray(256),
-        "Alpha" to IntArray(256)
-    )
-    for (x in 0 until image.width) {
-        for (y in 0 until image.height) {
-            val pixel = image.getRGB(x, y)
-            val alpha = (pixel shr 24) and 0xFF
-            val red = (pixel shr 16) and 0xFF
-            val green = (pixel shr 8) and 0xFF
-            val blue = pixel and 0xFF
-            histogram["Red"]!![red]++
-            histogram["Green"]!![green]++
-            histogram["Blue"]!![blue]++
-            histogram["Alpha"]!![alpha]++
-        }
-    }
-    return histogram
-}
-
-// Función auxiliar para modificar el LSB
 private fun modifyLSB(value: Int, bit: Int): Int {
     return (value and 0xFE) or bit
 }
