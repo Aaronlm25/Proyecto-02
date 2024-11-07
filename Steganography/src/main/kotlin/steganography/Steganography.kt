@@ -127,11 +127,9 @@ private fun modifyLSB(channel: Int, bit: Int): Int {
  *
  * @param image A BufferedImage of the image.
  * @return The decoded text.
- * @throws IllegalStateException if no key is found on the pixels array.
  */
 fun decodeText(image: BufferedImage): List<Char> {
-    val length = image.getRGB(image.width - 1, image.height - 1) / 7
-    println(length)
+    val length = ((image.getRGB(image.width - 1, image.height - 1) and 0xFFFFFF) / 7.0).toInt()
     val width = image.width
     val height = image.height
     val text = mutableListOf<Char>()
