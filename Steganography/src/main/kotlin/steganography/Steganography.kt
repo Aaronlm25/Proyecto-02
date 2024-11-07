@@ -46,34 +46,52 @@ fun encodeText(text: List<Char>, image: BufferedImage): BufferedImage {
     val modifiedImage = getImage(image)
     var bitIndex = 0
     var charValue = charToInt[text[textIndex]] ?: 0
+    var temp = mutableListOf<List<String>>()
+    var act = mutableListOf<String>()
+    temp.add(act)
     for (y in 0 until height) {
-        for (x in 0 until width) {
+        for (x in 1 until width) {
             val pixel = modifiedImage.getRGB(x, y)
-            for (i in 0..1) {
+            for (i in 0..1) {   
                 if (bitIndex == 7) {
                     textIndex++
+                    act = mutableListOf<String>()
+                    temp.add(act)
                     if (textIndex == length) {
+                        for (row in temp) {
+                            println(row.joinToString(" "))
+                        }
                         modifiedImage.setRGB(width - 1, height - 1, length * 4)
                         return modifiedImage
                     }
                     charValue = charToInt[text[textIndex]] ?: 0
                     bitIndex = 0
                 }
-                val currentChannel = if (i % 2 == 0) (pixel shr 16) and 0xFF else (pixel shr 8) and 0xFF
+                val (currentChannel, displacement) = getCurrentChannel(pixel, i)
                 val newChannel = modifyLSB(currentChannel, (charValue shr bitIndex) and 1)
                 bitIndex++
-                val newPixel = if (i % 2 == 0) {
-                    (pixel and 0xFF00FFFF.toInt()) or (newChannel shl 16)
-                } else {
-                    (pixel and 0xFFFF00FF.toInt()) or (newChannel shl 8)
-                }
+                val newPixel = getNewPixel(pixel, Pair(newChannel, displacement))
                 modifiedImage.setRGB(x, y, newPixel)
+                act.add((getCurrentChannel(newPixel, i).first and 1).toString())
             }
         }
     }
     modifiedImage.setRGB(width - 1, height - 1, length * 4)
     return modifiedImage
 }
+
+private fun getCurrentChannel(pixel: Int, i: Int): Pair<Int, Int> {
+    return when (i % 2) {
+        0 -> Pair((pixel shr 16) and 0xFF, 16)
+        else -> Pair((pixel shr 8) and 0xFF, 8)
+    }
+}
+
+private fun getNewPixel(pixel: Int, channel: Pair<Int, Int>): Int {
+    val (newChannel, displacement) = channel
+    return (pixel and (0xFF shl displacement).inv()) or (newChannel shl displacement)
+}
+
 
 private fun getImage(image : BufferedImage): BufferedImage {
     val modifiedImage = BufferedImage(image.width, image.height, image.type)
@@ -125,25 +143,37 @@ fun decodeText(image: BufferedImage): List<Char> {
     val width = image.width
     val height = image.height
     val text = mutableListOf<Char>()
-    var textIndex = 0
-    var bitIndex = 0
-    var charValue = 0
+    val bits = StringBuilder()
+    var index = 0
+    var temp = mutableListOf<List<String>>()
+    var act = mutableListOf<String>()
+    temp.add(act)
     for (y in 0 until height) {
-        for (x in 0 until width) {
+        for (x in 1 until width) {
             val pixel = image.getRGB(x, y)
-            for (i in 0..1) {
-                val currentChannelLSB = if (i % 2 == 0) (pixel shr 16) and 1 else (pixel shr 8) and 1
-                bitIndex++
-                charValue = (charValue shl 1) or currentChannelLSB
-                if (bitIndex == 7) {
-                    textIndex++
-                    if (textIndex == length) {
+            for(i in 0..1) {
+                val (channel, displacement) = getCurrentChannel(pixel, i)
+                bits.append(channel and 1)
+                act.add((getCurrentChannel(pixel, i).first and 1).toString())
+                //println(blueLSB.toString()+"  "+alphaLSB.toString())
+                // Verificamos si ya tenemos 6 bits para formar un carácter a reserva de meter mayusculas
+                if (bits.length == 7) {
+                    //println(bits)
+                    val charValue = Integer.parseInt(bits.toString(), 2)
+                    //println("Bits: ${bits.toString()}, Char Value: $charValue")
+                    val char = intToChar[charValue] ?: '0'
+                    text.add(char)
+                    println(bits.toString())
+                    bits.clear()
+                    index++
+                    act = mutableListOf<String>()
+                    temp.add(act)
+                    if(index == length) {
+                        for (row in temp) {
+                            println(row.joinToString(" "))
+                        }
                         return text
                     }
-                    val char = intToChar[charValue] ?: ' '
-                    text.add(char)
-                    charValue = 0
-                    bitIndex = 0
                 }
             }
         }
