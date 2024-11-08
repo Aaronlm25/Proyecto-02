@@ -37,6 +37,8 @@ fun main() {
             }
         } catch (ise: IllegalStateException) {
             println(ise.message)
+        }catch (e: Exception) {
+            println("Se ha producido un error general: ${e.message}")
         }
     }
 }
@@ -79,6 +81,8 @@ private fun saveImage(text: List<Char>, image: BufferedImage) {
             println("No se pudo guardar la imagen en la ruta proporcionada.")
         } catch (iae: IllegalArgumentException) {
             println("El formato de la imagen no es válido. Debe ser (png) o (jpg).")
+        }catch (e: Exception) {
+            println("Se ha producido un error general: ${e.message}")
         }
     }
 }
@@ -96,6 +100,8 @@ private fun saveText(image: BufferedImage) {
             println("No se pudo guardar el texto en la ruta proporcionada.")
         } catch (iae: IllegalArgumentException) {
             println("El formato del archivo debe ser .txt")
+        }catch (e: Exception) {
+            println("Se ha producido un error general: ${e.message}")
         }
     }
 }
@@ -112,6 +118,8 @@ private fun getText(): List<Char> {
             println("El archivo tiene caracteres no soportados.")
         } catch (fnfe: FileNotFoundException) {
             println("No se encontró el archivo.")
+        }catch (e: Exception) {
+            println("Se ha producido un error general: ${e.message}")
         }
     }
 }
@@ -128,6 +136,8 @@ private fun getImage(prompt: String): BufferedImage {
             println("Error: El archivo proporcionado no es una imagen válida o tiene un formato no soportado.")
         } catch (fnfe: FileNotFoundException) {
             println("No se encontró el archivo.")
+        }catch (e: Exception) {
+            println("Se ha producido un error general: ${e.message}")
         }
     }
 }
