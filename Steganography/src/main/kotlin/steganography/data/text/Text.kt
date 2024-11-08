@@ -53,6 +53,9 @@ fun readFile(path : String): List<Char> {
  * @throws IOException If the path is invalid.
 */
 fun toFile(characters : List<Char>, path: String): File {
+    if (path.substringAfterLast(".") != "txt") {
+        throw IllegalArgumentException("La extension del archivo no es valida.")
+    }
     val file = File(path)
     val text = characters.joinToString("")
     file.writeText(text)
