@@ -38,14 +38,15 @@ fun main() {
         } catch (ise: IllegalStateException) {
             println(ise.message)
         }catch (e: Exception) {
-            println("\nSe ha producido un error.")
+            println("\nSe ha producido un error. Intente de nuevo.")
         }
     }
 }
 
 fun displayMenu() {
     println(
-        """ \n
+        """
+
         Esteganografía.
         (Pulse tab para autocompletar)
         (h) Ocultar texto en imagen.
@@ -82,7 +83,7 @@ private fun saveImage(text: List<Char>, image: BufferedImage) {
         } catch (iae: IllegalArgumentException) {
             println("\nEl formato de la imagen no es válido. Debe ser (png) o (jpg).")
         }catch (e: Exception) {
-            println("\nSe ha producido un error.")
+            println("\nSe ha producido un error. Intente de nuevo.")
         }
     }
 }
@@ -119,7 +120,7 @@ private fun getText(): List<Char> {
         } catch (fnfe: FileNotFoundException) {
             println("\nNo se encontró el archivo.")
         }catch (e: Exception) {
-            println("\nSe ha producido un error.")
+            println("\nSe ha producido un error. Intente de nuevo.")
         }
     }
 }
@@ -137,7 +138,7 @@ private fun getImage(prompt: String): BufferedImage {
         } catch (fnfe: FileNotFoundException) {
             println("\nNo se encontró el archivo.")
         }catch (e: Exception) {
-            println("\nSe ha producido un error.")
+            println("\nSe ha producido un error. Intente de nuevo.")
         }
     }
 }
