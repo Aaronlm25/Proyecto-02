@@ -12,7 +12,7 @@ import java.io.FileNotFoundException
  */
 fun readFile(path : String): List<Char> {
     val file = File(path)
-    return file.readText().lowercase().toList()
+    return file.readText().toList()
 }
 
 /**

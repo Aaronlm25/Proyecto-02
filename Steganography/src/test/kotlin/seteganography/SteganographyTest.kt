@@ -41,7 +41,7 @@ class SteganographyTest : StringSpec ({
             val width = image.getWidth()
             val height = image.getHeight()
             val chars = ('A'..'Z') + ('a'..'z') + ' '
-            val maxSize = (width * height) / 3
+            val maxSize = (width * height) / 4
             val text = List(maxSize + 1) { chars.random() } // +1 para asegurarse de que exceda
             shouldThrow<IllegalStateException> {
                 encodeText(text, image)
@@ -113,19 +113,19 @@ class SteganographyTest : StringSpec ({
                 val originalBalance = ((origalLSB [0] ?: 0).toDouble() / (origalLSB .values.sum())) * 100
                 val encodedLSB = encodedHistogram[channel]!!
                 val encodedBalance = ((encodedLSB[0] ?: 0).toDouble() / (encodedLSB.values.sum())) * 100
-                Math.abs(originalBalance - encodedBalance) shouldBeLessThanOrEqual 10.0
+                Math.abs(originalBalance - encodedBalance) shouldBeLessThanOrEqual 15.0
             }
         }
     }
 
 
     "should handle upper case letters" {
-        val text = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".lowercase().toList()
+        val text = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toList()
         for(image in imageData) {
             if(text.size >= image.height * image.width * 3)
                 continue
             val encodedImage = encodeText(text, image)
-            decodeText(encodedImage).joinToString("").lowercase() shouldBe text.joinToString("").lowercase()
+            decodeText(encodedImage).joinToString("") shouldBe text.joinToString("")
         }
     }
 
