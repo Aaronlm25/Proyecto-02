@@ -72,7 +72,7 @@ class SteganographyTest : StringSpec ({
     "should encode text correctly in image" {
         val text = readFile("src/test/resources/text/short.txt")
         for(image in imageData) {
-            if(text.size >= image.height * image.width * 3)
+            if(text.size >= image.height * image.width * 4)
                 continue
             val encodedImage = encodeText(text, image)
             comparePixels(encodedImage, image) shouldBe false
@@ -82,7 +82,7 @@ class SteganographyTest : StringSpec ({
     "should decode text correctly from image" {
         val text = readFile("src/test/resources/text/short.txt")
         for(image in imageData) {
-            if(text.size >= image.height * image.width * 3)
+            if(text.size >= image.height * image.width * 4)
                 continue
             val encodedImage = encodeText(text, image)
             decodeText(encodedImage) shouldBe text
@@ -92,7 +92,7 @@ class SteganographyTest : StringSpec ({
     "should handle some common special characters during encoding and decoding" {
         val text = ("!.-?áéíóú!").toList()
         for(image in imageData) {
-            if(text.size >= image.height * image.width * 3)
+            if(text.size >= image.height * image.width * 4)
                 continue
             val encodedImage = encodeText(text, image)
             decodeText(encodedImage) shouldBe text
@@ -102,7 +102,7 @@ class SteganographyTest : StringSpec ({
     "should changes not be apparent" {
         val text = readFile("src/test/resources/text/short.txt")
         for(image in imageData) {
-            if(text.size >= image.height * image.width * 3)
+            if(text.size >= image.height * image.width * 4)
                 continue
             val encodedImage = encodeText(text, image)
             val originalHistorgram = getLSBHistogram(image)
@@ -113,7 +113,7 @@ class SteganographyTest : StringSpec ({
                 val originalBalance = ((origalLSB [0] ?: 0).toDouble() / (origalLSB .values.sum())) * 100
                 val encodedLSB = encodedHistogram[channel]!!
                 val encodedBalance = ((encodedLSB[0] ?: 0).toDouble() / (encodedLSB.values.sum())) * 100
-                Math.abs(originalBalance - encodedBalance) shouldBeLessThanOrEqual 15.0
+                Math.abs(originalBalance - encodedBalance) shouldBeLessThanOrEqual 14.0
             }
         }
     }
@@ -122,7 +122,7 @@ class SteganographyTest : StringSpec ({
     "should handle upper case letters" {
         val text = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toList()
         for(image in imageData) {
-            if(text.size >= image.height * image.width * 3)
+            if(text.size >= image.height * image.width * 4)
                 continue
             val encodedImage = encodeText(text, image)
             decodeText(encodedImage).joinToString("") shouldBe text.joinToString("")
@@ -132,7 +132,7 @@ class SteganographyTest : StringSpec ({
     "should handle numbers" {
         val text = "0123456789".toList()
         for(image in imageData) {
-            if(text.size >= image.height * image.width * 3)
+            if(text.size >= image.height * image.width * 4)
                 continue
             val encodedImage = encodeText(text.toList(), image)
             decodeText(encodedImage).joinToString("") shouldBe text.joinToString("")
