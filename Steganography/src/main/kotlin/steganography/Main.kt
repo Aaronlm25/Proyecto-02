@@ -108,7 +108,7 @@ private fun getText(): List<Char> {
         try {
             println("Proporcione la ruta del archivo con el texto a ocultar.")
             val textPath = readNonNullInput()
-            return readFile(textPath)
+            return readFile(textPath).also { flag = false }
         } catch (iae: IllegalArgumentException) {
             println("El archivo debe ser .txt")
         } catch (ise: IllegalStateException) {
@@ -116,8 +116,8 @@ private fun getText(): List<Char> {
         } catch(fnfe : FileNotFoundException) {
             println("No se encontro el archivo.")
         }
-        flag = false
     }
+    return emptyList()
 }
 
 private fun getImage(prompt: String): BufferedImage {
@@ -126,7 +126,7 @@ private fun getImage(prompt: String): BufferedImage {
         try {
             println(prompt)
             val imagePath = readNonNullInput()
-            return loadImage(imagePath)
+            return loadImage(imagePath).also { flag = false }
         } catch (e: IOException) {
             println("Error: No se pudo leer la imagen desde la ruta proporcionada. Asegúrese de que el archivo existe y es accesible.")
         } catch (e: IllegalArgumentException) {
@@ -134,6 +134,6 @@ private fun getImage(prompt: String): BufferedImage {
         } catch(fnfe : FileNotFoundException) {
             println("No se encontro el archivo.")
         }
-        flag = false
     }
+    return BufferedImage(0, 0, BufferedImage.TYPE_INT_RGB)
 }
