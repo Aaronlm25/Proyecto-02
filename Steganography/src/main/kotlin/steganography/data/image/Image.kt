@@ -71,15 +71,19 @@ fun saveImage(image: BufferedImage, path: String) {
     val type = path.substringAfterLast(".").lowercase()
     if (type != "png" && type != "jpg") {
         throw IllegalArgumentException("Tipo de archivo inválido: $type. Solo se admiten archivos de tipo 'png' y 'jpg'.")
-    } else {
-        try {
-            val outputFile = File(path)
-            val result = ImageIO.write(image, type, outputFile)
-            if (!result) {
-                throw IOException("Error al guardar la imágen.")
-            }
-        } catch (e: IOException) {
-            throw e
+    }
+    val outputFile = File(path)
+
+    if (!outputFile.parentFile.exists()) {
+        throw IllegalArgumentException("El directorio ${outputFile.parent} no existe.")
+    }
+
+    try {
+        val result = ImageIO.write(image, type, outputFile)
+        if (!result) {
+            throw IOException("Error al guardar la imagen: no se pudo escribir en el archivo.")
         }
+    } catch (e: IOException) {
+        throw IOException("Error al intentar guardar la imagen: ${e.message}", e)
     }
 }

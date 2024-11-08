@@ -1,4 +1,5 @@
 package steganography
+
 import kotlin.text.trim
 import kotlin.io.readlnOrNull
 import steganography.data.text.toFile
@@ -10,7 +11,6 @@ import steganography.encodeText
 import java.awt.image.BufferedImage
 import java.io.IOException
 import java.io.FileNotFoundException
-import java.nio.file.Paths
 import org.jline.reader.LineReaderBuilder
 import org.jline.reader.LineReader
 import org.jline.terminal.TerminalBuilder
@@ -22,24 +22,16 @@ val lineReader = LineReaderBuilder.builder()
     .build()
 
 fun main() {
-    var active = true
-    while (active) {
+    while (true) {
         displayMenu()
         val option = readNonNullInput()
         try {
             when (option) {
-                "h" -> {
-                    val text = getText()
-                    val image = getImage("Proporcione la ruta de la imagen donde se ocultará el texto.")
-                    saveImage(text, image)
-                }
-                "u" -> {
-                    val image = getImage("Proporcione la ruta de la imagen que contiene los datos ocultos.")
-                    saveText(image)
-                }
+                "h" -> hideTextInImage()
+                "u" -> revealTextFromImage()
                 "x" -> {
-                    active = false
                     println("El programa ha terminado.")
+                    return
                 }
                 else -> println("Introduzca una opción válida (u) (h) (x).")
             }
@@ -48,7 +40,7 @@ fun main() {
         }
     }
 }
- 
+
 fun displayMenu() {
     println(
         """
@@ -63,29 +55,36 @@ fun displayMenu() {
 
 private fun readNonNullInput(): String = lineReader.readLine().trim()
 
+private fun hideTextInImage() {
+    val text = getText()
+    val image = getImage("Proporcione la ruta de la imagen donde se ocultará el texto.")
+    saveImage(text, image)
+}
 
-private fun saveImage(text : List<Char>, image : BufferedImage) {
+private fun revealTextFromImage() {
+    val image = getImage("Proporcione la ruta de la imagen que contiene los datos ocultos.")
+    saveText(image)
+}
+
+private fun saveImage(text: List<Char>, image: BufferedImage) {
     val encoded = encodeText(text, image)
-    var flag = true
-    while (flag) {
+    while (true) {
         try {
             println("Proporcione la ruta con el nombre de la imagen resultante. \nEjemplo: /home/user/nombre-imagen.png")
             val resultPath = readNonNullInput()
             saveImage(encoded, resultPath)
-            println("El texto se ha ocultado exitosamente en : $resultPath")
+            println("El texto se ha ocultado exitosamente en: $resultPath")
             return
         } catch (ioe: IOException) {
             println("No se pudo guardar la imagen en la ruta proporcionada.")
-        } catch(iae : IllegalArgumentException) {
-            println("El formato de la imagen no es valido debe ser (png) o (jpg).")
+        } catch (iae: IllegalArgumentException) {
+            println("El formato de la imagen no es válido. Debe ser (png) o (jpg).")
         }
-        flag = false
     }
 }
 
-private fun saveText(image : BufferedImage) {
-    var flag = true
-    while (flag) {
+private fun saveText(image: BufferedImage) {
+    while (true) {
         try {
             println("Proporcione el nombre del archivo en el que se guardará el texto decodificado.")
             val resultPath = readNonNullInput()
@@ -94,46 +93,41 @@ private fun saveText(image : BufferedImage) {
             println("Se ha decodificado el mensaje en: $resultPath")
             return
         } catch (ise: IOException) {
-            println("No se pudo guardar el texto en la ruta que proporciono.")
+            println("No se pudo guardar el texto en la ruta proporcionada.")
         } catch (iae: IllegalArgumentException) {
-            println("El formato del archivo deber ser .txt")
+            println("El formato del archivo debe ser .txt")
         }
-        flag = false
     }
 }
 
 private fun getText(): List<Char> {
-    var flag = true
-    while (flag) {
+    while (true) {
         try {
             println("Proporcione la ruta del archivo con el texto a ocultar.")
             val textPath = readNonNullInput()
-            return readFile(textPath).also { flag = false }
+            return readFile(textPath)
         } catch (iae: IllegalArgumentException) {
             println("El archivo debe ser .txt")
         } catch (ise: IllegalStateException) {
             println("El archivo tiene caracteres no soportados.")
-        } catch(fnfe : FileNotFoundException) {
-            println("No se encontro el archivo.")
+        } catch (fnfe: FileNotFoundException) {
+            println("No se encontró el archivo.")
         }
     }
-    return emptyList()
 }
 
 private fun getImage(prompt: String): BufferedImage {
-    var flag = true
-    while (flag) {
+    while (true) {
         try {
             println(prompt)
             val imagePath = readNonNullInput()
-            return loadImage(imagePath).also { flag = false }
+            return loadImage(imagePath)
         } catch (e: IOException) {
             println("Error: No se pudo leer la imagen desde la ruta proporcionada. Asegúrese de que el archivo existe y es accesible.")
         } catch (e: IllegalArgumentException) {
             println("Error: El archivo proporcionado no es una imagen válida o tiene un formato no soportado.")
-        } catch(fnfe : FileNotFoundException) {
-            println("No se encontro el archivo.")
+        } catch (fnfe: FileNotFoundException) {
+            println("No se encontró el archivo.")
         }
     }
-    return BufferedImage(0, 0, BufferedImage.TYPE_INT_RGB)
 }

@@ -77,6 +77,14 @@ fun encodeText(text: List<Char>, image: BufferedImage): BufferedImage {
     return modifiedImage
 }
 
+/**
+
+ * Retrieves the current color channel from a pixel and its corresponding bit displacement.
+ * @param pixel The pixel value from which to extract the channel.
+ * @param i The index used to determine which channel to extract (0 for red, 1 for green).
+ * @return A Pair containing the extracted channel value and its bit displacement.
+ * The first element is the channel value (0-255), and the second element is the bit displacement (8 or 16).
+ */
 private fun getCurrentChannel(pixel: Int, i: Int): Pair<Int, Int> {
     return when (i % 2) {
         0 -> Pair((pixel shr 16) and 0xFF, 16)
@@ -84,12 +92,22 @@ private fun getCurrentChannel(pixel: Int, i: Int): Pair<Int, Int> {
     }
 }
 
+/**
+ * Modifies a pixel by updating a specific color channel with a new value.
+ * @param pixel The original pixel value to be modified.
+ * @param channel A Pair containing the new channel value and its bit displacement.
+ * @return The modified pixel value with the updated channel.
+ */
 private fun getNewPixel(pixel: Int, channel: Pair<Int, Int>): Int {
     val (newChannel, displacement) = channel
     return (pixel and (0xFF shl displacement).inv()) or (newChannel shl displacement)
 }
 
-
+/**
+ * Creates a modified copy of the given image.
+ * @param image The original BufferedImage to be copied.
+ * @return A new BufferedImage that is a copy of the original image.
+ */
 private fun getImage(image : BufferedImage): BufferedImage {
     val modifiedImage = BufferedImage(image.width, image.height, image.type)
     val graphics = modifiedImage.createGraphics()
@@ -99,7 +117,10 @@ private fun getImage(image : BufferedImage): BufferedImage {
 }
 
 /**
- * 
+ * Validates the provided text for size and character support.
+ * @param text The list of characters to validate.
+ * @param maxLength The maximum allowed length for the text.
+ * @throws IllegalStateException If the text exceeds maxLength, is empty, or contains unsupported characters.
  */
 private fun validateText(text: List<Char>, maxLength : Int) {
     if(text.size >= maxLength) {
