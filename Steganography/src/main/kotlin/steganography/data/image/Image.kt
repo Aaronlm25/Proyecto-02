@@ -74,10 +74,6 @@ fun saveImage(image: BufferedImage, path: String) {
     }
     val outputFile = File(path)
 
-    if (!outputFile.parentFile.exists()) {
-        throw IllegalArgumentException("El directorio ${outputFile.parent} no existe.")
-    }
-
     try {
         val result = ImageIO.write(image, type, outputFile)
         if (!result) {
