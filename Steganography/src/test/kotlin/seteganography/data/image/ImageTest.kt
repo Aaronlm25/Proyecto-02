@@ -8,6 +8,7 @@ import io.kotest.assertions.throwables.shouldNotThrowAny
 import java.io.File
 import javax.imageio.ImageIO
 import java.io.IOException
+import java.io.FileNotFoundException
 import java.awt.image.BufferedImage
 import steganography.data.image.loadImage
 import steganography.data.image.saveImage
@@ -128,19 +129,21 @@ class ImageTest : StringSpec({
         }
     }
 
-    "should throw IllegalArgumentException when trying to save an image to an invalid path" {
-        var imageProcessed = false
-        for ((directory, imagePaths) in images) {
-            for (path in imagePaths) {
-                if (!imageProcessed) {
-                    val invalidFilePath = "invalid/path/to/save_image.png"
-                    val image = loadImage(path)
-                    shouldThrow<IllegalArgumentException> {
-                        saveImage(image, invalidFilePath)
-                    }
-                    imageProcessed = true
+    "should throw FileNotFoundException when trying to save an image to an invalid path" {
+        val originalErr = System.err
+        System.setErr(java.io.PrintStream(java.io.OutputStream.nullOutputStream()))
+        try {
+            for ((directory, imagePaths) in images) {
+                for (path in imagePaths) {
+                        val invalidFilePath = "invalid/path/to/save_image.png"
+                        val image = loadImage(path)
+                        shouldThrow<FileNotFoundException> {
+                            saveImage(image, invalidFilePath)
+                        }
                 }
             }
+        } finally {
+            System.setErr(originalErr)
         }
     }
 

@@ -2,6 +2,7 @@ package steganography.data.image
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.IOException
+import java.io.FileNotFoundException
 import javax.imageio.ImageIO
 import java.awt.Graphics2D
 
@@ -73,6 +74,11 @@ fun saveImage(image: BufferedImage, path: String) {
         throw IllegalArgumentException("Tipo de archivo inválido: $type. Solo se admiten archivos de tipo 'png' y 'jpg'.")
     }
     val outputFile = File(path)
+    val parentDir = outputFile.parentFile
+
+    if (parentDir != null && !parentDir.exists()) {
+        throw FileNotFoundException("Error al guardar la imagen: el directorio no existe.")
+    }
 
     try {
         val result = ImageIO.write(image, type, outputFile)
