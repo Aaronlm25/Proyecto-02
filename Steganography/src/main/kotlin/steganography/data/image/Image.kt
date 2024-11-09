@@ -80,6 +80,6 @@ fun saveImage(image: BufferedImage, path: String) {
             throw IOException("Error al guardar la imagen: no se pudo escribir en el archivo.")
         }
     } catch (e: IOException) {
-        throw IOException("Error al intentar guardar la imagen: ${e.message}", e)
+        throw IllegalArgumentException("Error al intentar guardar la imagen: ${e.message}", e)
     }
 }

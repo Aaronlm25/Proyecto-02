@@ -129,10 +129,8 @@ private fun validateText(text: List<Char>, maxLength : Int) {
     if(text.size == 0) {
         throw IllegalStateException("El texto debe tener por lo menos un caracter.")
     }
-    for(char in text) {
-        if(char !in charToInt) {
-            throw IllegalStateException("Caracter no soportado : $char")
-        }
+    if (!text.all { it in charToInt} || text.contains('~')){
+        throw IllegalStateException("El texto contiene caracteres invalidos.")
     }
 }
 
