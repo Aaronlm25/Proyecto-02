@@ -1,5 +1,4 @@
 package steganography
-import steganography.data.text.replaceAlphabet
 import java.util.Random
 import java.awt.image.BufferedImage
 import kotlin.math.floor
