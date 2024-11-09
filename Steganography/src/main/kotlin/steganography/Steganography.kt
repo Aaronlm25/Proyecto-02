@@ -1,8 +1,25 @@
+/**
+ * Module that provides functions for encoding and decoding text in images using steganography.
+ * 
+ * Functions:
+ * - encodeText: Encodes text into an image.
+ * - decodeText: Decodes text from an image.
+ * - getNewPixel: Modifies a pixel by updating a specific color channel.
+ * - getImage: Creates a modified copy of the given image.
+ * - validateText: Validates the provided text for size and character support.
+ * 
+ * Exceptions:
+ * - IllegalStateException: If the text is too large for the image or contains unsupported characters.
+ */
 package steganography
 import java.util.Random
 import java.awt.image.BufferedImage
 import kotlin.math.floor
 
+/**
+ * A map that associates each character with its corresponding integer value.
+ * This map is used to convert characters to integers for encoding purposes.
+ */
 private val charToInt = mapOf(
     'a' to 1, 'b' to 2, 'c' to 3, 'd' to 4, 'e' to 5,
     'f' to 6, 'g' to 7, 'h' to 8, 'i' to 9, 'j' to 10,
@@ -32,6 +49,10 @@ private val charToInt = mapOf(
     '¶' to 126, '·' to 127, '¸' to 128
 )
 
+/**
+ * A map that associates each integer value with its corresponding character.
+ * This map is used to convert integers back to characters for decoding purposes.
+ */
 private val intToChar = charToInt.entries.associate { (k, v) -> v to k }
 
 /**

@@ -1,3 +1,15 @@
+/**
+ * Module that provides functions for reading and writing text files.
+ * 
+ * Functions:
+ * - readFile: Reads a text file and converts it into a list of characters.
+ * - toFile: Writes a list of characters to a text file.
+ * 
+ * Exceptions:
+ * - FileNotFoundException: If the file is not found.
+ * - IllegalArgumentException: If the file is not of type txt.
+ * - IOException: If an error occurs while writing to the file.
+ */
 package steganography.data.text
 import java.io.File
 import java.io.IOException

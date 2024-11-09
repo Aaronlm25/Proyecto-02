@@ -1,5 +1,19 @@
+/**
+ * This module provides the main entry point for the steganography application.
+ * It includes functions to display the menu, read user input, and handle the main operations.
+ * 
+ * Functions:
+ * - main: The main entry point of the application.
+ * - displayMenu: Displays the main menu to the user.
+ * - readNonNullInput: Reads non-null input from the user.
+ * - hideTextInImage: Handles the process of hiding text in an image.
+ * - revealTextFromImage: Handles the process of revealing text from an image.
+ * - saveImage: Saves the encoded image to a specified path.
+ * - saveText: Saves the decoded text to a specified path.
+ * - getText: Prompts the user to enter the text to be hidden.
+ * - getImage: Prompts the user to provide the path to the image.
+ */
 package steganography
-
 import kotlin.text.trim
 import kotlin.io.readlnOrNull
 import steganography.data.text.toFile
@@ -43,6 +57,9 @@ fun main() {
     }
 }
 
+/**
+ * Displays the main menu to the user.
+ */
 fun displayMenu() {
     println(
         """
@@ -56,19 +73,34 @@ fun displayMenu() {
     )
 }
 
+/**
+ * Reads non-null input from the user.
+ * @return The trimmed input string.
+ */
 private fun readNonNullInput(): String = lineReader.readLine().trim()
 
+/**
+ * Handles the process of hiding text in an image.
+ */
 private fun hideTextInImage() {
     val text = getText()
     val image = getImage("\nProporcione la ruta de la imagen donde se ocultará el texto.")
     saveImage(text, image)
 }
 
+/**
+ * Handles the process of revealing text from an image.
+ */
 private fun revealTextFromImage() {
     val image = getImage("\nProporcione la ruta de la imagen que contiene los datos ocultos.")
     saveText(image)
 }
 
+/**
+ * Saves the encoded image to a specified path.
+ * @param text The text to be hidden in the image.
+ * @param image The image in which the text will be hidden.
+ */
 private fun saveImage(text: List<Char>, image: BufferedImage) {
     val encoded = encodeText(text, image)
     while (true) {
@@ -90,6 +122,10 @@ private fun saveImage(text: List<Char>, image: BufferedImage) {
     }
 }
 
+/**
+ * Saves the decoded text to a specified path.
+ * @param image The image from which the text will be revealed.
+ */
 private fun saveText(image: BufferedImage) {
     while (true) {
         try {
@@ -109,6 +145,10 @@ private fun saveText(image: BufferedImage) {
     }
 }
 
+/**
+ * Prompts the user to enter the text to be hidden.
+ * @return The text entered by the user as a list of characters.
+ */
 private fun getText(): List<Char> {
     while (true) {
         try {
@@ -127,6 +167,11 @@ private fun getText(): List<Char> {
     }
 }
 
+/**
+ * Prompts the user to provide the path to the image.
+ * @param prompt The prompt message to display to the user.
+ * @return The loaded image.
+ */
 private fun getImage(prompt: String): BufferedImage {
     while (true) {
         try {

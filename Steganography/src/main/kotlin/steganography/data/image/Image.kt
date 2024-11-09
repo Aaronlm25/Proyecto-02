@@ -1,3 +1,15 @@
+/**
+ * Module that provides functions for loading and saving images.
+ * 
+ * Functions:
+ * - loadImage: Loads an image from a specified path.
+ * - saveImage: Saves a modified image to a specified path.
+ * 
+ * Exceptions:
+ * - IOException: If an error occurs while reading or writing the image.
+ * - IllegalStateException: If the image is not of type png or jpg.
+ * - FileNotFoundException: If the directory does not exist.
+ */
 package steganography.data.image
 import java.awt.image.BufferedImage
 import java.io.File
