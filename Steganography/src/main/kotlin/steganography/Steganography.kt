@@ -46,7 +46,7 @@ fun encodeText(text: List<Char>, image: BufferedImage): BufferedImage {
     val length = text.size
     val width = image.width
     val height = image.height
-    validateText(text, floor(image.width * image.height / 6.5).toInt() - 4)
+    validateText(text, floor(image.width * image.height / 6.5).toInt() - 10)
     var textIndex = 0
     val modifiedImage = getImage(image)
     var bitIndex = 0
@@ -57,11 +57,14 @@ fun encodeText(text: List<Char>, image: BufferedImage): BufferedImage {
             for (i in 0..1) {   
                 if (bitIndex == 7) {
                     textIndex++
-                    if (textIndex == length) {
-                        modifiedImage.setRGB(width - 1, height - 1, length * 7)
+                    if (textIndex == length + 1) {
                         return modifiedImage
                     }
-                    charValue = charToInt[text[textIndex]] ?: 0
+                    if(textIndex != length) {
+                        charValue = charToInt[text[textIndex]] ?: 0
+                    } else {
+                        charValue = 0
+                    }
                     bitIndex = 0
                 }
                 val (currentChannel, displacement) = getCurrentChannel(pixel, i)
@@ -72,7 +75,6 @@ fun encodeText(text: List<Char>, image: BufferedImage): BufferedImage {
             }
         }
     }
-    modifiedImage.setRGB(width - 1, height - 1, length * 7)
     return modifiedImage
 }
 
@@ -128,7 +130,7 @@ private fun validateText(text: List<Char>, maxLength : Int) {
     if(text.size == 0) {
         throw IllegalStateException("El texto debe tener por lo menos un caracter.")
     }
-    if (!text.all { it in charToInt} || text.contains('~')){
+    if (!text.all { it in charToInt}){
         throw IllegalStateException("El texto contiene caracteres invalidos.")
     }
 }
@@ -153,12 +155,10 @@ private fun modifyLSB(channel: Int, bit: Int): Int {
  * @return The decoded text.
  */
 fun decodeText(image: BufferedImage): List<Char> {
-    val length = ((image.getRGB(image.width - 1, image.height - 1) and 0xFFFFFF) / 7.0).toInt()
     val width = image.width
     val height = image.height
     val text = mutableListOf<Char>()
     val bits = StringBuilder()
-    var index = 0
     for (y in 0 until height) {
         for (x in 1 until width) {
             val pixel = image.getRGB(x, y)
@@ -167,13 +167,12 @@ fun decodeText(image: BufferedImage): List<Char> {
                 bits.append(channel and 1)
                 if (bits.length == 7) {
                     val charValue = Integer.parseInt(bits.toString(), 2)
-                    val char = intToChar[charValue] ?: '0'
-                    text.add(char)
-                    bits.clear()
-                    index++
-                    if(index == length) {
+                    val char = intToChar[charValue] ?: '€'
+                    if(char == '€') {
                         return text
                     }
+                    text.add(char)
+                    bits.clear()
                 }
             }
         }

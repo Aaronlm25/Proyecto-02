@@ -139,7 +139,7 @@ class SteganographyTest : StringSpec ({
 })
 
 private fun getLimit(image : BufferedImage): Int {
-    return floor(image.width * image.height / 6.5).toInt() - 4
+    return floor(image.width * image.height / 6.5).toInt() - 10
 }
 
 private fun getLSBHistogram(image : BufferedImage): Map<String, Map<Int, Int>> {
