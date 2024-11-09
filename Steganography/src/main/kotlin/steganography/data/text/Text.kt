@@ -21,7 +21,7 @@ import java.util.HashMap
 /**
  * Reads the file at a specified path and converts it to a list of characters.
  *
- * @param The path of the text to read.
+ * @property The path of the text to read.
  * @return A list of the characters in the text.
  * @throws FileNotFoundException If no file is found.
  * @throws IllegalArgumentException If file is not txt.
@@ -38,8 +38,8 @@ fun readFile(path : String): List<Char> {
 /**
  * Writes a list of characters to a file at the specified path.
  * 
- * @param characters List of characters.
- * @param textPath Path to which the message will be written.
+ * @property characters List of characters.
+ * @property textPath Path to which the message will be written.
  * @return The file with the message.
  * @throws IOException If the path is invalid.
 */

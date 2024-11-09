@@ -58,8 +58,8 @@ private val intToChar = charToInt.entries.associate { (k, v) -> v to k }
 /**
  * Encodes the text into an image represented by an integer array of the pixels.
  *
- * @param text The text to be encoded.
- * @param image Contains the pixels that make up the image.
+ * @property text The text to be encoded.
+ * @property image Contains the pixels that make up the image.
  * @return An object of type BufferedImage.
  * @throws IllegalStateException if the text is too large for the pixels array.
  */
@@ -102,8 +102,8 @@ fun encodeText(text: List<Char>, image: BufferedImage): BufferedImage {
 /**
 
  * Retrieves the current color channel from a pixel and its corresponding bit displacement.
- * @param pixel The pixel value from which to extract the channel.
- * @param i The index used to determine which channel to extract (0 for red, 1 for green).
+ * @property pixel The pixel value from which to extract the channel.
+ * @property i The index used to determine which channel to extract (0 for red, 1 for green).
  * @return A Pair containing the extracted channel value and its bit displacement.
  * The first element is the channel value (0-255), and the second element is the bit displacement (8 or 16).
  */
@@ -116,8 +116,8 @@ private fun getCurrentChannel(pixel: Int, i: Int): Pair<Int, Int> {
 
 /**
  * Modifies a pixel by updating a specific color channel with a new value.
- * @param pixel The original pixel value to be modified.
- * @param channel A Pair containing the new channel value and its bit displacement.
+ * @property pixel The original pixel value to be modified.
+ * @property channel A Pair containing the new channel value and its bit displacement.
  * @return The modified pixel value with the updated channel.
  */
 private fun getNewPixel(pixel: Int, channel: Pair<Int, Int>): Int {
@@ -127,7 +127,7 @@ private fun getNewPixel(pixel: Int, channel: Pair<Int, Int>): Int {
 
 /**
  * Creates a modified copy of the given image.
- * @param image The original BufferedImage to be copied.
+ * @property image The original BufferedImage to be copied.
  * @return A new BufferedImage that is a copy of the original image.
  */
 private fun getImage(image : BufferedImage): BufferedImage {
@@ -140,8 +140,8 @@ private fun getImage(image : BufferedImage): BufferedImage {
 
 /**
  * Validates the provided text for size and character support.
- * @param text The list of characters to validate.
- * @param maxLength The maximum allowed length for the text.
+ * @property text The list of characters to validate.
+ * @property maxLength The maximum allowed length for the text.
  * @throws IllegalStateException If the text exceeds maxLength, is empty, or contains unsupported characters.
  */
 private fun validateText(text: List<Char>, maxLength : Int) {
@@ -158,8 +158,8 @@ private fun validateText(text: List<Char>, maxLength : Int) {
 
 /**
  * Modifies the LSB of the desired channel.
- * @param channel The channel to be modified.
- * @param bit The bit to be compared with the channel's LSB.
+ * @property channel The channel to be modified.
+ * @property bit The bit to be compared with the channel's LSB.
  * @return The modified channel.
  */
 private fun modifyLSB(channel: Int, bit: Int): Int {
@@ -172,7 +172,7 @@ private fun modifyLSB(channel: Int, bit: Int): Int {
  * Handles letters (a-z) and (A-Z) numbers (0-9) and some special characters :
  * (!.+-?¿àèìòù¡¿/!)
  *
- * @param image A BufferedImage of the image.
+ * @property image A BufferedImage of the image.
  * @return The decoded text.
  */
 fun decodeText(image: BufferedImage): List<Char> {

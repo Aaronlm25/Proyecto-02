@@ -94,6 +94,19 @@
       </plugin>
 
       <plugin>
+        <groupId>org.jetbrains.dokka</groupId>
+        <artifactId>dokka-maven-plugin</artifactId>
+        <version>1.9.20</version>
+        <executions>
+            <execution>
+                <goals>
+                    <goal>dokka</goal>
+                </goals>
+            </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.1</version>
@@ -143,34 +156,27 @@
 
 <reporting>
     <plugins>
-        <!-- Maven Project Info Reports Plugin -->
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-project-info-reports-plugin</artifactId>
             <version>3.1.1</version>
         </plugin>
 
-        <!-- Maven Javadoc Plugin -->
         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-javadoc-plugin</artifactId>
-            <version>3.3.1</version>
-            <reportSets>
-                <reportSet>
-                    <reports>
-                        <report>javadoc</report>
-                    </reports>
-                </reportSet>
-            </reportSets>
-            <configuration>
-                <source>11</source>
-                <encoding>UTF-8</encoding>
-                <doclint>none</doclint>
-                <failOnError>false</failOnError>
-            </configuration>
+          <groupId>org.jetbrains.dokka</groupId>
+          <artifactId>dokka-maven-plugin</artifactId>
+          <version>1.9.20</version>
+          <configuration>
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>dokka</goal>
+                    </goals>
+                </execution>
+            </executions>
+          </configuration>
         </plugin>
 
-        <!-- Maven Surefire Report Plugin -->
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-report-plugin</artifactId>
