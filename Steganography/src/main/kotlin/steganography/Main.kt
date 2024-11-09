@@ -73,8 +73,10 @@ private fun saveImage(text: List<Char>, image: BufferedImage) {
     val encoded = encodeText(text, image)
     while (true) {
         try {
-            println("\nProporcione la ruta con el nombre de la imagen resultante. \nEjemplo: /home/user/nombre-imagen.png")
-            val resultPath = readNonNullInput()
+            println("\nProporcione el nombre de la imagen resultante (ejemplo: nombre-imagen.png):")
+            val fileName = readNonNullInput()
+            val resultPath = System.getProperty("user.dir") + "/" + fileName
+            
             saveImage(encoded, resultPath)
             println("\nEl texto se ha ocultado exitosamente en: $resultPath")
             return
@@ -82,7 +84,7 @@ private fun saveImage(text: List<Char>, image: BufferedImage) {
             println("\nNo se pudo guardar la imagen en la ruta proporcionada.")
         } catch (iae: IllegalArgumentException) {
             println("\nEl formato de la imagen no es válido. Debe ser (png) o (jpg).")
-        }catch (e: Exception) {
+        } catch (e: Exception) {
             println("\nSe ha producido un error. Intente de nuevo.")
         }
     }
