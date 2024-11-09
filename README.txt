@@ -93,6 +93,8 @@ confirmando que la instalación fue exitosa.
 ### Ejecutar el Proyecto
 
 Para ejecutar la aplicación principal, usa el siguiente comando:
+
+mvn install
 ```
 java -jar target/steganography.jar
 ```
@@ -104,6 +106,13 @@ Para ejecutar las pruebas definidas en el proyecto, utiliza el siguiente comando
 ```
 mvn test
 ```
+
+Si deseas generar un sitio web estático con varios informes sobre el proyecto, 
+incluyendo información sobre las dependencias, plugins, y más ejecuta el siguiente comando:
+```
+mvn site
+```
+Los archivos HTML generados se encontrarán en el directorio target/site del proyecto.
 
 ## Uso
 
