@@ -102,7 +102,7 @@ private fun saveText(image: BufferedImage) {
         } catch (iae: IllegalArgumentException) {
             println("\nEl formato del archivo debe ser .txt")
         }catch (e: Exception) {
-            println("\nSe ha producido un error.")
+            println("\nSe ha producido un error. Intente de nuevo.")
         }
     }
 }

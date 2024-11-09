@@ -54,7 +54,7 @@ fun readFile(path : String): List<Char> {
 */
 fun toFile(characters : List<Char>, path: String): File {
     if (path.substringAfterLast(".") != "txt") {
-        throw IllegalArgumentException("La extension del archivo no es valida.")
+        throw IOException("La extension del archivo no es valida.")
     }
     val file = File(path)
     val text = characters.joinToString("")
