@@ -21,7 +21,7 @@ import java.awt.Graphics2D
 /**
  * Loads a PNG image from the specified file path.
  *
- * @param filePath The path of the image file.
+ * @property filePath The path of the image file.
  * @return The loaded BufferedImage.
  * @throws IOException If an error occurs during reading.
  */
@@ -40,7 +40,7 @@ private fun loadImagePNG(path: String): BufferedImage {
 /**
  * Converts a JPG image to a PNG BufferedImage.
  *
- * @param path The path of the JPG image file.
+ * @property path The path of the JPG image file.
  * @return The converted BufferedImage in PNG format.
  * @throws IOException If an error occurs during reading or writing.
  */
@@ -58,7 +58,7 @@ private fun convertJPGtoPNG(path: String): BufferedImage {
  * 
  * Handles PNG and JPG.
  *
- * @param path The path of the image file.
+ * @property path The path of the image file.
  * @return A BufferedImage object representing the loaded image.
  * @throws IllegalStateException If the provided image is not png or jpg.
  */
@@ -75,8 +75,8 @@ fun loadImage(path: String): BufferedImage {
 /**
  * Saves the modified image to the specified file path.
  *
- * @param image as buffered image.
- * @param path The path where the image should be saved.
+ * @property image as buffered image.
+ * @property path The path where the image should be saved.
  * @throws IOException If an error occurs during writing.
  * @throws IllegalArgumentException If the provided parameters are invalid.
  */

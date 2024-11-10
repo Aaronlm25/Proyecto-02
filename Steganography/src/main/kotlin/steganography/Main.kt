@@ -98,8 +98,8 @@ private fun revealTextFromImage() {
 
 /**
  * Saves the encoded image to a specified path.
- * @param text The text to be hidden in the image.
- * @param image The image in which the text will be hidden.
+ * @property text The text to be hidden in the image.
+ * @property image The image in which the text will be hidden.
  */
 private fun saveImage(text: List<Char>, image: BufferedImage) {
     val encoded = encodeText(text, image)
@@ -124,7 +124,7 @@ private fun saveImage(text: List<Char>, image: BufferedImage) {
 
 /**
  * Saves the decoded text to a specified path.
- * @param image The image from which the text will be revealed.
+ * @property image The image from which the text will be revealed.
  */
 private fun saveText(image: BufferedImage) {
     while (true) {
@@ -169,7 +169,7 @@ private fun getText(): List<Char> {
 
 /**
  * Prompts the user to provide the path to the image.
- * @param prompt The prompt message to display to the user.
+ * @property prompt The prompt message to display to the user.
  * @return The loaded image.
  */
 private fun getImage(prompt: String): BufferedImage {
