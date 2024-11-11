@@ -123,7 +123,3 @@ Los archivos HTML generados se encontrarán en el directorio target/site del pro
 - El proyecto está estructurado para separar efectivamente el código fuente, las pruebas y los recursos, lo que facilita su mantenimiento.
 
 Para cualquier problema o contribuciones, consulta el repositorio del proyecto.
-
----
-
-Este formato está optimizado para un archivo `README.txt` claro y fácil de seguir.
