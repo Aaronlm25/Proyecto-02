@@ -1,6 +1,3 @@
-Claro, aquí tienes el texto formateado como un archivo `README.txt` con instrucciones claras:
-
----
 
 # Proyecto de Esteganografía
 
